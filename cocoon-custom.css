@@ -19,9 +19,10 @@
     radial-gradient(circle at 88% 18%, rgba(155, 229, 207, 0.11), transparent 24rem),
     linear-gradient(180deg, #0b0b12 0%, var(--mn-bg) 48%, #141018 100%);
   border-radius: 0;
-  margin: 0 calc(50% - 50vw);
+  margin: 0 auto;
   overflow: hidden;
-  padding: 0 calc(50vw - 50%);
+  max-width: 100%;
+  padding: 0;
 }
 
 .mn-site *,
@@ -805,18 +806,42 @@
 }
 
 @media (max-width: 900px) {
-  .mn-hero,
-  .mn-section--split,
-  .mn-section--contact {
-    grid-template-columns: 1fr;
+  .mn-hero {
+    flex-direction: column;
+    min-height: auto;
+    padding: 3.5rem 1.2rem 2.5rem;
+    text-align: center;
+    gap: 2.5rem;
   }
 
-  .mn-hero {
-    min-height: 100vh;
+  .mn-hero__content {
+    max-width: 100%;
+    padding-block: 0;
+  }
+
+  .mn-hero__copy,
+  .mn-hero__lead {
+    margin-inline: auto;
+  }
+
+  .mn-actions {
+    justify-content: center;
+  }
+
+  .mn-hero__scene {
+    max-width: min(320px, 85vw);
+    min-height: 220px;
+    margin: 0 auto;
+    transform: none;
   }
 
   .mn-hero__scene:not(.mn-hero__scene--image) {
     transform: none;
+  }
+
+  .mn-section--split,
+  .mn-section--contact {
+    grid-template-columns: 1fr;
   }
 
   .mn-feature-grid,
@@ -846,13 +871,20 @@
 
 @media (max-width: 620px) {
   .mn-site {
-    margin-inline: calc(50% - 50vw);
-    padding-inline: calc(50vw - 50%);
+    margin-inline: 0;
+    padding-inline: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .mn-hero {
+    padding: 2.5rem 1rem 2rem;
+    gap: 1.8rem;
   }
 
   .mn-hero__title,
   .mn-page-hero h1 {
-    font-size: clamp(2.35rem, 10vw, 2.75rem);
+    font-size: clamp(2rem, 9vw, 2.6rem);
   }
 
   .mn-hero,
@@ -863,7 +895,7 @@
 
   .mn-page-hero {
     min-height: auto;
-    padding-block: 3rem 1.5rem;
+    padding-block: 2.5rem 1.5rem;
   }
 
   .mn-page-hero + .mn-section {
@@ -871,12 +903,14 @@
   }
 
   .mn-actions {
-    align-items: stretch;
+    align-items: center;
     flex-direction: column;
+    gap: 0.75rem;
   }
 
   .mn-button {
     width: 100%;
+    max-width: 320px;
   }
 
   .mn-feature-grid,
@@ -886,6 +920,8 @@
 
   .mn-hero__scene:not(.mn-hero__scene--image) {
     border-radius: 1.2rem;
+    max-width: 260px;
+    min-height: 180px;
   }
 
   .mn-character-avatar {

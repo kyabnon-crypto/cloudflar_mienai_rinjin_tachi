@@ -17,38 +17,50 @@
   <style>
     html {
       scroll-behavior: smooth;
+      overflow-x: hidden;
+      width: 100%;
     }
     body {
       background: #101016;
       margin: 0;
       color: #fff7e8;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+      overflow-x: hidden;
+      width: 100%;
     }
 
     .preview-nav {
       align-items: center;
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      background: rgba(16, 16, 22, 0.88);
+      background: rgba(16, 16, 22, 0.92);
       border-bottom: 1px solid rgba(255, 242, 210, 0.16);
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
       gap: 0.5rem;
-      justify-content: center;
+      justify-content: flex-start;
       left: 0;
-      padding: 0.7rem;
+      padding: 0.65rem 0.8rem;
       position: sticky;
       right: 0;
       top: 0;
       z-index: 999;
     }
 
+    .preview-nav::-webkit-scrollbar {
+      display: none;
+    }
+
     .preview-nav a {
+      flex-shrink: 0;
       border: 1px solid rgba(255, 242, 210, 0.18);
       border-radius: 999px;
       color: #fff7e8;
-      font: 700 0.88rem system-ui, sans-serif;
-      padding: 0.45rem 0.95rem;
+      font: 700 0.84rem system-ui, sans-serif;
+      padding: 0.42rem 0.85rem;
       text-decoration: none;
       transition: background 0.2s, border-color 0.2s;
     }
@@ -61,10 +73,48 @@
     .preview-page {
       border-top: 1px solid rgba(255, 242, 210, 0.12);
       min-height: auto;
+      overflow-x: hidden;
     }
 
     .preview-page:first-of-type {
       border-top: none;
+    }
+
+    @media (max-width: 900px) {
+      .preview-nav {
+        justify-content: flex-start;
+      }
+      .mn-hero {
+        flex-direction: column !important;
+        padding: 2.5rem 1rem 2rem !important;
+        min-height: auto !important;
+        gap: 1.8rem !important;
+        text-align: center !important;
+      }
+      .mn-hero__content {
+        max-width: 100% !important;
+        padding-block: 0 !important;
+      }
+      .mn-actions {
+        justify-content: center !important;
+        align-items: center !important;
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+      }
+      .mn-actions .mn-button {
+        width: 100% !important;
+        max-width: 320px !important;
+      }
+      .mn-hero__scene {
+        display: none !important;
+      }
+      .mn-site {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+      }
     }
   </style>
 </head>
