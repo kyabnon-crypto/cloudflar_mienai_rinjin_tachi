@@ -105,8 +105,36 @@
         width: 100% !important;
         max-width: 320px !important;
       }
-      .mn-hero__scene {
+      .mn-hero__scene:not(.mn-hero__scene--image) {
         display: none !important;
+      }
+      .mn-hero__scene--image {
+        display: block !important;
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        z-index: 0 !important;
+        overflow: hidden !important;
+      }
+      .mn-hero__scene--image img {
+        display: block !important;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center !important;
+      }
+      .mn-hero__particles {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        z-index: 1 !important;
+        pointer-events: none !important;
+      }
+      .mn-hero__content {
+        position: relative !important;
+        z-index: 2 !important;
       }
       .mn-site {
         margin: 0 !important;
@@ -133,6 +161,18 @@
 <div class="preview-page" id="top-preview">
 <div class="mn-site">
   <header class="mn-hero">
+    <!-- 背景画像（夜の常世町の路地裏・キービジュアル） -->
+    <div class="mn-hero__scene mn-hero__scene--image" aria-hidden="true">
+      <img src="assets/hero-alley.png" alt="常世町の路地裏" loading="eager">
+    </div>
+
+    <!-- 幻想的な発光グローエフェクト -->
+    <div class="mn-hero__glow mn-hero__glow--one"></div>
+    <div class="mn-hero__glow mn-hero__glow--two"></div>
+
+    <!-- 星・光の粒が舞い上がるアニメーションキャンバス -->
+    <canvas class="mn-hero__particles" id="mn-particles"></canvas>
+
     <div class="mn-hero__content">
       <p class="mn-kicker">Picture Book / Animation / Audio</p>
       <h1 class="mn-hero__title">見えない隣人たち</h1>
@@ -149,15 +189,6 @@
         <a class="mn-button mn-button--ghost" href="#stickers-preview" style="border-color: rgba(6, 199, 85, 0.55); background: rgba(6, 199, 85, 0.12); color: #86efac;">💬 動くLINEスタンプ（全13種）</a>
         <a class="mn-button mn-button--ghost" href="#characters-preview">13人の隣人図鑑</a>
         <a class="mn-button mn-button--ghost" href="#music-preview">🎧 楽曲・BGM</a>
-      </div>
-    </div>
-    <div class="mn-hero__scene" aria-hidden="true">
-      <div class="mn-hero__spotlight"></div>
-      <div class="mn-hero__character mn-hero__character--front">
-        <img src="assets/susunomi-clean.png" alt="" width="320" height="320">
-      </div>
-      <div class="mn-hero__character mn-hero__character--back">
-        <img src="assets/kagemichi-clean.png" alt="" width="260" height="260">
       </div>
     </div>
   </header>

@@ -224,7 +224,7 @@
 
 .mn-hero__scene--image {
   aspect-ratio: auto;
-  background: #15151d;
+  background: #101016;
   border: 0;
   border-radius: 0;
   box-shadow: none;
@@ -235,24 +235,27 @@
   position: absolute;
   transform: none;
   width: 100%;
-  z-index: -2;
+  z-index: 0;
+  overflow: hidden;
 }
 
 .mn-hero__scene--image img {
   display: block;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   width: 100%;
+  opacity: 0.6;
 }
 
 .mn-hero__scene--image::after {
   background:
-    linear-gradient(90deg, rgba(8, 9, 14, 0.78) 0%, rgba(8, 9, 14, 0.46) 42%, rgba(8, 9, 14, 0.16) 100%),
-    linear-gradient(180deg, rgba(8, 9, 14, 0.24) 0%, rgba(8, 9, 14, 0.12) 48%, rgba(8, 9, 14, 0.86) 100%);
+    linear-gradient(180deg, rgba(16, 16, 22, 0.35) 0%, rgba(16, 16, 22, 0.65) 60%, rgba(16, 16, 22, 0.96) 100%),
+    radial-gradient(circle at 50% 30%, transparent 0%, rgba(16, 16, 22, 0.7) 100%);
   content: "";
   inset: 0;
   position: absolute;
-  z-index: 2;
+  z-index: 1;
 }
 
 .mn-hero__scene::before {
