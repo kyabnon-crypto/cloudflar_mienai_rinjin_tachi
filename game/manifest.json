@@ -1,0 +1,16 @@
+{
+  "name": "みつけて、となりびと ― 見えない隣人たち",
+  "short_name": "となりびと",
+  "description": "常世町の隙間に隠れた隣人たちを、ランタンの光でみつける癒しのゲーム。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b1230",
+  "theme_color": "#0b1230",
+  "lang": "ja",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,1651 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="換気口、終電後の駅、古い時計、忘れ物の影。人目につかない場所で暮らす小さな隣人たちを描く『見えない隣人たち』公式サイト。絵本・朗読動画・全世界音楽配信・動くLINEスタンプ・スマホ絵本ゲーム『みつけて、となりびと』を公開中。">
+  <meta property="og:title" content="見えない隣人たち | 公式サイト">
+  <meta property="og:description" content="人目につかない場所で暮らす小さな隣人たちの物語。絵本・動画・音楽・LINEスタンプ・スマホ絵本ゲーム『みつけて、となりびと』を公開中。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mienai-rinjin-tachi.pages.dev/">
+  <meta property="og:image" content="https://mienai-rinjin-tachi.pages.dev/assets/hero-alley.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>見えない隣人たち | 公式サイト</title>
+  <link rel="stylesheet" href="cocoon-custom.css?v=20261103">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      background: #101016;
+      margin: 0;
+      color: #fff7e8;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    }
+
+    .preview-nav {
+      align-items: center;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(16, 16, 22, 0.88);
+      border-bottom: 1px solid rgba(255, 242, 210, 0.16);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      left: 0;
+      padding: 0.7rem;
+      position: sticky;
+      right: 0;
+      top: 0;
+      z-index: 999;
+    }
+
+    .preview-nav a {
+      border: 1px solid rgba(255, 242, 210, 0.18);
+      border-radius: 999px;
+      color: #fff7e8;
+      font: 700 0.88rem system-ui, sans-serif;
+      padding: 0.45rem 0.95rem;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .preview-nav a:hover {
+      background: rgba(255, 242, 210, 0.12);
+      border-color: rgba(255, 242, 210, 0.35);
+    }
+
+    .preview-page {
+      border-top: 1px solid rgba(255, 242, 210, 0.12);
+      min-height: auto;
+    }
+
+    .preview-page:first-of-type {
+      border-top: none;
+    }
+  </style>
+</head>
+<body>
+  <nav class="preview-nav" aria-label="Site navigation">
+    <a href="#top-preview">トップ</a>
+    <a href="game/play.html" style="border-color: rgba(255, 207, 122, 0.6); background: rgba(255, 207, 122, 0.16); color: #ffe2a8;">🏮 ゲームで遊ぶ</a>
+    <a href="#stickers-preview" style="border-color: rgba(6, 199, 85, 0.6); background: rgba(6, 199, 85, 0.16); color: #86efac;">💬 LINEスタンプ（全13種）</a>
+    <a href="#characters-preview">キャラクター図鑑</a>
+    <a href="#stories-preview">ストーリー一覧</a>
+    <a href="#music-preview">🎧 楽曲・BGM</a>
+  </nav>
+
+  <!-- 全セクション完全静的インライン結合 -->
+  <main id="main-content">
+<div class="preview-page" id="top-preview">
+<div class="mn-site">
+  <header class="mn-hero">
+    <div class="mn-hero__content">
+      <p class="mn-kicker">Picture Book / Animation / Audio</p>
+      <h1 class="mn-hero__title">見えない隣人たち</h1>
+      <p class="mn-hero__copy">
+        換気口の奥、電車の終点、忘れ物の影、古い時計の中。<br>
+        日常の隙間に息づく、13人のちいさな隣人たちの物語。
+      </p>
+      <p class="mn-hero__lead">
+        だれにも褒められなかった日の帰り道、理由もなく心が軽くなったなら――<br>
+        それはきっと、彼らがそっと仕事をした証拠です。
+      </p>
+      <div class="mn-actions">
+        <a class="mn-button mn-button--primary" href="game/play.html" style="background: linear-gradient(135deg, #eab308, #ca8a04); color: #1e1302; font-weight: 800;">🏮 ゲームで遊ぶ（無料）</a>
+        <a class="mn-button mn-button--ghost" href="#stickers-preview" style="border-color: rgba(6, 199, 85, 0.55); background: rgba(6, 199, 85, 0.12); color: #86efac;">💬 動くLINEスタンプ（全13種）</a>
+        <a class="mn-button mn-button--ghost" href="#characters-preview">13人の隣人図鑑</a>
+        <a class="mn-button mn-button--ghost" href="#music-preview">🎧 楽曲・BGM</a>
+      </div>
+    </div>
+    <div class="mn-hero__scene" aria-hidden="true">
+      <div class="mn-hero__spotlight"></div>
+      <div class="mn-hero__character mn-hero__character--front">
+        <img src="assets/susunomi-clean.png" alt="" width="320" height="320">
+      </div>
+      <div class="mn-hero__character mn-hero__character--back">
+        <img src="assets/kagemichi-clean.png" alt="" width="260" height="260">
+      </div>
+    </div>
+  </header>
+
+  <!-- スマホ絵本ゲーム紹介セクション -->
+  <section class="mn-section mn-section--split" id="game-preview" aria-labelledby="mn-game-title" style="padding-top: 3.5rem; padding-bottom: 3.5rem;">
+    <div>
+      <p class="mn-kicker" style="color: #ffd782;">Web Picturebook Game</p>
+      <h2 id="mn-game-title" style="font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.25; margin-bottom: 1rem;">みつけて、となりびと</h2>
+      <p style="color: #cfc3af; font-size: 1rem; line-height: 1.8;">
+        常世町の夜の隙間に隠れた13人の隣人たちを、ランタンの光で照らしてみつける無料スマホ絵本ゲーム。<br>
+        みつけた隣人の絵本や朗読動画・音楽・LINEスタンプをその場で開いて楽しめます。寝る前の5分にどうぞ。
+      </p>
+      <div class="mn-actions" style="margin-top: 1.8rem;">
+        <a class="mn-button mn-button--primary" href="game/play.html" style="background: linear-gradient(135deg, #ffd782, #e5a93b); color: #1e1302; font-weight: 800; font-size: 1.05rem; padding: 0.85rem 2rem;">🏮 ゲームをはじめる（無料）</a>
+      </div>
+    </div>
+    <article class="mn-character-card mn-character-card--large" style="border-radius: 20px; overflow: hidden; border: 1px solid rgba(255, 215, 130, 0.25);">
+      <img class="mn-card-image" src="game/assets/img/ogp.jpg" alt="みつけて、となりびと" style="width: 100%; height: auto; display: block;">
+      <div style="padding: 1.4rem;">
+        <p class="mn-kicker">Lantern &amp; Story</p>
+        <h3 style="font-size: 1.2rem; color: #fff7e8; margin: 0 0 0.4rem;">常世町の隣人さがし</h3>
+        <p style="color: #cfc3af; font-size: 0.88rem; margin: 0;">ブラウザですぐに遊べる、音と灯りの探索絵本。</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- LINEスタンプ特集セクション -->
+  
+  <section class="mn-section" id="stickers-preview" aria-labelledby="mn-stickers-title" style="border-top: 1px solid rgba(255, 242, 210, 0.14); padding-top: 4rem; padding-bottom: 4rem;">
+    <div class="mn-section__intro" style="text-align: center; max-width: 780px; margin: 0 auto 2.5rem;">
+      <p class="mn-kicker" style="color: #86efac; font-size: 0.9rem; letter-spacing: 0.16em;">LINE Animated Stickers</p>
+      <h2 id="mn-stickers-title" style="font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.25; margin-bottom: 1rem;">💬 動くLINEアニメーションスタンプ<br><span style="font-size: 0.8em; color: #86efac;">（全13キャラクター・好評販売中）</span></h2>
+      <p style="color: #cfc3af; font-size: 1rem; line-height: 1.8;">
+        13人の小さな隣人たちが、あなたの日常のトーク画面にそっと寄り添うアニメーションスタンプになりました。<br>
+        「おつかれさま」「あせらないで」「あったかくしてね」――毎日の何気ない会話をそっと温める優しい言葉が詰まっています。
+      </p>
+      <div class="mn-actions" style="margin-top: 1.8rem; justify-content: center; display: flex;">
+        <a class="mn-button mn-button--primary" href="https://line.me/S/shop/sticker/author/6654833/new?lang=ja&utm_source=gnsh_staut" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, #06c755, #059669); color: #fff; border: none; font-size: 1.05rem; padding: 0.85rem 2rem; box-shadow: 0 8px 24px rgba(6, 199, 85, 0.35);">
+          💬 LINE STOREで全13人のスタンプ一覧を見る
+        </a>
+      </div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.2rem; margin-top: 2rem;">
+      
+      <div class="mn-sticker-card" style="background: rgba(23, 23, 34, 0.78); border: 1px solid rgba(6, 199, 85, 0.32); border-radius: 18px; padding: 1.25rem 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); transition: transform 0.2s, border-color 0.2s;">
+        <div style="width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, rgba(6, 199, 85, 0.18) 0%, rgba(255, 242, 210, 0.04) 70%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem;">
+          <img src="assets/susunomi-clean.png" alt="ススノミ" style="width: 92px; height: 92px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));" loading="lazy">
+        </div>
+        <div style="font-size: 0.75rem; color: #86efac; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 0.2rem;">01. ススノミ</div>
+        <div style="font-size: 0.95rem; font-weight: 700; color: #fff7e8; margin-bottom: 0.35rem;">換気口の奥の料理人</div>
+        <div style="font-size: 0.78rem; color: #cfc3af; background: rgba(255, 255, 255, 0.06); padding: 0.25rem 0.65rem; border-radius: 999px; margin-bottom: 1rem;">「召し上がれ」「おなかすいた？」</div>
+        <a class="mn-mini-button" href="https://line.me/S/sticker/36644772/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="width: 100%; border-color: rgba(6, 199, 85, 0.6); color: #86efac; font-weight: 700; text-align: center; padding: 0.55rem 0.6rem; border-radius: 999px; background: rgba(6, 199, 85, 0.08);">💬 スタンプを見る ↗</a>
+      </div>
+      <div class="mn-sticker-card" style="background: rgba(23, 23, 34, 0.78); border: 1px solid rgba(6, 199, 85, 0.32); border-radius: 18px; padding: 1.25rem 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); transition: transform 0.2s, border-color 0.2s;">
+        <div style="width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, rgba(6, 199, 85, 0.18) 0%, rgba(255, 242, 210, 0.04) 70%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem;">
+          <img src="assets/kagemichi-clean.png" alt="カゲミチ" style="width: 92px; height: 92px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));" loading="lazy">
+        </div>
+        <div style="font-size: 0.75rem; color: #86efac; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 0.2rem;">02. カゲミチ</div>
+        <div style="font-size: 0.95rem; font-weight: 700; color: #fff7e8; margin-bottom: 0.35rem;">電車の終点に立つ案内人</div>
+        <div style="font-size: 0.78rem; color: #cfc3af; background: rgba(255, 255, 255, 0.06); padding: 0.25rem 0.65rem; border-radius: 999px; margin-bottom: 1rem;">「終電だよ」「気をつけてね」</div>
+        <a class="mn-mini-button" href="https://line.me/S/sticker/36757128/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="width: 100%; border-color: rgba(6, 199, 85, 0.6); color: #86efac; font-weight: 700; text-align: center; padding: 0.55rem 0.6rem; border-radius: 999px; background: rgba(6, 199, 85, 0.08);">💬 スタンプを見る ↗</a>
+      </div>
+      <div class="mn-sticker-card" style="background: rgba(23, 23, 34, 0.78); border: 1px solid rgba(6, 199, 85, 0.32); border-radius: 18px; padding: 1.25rem 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); transition: transform 0.2s, border-color 0.2s;">
+        <div style="width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, rgba(6, 199, 85, 0.18) 0%, rgba(255, 242, 210, 0.04) 70%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem;">
+          <img src="assets/tokitsugi-clean.png" alt="トキツギ" style="width: 92px; height: 92px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));" loading="lazy">
+        </div>
+        <div style="font-size: 0.75rem; color: #86efac; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 0.2rem;">03. トキツギ</div>
+        <div style="font-size: 0.95rem; font-weight: 700; color: #fff7e8; margin-bottom: 0.35rem;">押し入れの奥の時間職人</div>
+        <div style="font-size: 0.78rem; color: #cfc3af; background: rgba(255, 255, 255, 0.06); padding: 0.25rem 0.65rem; border-radius: 999px; margin-bottom: 1rem;">「ひとやすみ」「おつかれさま」</div>
+        <a class="mn-mini-button" href="https://line.me/S/sticker/37100585/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="width: 100%; border-color: rgba(6, 199, 85, 0.6); color: #86efac; font-weight: 700; text-align: center; padding: 0.55rem 0.6rem; border-radius: 999px; background: rgba(6, 199, 85, 0.08);">💬 スタンプを見る ↗</a>
+      </div>
+      <div class="mn-sticker-card" style="background: rgba(23, 23, 34, 0.78); border: 1px solid rgba(6, 199, 85, 0.32); border-radius: 18px; padding: 1.25rem 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); transition: transform 0.2s, border-color 0.2s;">
+        <div style="width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, rgba(6, 199, 85, 0.18) 0%, rgba(255, 242, 210, 0.04) 70%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem;">
+          <img src="assets/wasuredama-clean.png" alt="ワスレダマ" style="width: 92px; height: 92px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));" loading="lazy">
+        </div>
+        <div style="font-size: 0.75rem; color: #86efac; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 0.2rem;">04. ワスレダマ</div>
+        <div style="font-size: 0.95rem; font-weight: 700; color: #fff7e8; margin-bottom: 0.35rem;">街灯の下の忘れ物係</div>
+        <div style="font-size: 0.78rem; color: #cfc3af; background: rgba(255, 255, 255, 0.06); padding: 0.25rem 0.65rem; border-radius: 999px; margin-bottom: 1rem;">「忘れ物ない？」「ここにあるよ」</div>
+        <a class="mn-mini-button" href="https://line.me/S/sticker/37135329/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="width: 100%; border-color: rgba(6, 199, 85, 0.6); color: #86efac; font-weight: 700; text-align: center; padding: 0.55rem 0.6rem; border-radius: 999px; background: rgba(6, 199, 85, 0.08);">💬 スタンプを見る ↗</a>
+      </div>
+      <div class="mn-sticker-card" style="background: rgba(23, 23, 34, 0.78); border: 1px solid rgba(6, 199, 85, 0.32); border-radius: 18px; padding: 1.25rem 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); transition: transform 0.2s, border-color 0.2s;">
+        <div style="width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, rgba(6, 199, 85, 0.18) 0%, rgba(255, 242, 210, 0.04) 70%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem;">
+          <img src="assets/nukumori-clean.png" alt="ヌクモリ" style="width: 92px; height: 92px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));" loading="lazy">
+        </div>
+        <div style="font-size: 0.75rem; color: #86efac; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 0.2rem;">05. ヌクモリ</div>
+        <div style="font-size: 0.95rem; font-weight: 700; color: #fff7e8; margin-bottom: 0.35rem;">自動販売機の裏の温度番</div>
+        <div style="font-size: 0.78rem; color: #cfc3af; background: rgba(255, 255, 255, 0.06); padding: 0.25rem 0.65rem; border-radius: 999px; margin-bottom: 1rem;">「あったかくしてね」「ぽかぽか」</div>
+        <a class="mn-mini-button" href="https://line.me/S/sticker/37086186/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="width: 100%; border-color: rgba(6, 199, 85, 0.6); color: #86efac; font-weight: 700; text-align: center; padding: 0.55rem 0.6rem; border-radius: 999px; background: rgba(6, 199, 85, 0.08);">💬 スタンプを見る ↗</a>
+      </div>
+      <div class="mn-sticker-card" style="background: rgba(23, 23, 34, 0.78); border: 1px solid rgba(6, 199, 85, 0.32); border-radius: 18px; padding: 1.25rem 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); transition: transform 0.2s, border-color 0.2s;">
+        <div style="width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, rgba(6, 199, 85, 0.18) 0%, rgba(255, 242, 210, 0.04) 70%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem;">
+          <img src="assets/henjirou-clean.png" alt="ヘンジロウ" style="width: 92px; height: 92px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));" loading="lazy">
+        </div>
+        <div style="font-size: 0.75rem; color: #86efac; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 0.2rem;">06. ヘンジロウ</div>
+        <div style="font-size: 0.95rem; font-weight: 700; color: #fff7e8; margin-bottom: 0.35rem;">ポストの中の返事書き</div>
+        <div style="font-size: 0.78rem; color: #cfc3af; background: rgba(255, 255, 255, 0.06); padding: 0.25rem 0.65rem; border-radius: 999px; margin-bottom: 1rem;">「ありがとう」「届いたよ」</div>
+        <a class="mn-mini-button" href="https://line.me/S/sticker/37090308/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="width: 100%; border-color: rgba(6, 199, 85, 0.6); color: #86efac; font-weight: 700; text-align: center; padding: 0.55rem 0.6rem; border-radius: 999px; background: rgba(6, 199, 85, 0.08);">💬 スタンプを見る ↗</a>
+      </div>
+      <div class="mn-sticker-card" style="background: rgba(23, 23, 34, 0.78); border: 1px solid rgba(6, 199, 85, 0.32); border-radius: 18px; padding: 1.25rem 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); transition: transform 0.2s, border-color 0.2s;">
+        <div style="width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, rgba(6, 199, 85, 0.18) 0%, rgba(255, 242, 210, 0.04) 70%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem;">
+          <img src="assets/tsumazuki-clean.png" alt="ツマヅキ" style="width: 92px; height: 92px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));" loading="lazy">
+        </div>
+        <div style="font-size: 0.75rem; color: #86efac; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 0.2rem;">07. ツマヅキ</div>
+        <div style="font-size: 0.95rem; font-weight: 700; color: #fff7e8; margin-bottom: 0.35rem;">階段の踊り場の見張り番</div>
+        <div style="font-size: 0.78rem; color: #cfc3af; background: rgba(255, 255, 255, 0.06); padding: 0.25rem 0.65rem; border-radius: 999px; margin-bottom: 1rem;">「あせらないで」「大丈夫」</div>
+        <a class="mn-mini-button" href="https://line.me/S/sticker/37091468/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="width: 100%; border-color: rgba(6, 199, 85, 0.6); color: #86efac; font-weight: 700; text-align: center; padding: 0.55rem 0.6rem; border-radius: 999px; background: rgba(6, 199, 85, 0.08);">💬 スタンプを見る ↗</a>
+      </div>
+      <div class="mn-sticker-card" style="background: rgba(23, 23, 34, 0.78); border: 1px solid rgba(6, 199, 85, 0.32); border-radius: 18px; padding: 1.25rem 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); transition: transform 0.2s, border-color 0.2s;">
+        <div style="width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, rgba(6, 199, 85, 0.18) 0%, rgba(255, 242, 210, 0.04) 70%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem;">
+          <img src="assets/kazoeru-clean.png" alt="カゾエル" style="width: 92px; height: 92px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));" loading="lazy">
+        </div>
+        <div style="font-size: 0.75rem; color: #86efac; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 0.2rem;">08. カゾエル</div>
+        <div style="font-size: 0.95rem; font-weight: 700; color: #fff7e8; margin-bottom: 0.35rem;">公園のブランコの数え役</div>
+        <div style="font-size: 0.78rem; color: #cfc3af; background: rgba(255, 255, 255, 0.06); padding: 0.25rem 0.65rem; border-radius: 999px; margin-bottom: 1rem;">「よくがんばったね」「えらい！」</div>
+        <a class="mn-mini-button" href="https://line.me/S/sticker/37146749/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="width: 100%; border-color: rgba(6, 199, 85, 0.6); color: #86efac; font-weight: 700; text-align: center; padding: 0.55rem 0.6rem; border-radius: 999px; background: rgba(6, 199, 85, 0.08);">💬 スタンプを見る ↗</a>
+      </div>
+      <div class="mn-sticker-card" style="background: rgba(23, 23, 34, 0.78); border: 1px solid rgba(6, 199, 85, 0.32); border-radius: 18px; padding: 1.25rem 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); transition: transform 0.2s, border-color 0.2s;">
+        <div style="width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, rgba(6, 199, 85, 0.18) 0%, rgba(255, 242, 210, 0.04) 70%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem;">
+          <img src="assets/tomerun-clean.png" alt="トメルン" style="width: 92px; height: 92px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));" loading="lazy">
+        </div>
+        <div style="font-size: 0.75rem; color: #86efac; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 0.2rem;">09. トメルン</div>
+        <div style="font-size: 0.95rem; font-weight: 700; color: #fff7e8; margin-bottom: 0.35rem;">冷蔵庫の奥の時間保存士</div>
+        <div style="font-size: 0.78rem; color: #cfc3af; background: rgba(255, 255, 255, 0.06); padding: 0.25rem 0.65rem; border-radius: 999px; margin-bottom: 1rem;">「のんびりいこう」「ゆっくりね」</div>
+        <a class="mn-mini-button" href="https://line.me/S/sticker/37146783/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="width: 100%; border-color: rgba(6, 199, 85, 0.6); color: #86efac; font-weight: 700; text-align: center; padding: 0.55rem 0.6rem; border-radius: 999px; background: rgba(6, 199, 85, 0.08);">💬 スタンプを見る ↗</a>
+      </div>
+      <div class="mn-sticker-card" style="background: rgba(23, 23, 34, 0.78); border: 1px solid rgba(6, 199, 85, 0.32); border-radius: 18px; padding: 1.25rem 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); transition: transform 0.2s, border-color 0.2s;">
+        <div style="width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, rgba(6, 199, 85, 0.18) 0%, rgba(255, 242, 210, 0.04) 70%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem;">
+          <img src="assets/hoshihakobi-clean.png" alt="ホシハコビ" style="width: 92px; height: 92px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));" loading="lazy">
+        </div>
+        <div style="font-size: 0.75rem; color: #86efac; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 0.2rem;">10. ホシハコビ</div>
+        <div style="font-size: 0.95rem; font-weight: 700; color: #fff7e8; margin-bottom: 0.35rem;">屋根の上の星運び</div>
+        <div style="font-size: 0.78rem; color: #cfc3af; background: rgba(255, 255, 255, 0.06); padding: 0.25rem 0.65rem; border-radius: 999px; margin-bottom: 1rem;">「おやすみなさい」「いい夢を」</div>
+        <a class="mn-mini-button" href="https://line.me/S/sticker/37224484/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="width: 100%; border-color: rgba(6, 199, 85, 0.6); color: #86efac; font-weight: 700; text-align: center; padding: 0.55rem 0.6rem; border-radius: 999px; background: rgba(6, 199, 85, 0.08);">💬 スタンプを見る ↗</a>
+      </div>
+      <div class="mn-sticker-card" style="background: rgba(23, 23, 34, 0.78); border: 1px solid rgba(6, 199, 85, 0.32); border-radius: 18px; padding: 1.25rem 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); transition: transform 0.2s, border-color 0.2s;">
+        <div style="width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, rgba(6, 199, 85, 0.18) 0%, rgba(255, 242, 210, 0.04) 70%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem;">
+          <img src="assets/yumeatsume-clean.png" alt="ユメアツメ" style="width: 92px; height: 92px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));" loading="lazy">
+        </div>
+        <div style="font-size: 0.75rem; color: #86efac; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 0.2rem;">11. ユメアツメ</div>
+        <div style="font-size: 0.95rem; font-weight: 700; color: #fff7e8; margin-bottom: 0.35rem;">夢の保管庫の管理人</div>
+        <div style="font-size: 0.78rem; color: #cfc3af; background: rgba(255, 255, 255, 0.06); padding: 0.25rem 0.65rem; border-radius: 999px; margin-bottom: 1rem;">「またあした」「おかえり」</div>
+        <a class="mn-mini-button" href="https://line.me/S/sticker/37385532/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="width: 100%; border-color: rgba(6, 199, 85, 0.6); color: #86efac; font-weight: 700; text-align: center; padding: 0.55rem 0.6rem; border-radius: 999px; background: rgba(6, 199, 85, 0.08);">💬 スタンプを見る ↗</a>
+      </div>
+      <div class="mn-sticker-card" style="background: rgba(23, 23, 34, 0.78); border: 1px solid rgba(6, 199, 85, 0.32); border-radius: 18px; padding: 1.25rem 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); transition: transform 0.2s, border-color 0.2s;">
+        <div style="width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, rgba(6, 199, 85, 0.18) 0%, rgba(255, 242, 210, 0.04) 70%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem;">
+          <img src="assets/namidabin-clean.png" alt="ナミダビン" style="width: 92px; height: 92px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));" loading="lazy">
+        </div>
+        <div style="font-size: 0.75rem; color: #86efac; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 0.2rem;">12. ナミダビン</div>
+        <div style="font-size: 0.95rem; font-weight: 700; color: #fff7e8; margin-bottom: 0.35rem;">涙瓶職人</div>
+        <div style="font-size: 0.78rem; color: #cfc3af; background: rgba(255, 255, 255, 0.06); padding: 0.25rem 0.65rem; border-radius: 999px; margin-bottom: 1rem;">「無理しないで」「よしよし」</div>
+        <a class="mn-mini-button" href="https://line.me/S/sticker/37385541/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="width: 100%; border-color: rgba(6, 199, 85, 0.6); color: #86efac; font-weight: 700; text-align: center; padding: 0.55rem 0.6rem; border-radius: 999px; background: rgba(6, 199, 85, 0.08);">💬 スタンプを見る ↗</a>
+      </div>
+      <div class="mn-sticker-card" style="background: rgba(23, 23, 34, 0.78); border: 1px solid rgba(6, 199, 85, 0.32); border-radius: 18px; padding: 1.25rem 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); transition: transform 0.2s, border-color 0.2s;">
+        <div style="width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, rgba(6, 199, 85, 0.18) 0%, rgba(255, 242, 210, 0.04) 70%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem;">
+          <img src="assets/ashitayobi-clean.png" alt="アシタヨビ" style="width: 92px; height: 92px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));" loading="lazy">
+        </div>
+        <div style="font-size: 0.75rem; color: #86efac; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 0.2rem;">13. アシタヨビ</div>
+        <div style="font-size: 0.95rem; font-weight: 700; color: #fff7e8; margin-bottom: 0.35rem;">朝焼け配達人</div>
+        <div style="font-size: 0.78rem; color: #cfc3af; background: rgba(255, 255, 255, 0.06); padding: 0.25rem 0.65rem; border-radius: 999px; margin-bottom: 1rem;">「おはよう！」「いい日になるよ」</div>
+        <a class="mn-mini-button" href="https://line.me/S/sticker/37385558/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="width: 100%; border-color: rgba(6, 199, 85, 0.6); color: #86efac; font-weight: 700; text-align: center; padding: 0.55rem 0.6rem; border-radius: 999px; background: rgba(6, 199, 85, 0.08);">💬 スタンプを見る ↗</a>
+      </div>
+    </div>
+    <div style="text-align: center; margin-top: 2.5rem;">
+      <a class="mn-button mn-button--ghost" href="https://line.me/S/shop/sticker/author/6654833/new?lang=ja&utm_source=gnsh_staut" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.5); color: #86efac; font-size: 0.95rem; padding: 0.75rem 1.8rem;">
+        💬 LINE STORE クリエイターページを開く ↗
+      </a>
+    </div>
+  </section>
+
+
+  <!-- 音楽配信＆睡眠BGM動画特集セクション -->
+  
+  <section class="mn-section" id="music-preview" aria-labelledby="mn-music-feature-title" style="border-top: 1px solid rgba(255, 242, 210, 0.14); padding-top: 4rem; padding-bottom: 4rem;">
+    <div class="mn-section__intro" style="text-align: center; max-width: 820px; margin: 0 auto 2.5rem;">
+      <p class="mn-kicker" style="color: #ffd782; font-size: 0.9rem; letter-spacing: 0.16em;">Streaming &amp; Meditation BGM</p>
+      <h2 id="mn-music-feature-title" style="font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.25; margin-bottom: 1rem;">🎧 公式楽曲 全世界ストリーミング配信中</h2>
+      <p style="color: #cfc3af; font-size: 1rem; line-height: 1.8;">
+        13人の隣人たちの心の機微を描いた全14曲が、Spotify、Apple Musicをはじめ世界各配信サービスにて配信開始されました。<br>
+        眠れない夜に聴くドリーミー版、デスクワークや集中したい時間に最適なインストゥルメンタル版の2つのアレンジをお楽しみいただけます。
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.8rem; margin-bottom: 2.5rem;">
+      <!-- Dreamy Ver -->
+      <article class="mn-character-card" style="padding: 2rem; background: rgba(23, 23, 34, 0.85); border: 1px solid rgba(255, 215, 130, 0.28); border-radius: 20px;">
+        <p class="mn-kicker" style="color: #9be5cf;">Sleep &amp; Relax</p>
+        <h3 style="font-size: 1.35rem; color: #fff7e8; margin: 0 0 0.8rem;">見えない隣人たち（dreamy ver.）</h3>
+        <p style="color: #cfc3af; font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.4rem;">
+          柔らかなオルゴールとアンビエントな広がり。今日という一日を静かに終え、眠りにつくためのベッドサイドBGMです。
+        </p>
+        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+          <a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/3aoNcmkPo3eXXBnmRsc4Ni" target="_blank" rel="noopener noreferrer" style="border-color: rgba(30, 215, 96, 0.45); color: #86efac;">🟢 Spotify</a>
+          <a class="mn-mini-button" href="https://music.apple.com" target="_blank" rel="noopener noreferrer" style="border-color: rgba(250, 88, 106, 0.45); color: #fda4af;">🍎 Apple Music</a>
+        </div>
+      </article>
+
+      <!-- Instrumental Ver -->
+      <article class="mn-character-card" style="padding: 2rem; background: rgba(23, 23, 34, 0.85); border: 1px solid rgba(158, 147, 255, 0.28); border-radius: 20px;">
+        <p class="mn-kicker" style="color: #9e93ff;">Focus &amp; Work</p>
+        <h3 style="font-size: 1.35rem; color: #fff7e8; margin: 0 0 0.8rem;">mienai_rinjin_tachi（Instrumental）</h3>
+        <p style="color: #cfc3af; font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.4rem;">
+          アコースティックギターとピアノの静謐なアンサンブル。読書、創作、デスクワークの集中を妨げない穏やかな旋律。
+        </p>
+        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+          <a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/3aoNcmkPo3eXXBnmRsc4Ni" target="_blank" rel="noopener noreferrer" style="border-color: rgba(30, 215, 96, 0.45); color: #86efac;">🟢 Spotify</a>
+          <a class="mn-mini-button" href="https://music.apple.com" target="_blank" rel="noopener noreferrer" style="border-color: rgba(250, 88, 106, 0.45); color: #fda4af;">🍎 Apple Music</a>
+        </div>
+      </article>
+    </div>
+
+    <!-- 60分睡眠動画案内 -->
+    <div style="background: linear-gradient(135deg, rgba(16, 16, 26, 0.95), rgba(28, 24, 38, 0.95)); border: 1px solid rgba(255, 215, 130, 0.35); border-radius: 20px; padding: clamp(1.8rem, 4vw, 2.5rem); display: flex; flex-direction: column; align-items: center; text-align: center;">
+      <p class="mn-kicker" style="color: #ffd782;">Long Meditation Video</p>
+      <h3 style="font-size: clamp(1.3rem, 3vw, 1.8rem); color: #fff7e8; margin: 0 0 0.8rem;">🌙 『眠れない夜に聴く、見えない隣人たちの物語』</h3>
+      <p style="color: #cfc3af; font-size: 0.95rem; max-width: 680px; line-height: 1.8; margin-bottom: 1.5rem;">
+        全14曲のDreamy Ver.を完全収録した約58分の長尺睡眠導入・作業用動画。常世町の静かな夜景スライドとともに、心地よい眠りの世界へ誘います。
+      </p>
+      <a class="mn-button mn-button--primary" href="https://youtube.com/@mienai_rinjin" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, #ff0000, #cc0000); color: #fff; border: none; padding: 0.8rem 2rem;">
+        ▶ YouTubeで長尺BGM動画を聴く
+      </a>
+    </div>
+  </section>
+
+
+  <!-- ピックアップ隣人セクション -->
+  <section class="mn-section mn-section--split" aria-labelledby="mn-pickup-title" style="border-top: 1px solid rgba(255, 242, 210, 0.14); padding-top: 4rem; padding-bottom: 4rem;">
+    <div>
+      <p class="mn-kicker">Pickup</p>
+      <h2 id="mn-pickup-title" style="font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.25; margin-bottom: 1rem;">今月の小さな隣人</h2>
+      <p style="color: #cfc3af; font-size: 1rem; line-height: 1.8;">
+        換気口の奥で料理をする「ススノミ」は、誰にも食べられない料理を作る小さな料理人。<br>
+        集めた匂いを丁寧に煮詰めて、ひとつの「記憶の味」をそっと呼び覚まします。
+      </p>
+      <div style="margin-top: 1.5rem;">
+        <a class="mn-button mn-button--ghost" href="#characters-preview">図鑑でくわしく見る ↗</a>
+      </div>
+    </div>
+    <article class="mn-character-card mn-character-card--large" style="padding: 2rem; border-radius: 20px; background: rgba(23, 23, 34, 0.8);">
+      <img class="mn-card-image" src="assets/susunomi-clean.png" alt="ススノミ" style="max-height: 240px; object-fit: contain; margin: 0 auto 1.5rem; display: block;">
+      <p class="mn-kicker">01 / Susunomi</p>
+      <h3 style="font-size: 1.4rem; color: #fff7e8; margin: 0 0 0.6rem;">ススノミ（換気口の奥の料理人）</h3>
+      <p style="color: #cfc3af; font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.4rem;">
+        夕暮れの匂い、雨上がりの土の匂い、遠い日の味噌汁の湯気。街から立ちのぼる記憶をコトコト煮込んで、誰かの心をお腹いっぱいに満たします。
+      </p>
+      <div class="mn-actions" style="gap: 0.6rem; flex-wrap: wrap;">
+        <a class="mn-mini-button" href="https://amzn.asia/d/09BnD076" target="_blank" rel="noopener noreferrer">📖 Kindle</a>
+        <a class="mn-mini-button" href="https://youtube.com/shorts/QGqUInhA0zA?feature=share" target="_blank" rel="noopener noreferrer">🎬 YouTube</a>
+        <a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/3aoNcmkPo3eXXBnmRsc4Ni?si=7e4bb6a58fe048e2" target="_blank" rel="noopener noreferrer">🎵 Spotify</a>
+        <a class="mn-mini-button" href="https://line.me/S/sticker/36644772/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.5); color: #86efac;">💬 LINEスタンプ</a>
+      </div>
+    </article>
+  </section>
+</div>
+
+</div>
+
+<div class="preview-page" id="characters-preview">
+<!-- SEO Title: キャラクター図鑑 | 見えない隣人たち -->
+<!-- Meta Description: 「見えない隣人たち」に登場する小さな不思議な存在たちを紹介。ススノミ、カゲミチ、トキツギ、ワスレダマなど、日常の裏側に住む隣人たちの図鑑。 -->
+<main class="mn-site" id="characters">
+  <section class="mn-page-hero" aria-labelledby="mn-characters-title">
+    <p class="mn-kicker">Character Guide</p>
+    <h1 id="mn-characters-title">キャラクター図鑑</h1>
+    <p>小さな隣人たちは、それぞれ違う場所で違う役目を持っています。</p>
+  </section>
+
+  <section class="mn-section">
+    <div class="mn-character-grid">
+      <article class="mn-character-card">
+        <img class="mn-card-image" src="assets/susunomi-clean.png?v=3" alt="鍋をかき混ぜるススノミ">
+        <p class="mn-kicker">換気口の料理人</p>
+        <h2>ススノミ</h2>
+        <p>匂いを集めて煮詰め、記憶の味を作る小さな料理人。住みかは古びたアパートの換気口の奥。</p>
+        <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;"><a class="mn-button mn-button--ghost" href="/characters/susunomi/" style="display: inline-block;">詳しく見る</a><a class="mn-button mn-button--ghost" href="https://youtube.com/shorts/QGqUInhA0zA?feature=share" target="_blank" rel="noopener noreferrer" style="display: inline-block;">🎬 動画</a><a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/36644772/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="display: inline-block; border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+      </article>
+      <article class="mn-character-card">
+        <img class="mn-card-image" src="assets/kagemichi-clean.png?v=3" alt="ランタンを持つカゲミチ">
+        <p class="mn-kicker">終電後の案内人</p>
+        <h2>カゲミチ</h2>
+        <p>帰れなかった想いを拾い、誰かの夢へ送り届ける影の旅人。住みかは終電後の駅。</p>
+        <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;"><a class="mn-button mn-button--ghost" href="/characters/kagemichi/" style="display: inline-block;">詳しく見る</a><a class="mn-button mn-button--ghost" href="https://youtube.com/shorts/F4VsWpkLn9w?feature=share" target="_blank" rel="noopener noreferrer" style="display: inline-block;">🎬 動画</a><a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/36757128/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="display: inline-block; border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+      </article>
+      <article class="mn-character-card">
+        <img class="mn-card-image" src="assets/tokitsugi-clean.png?v=3" alt="時計を直すトキツギ">
+        <p class="mn-kicker">古い時間の修復係</p>
+        <h2>トキツギ</h2>
+        <p>止まりかけた時間や置き忘れた瞬間を、静かにつなぎ直す隣人。</p>
+        <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;"><a class="mn-button mn-button--ghost" href="/characters/tokitsugi/" style="display: inline-block;">詳しく見る</a><a class="mn-button mn-button--ghost" href="https://youtube.com/shorts/qAjC1PyVdks?feature=share" target="_blank" rel="noopener noreferrer" style="display: inline-block;">🎬 動画</a><a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37100585/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="display: inline-block; border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+      </article>
+      <article class="mn-character-card">
+        <img class="mn-card-image" src="assets/wasuredama-clean.png?v=3" alt="街灯の下に立つワスレダマ">
+        <p class="mn-kicker">忘れ物の気配</p>
+        <h2>ワスレダマ</h2>
+        <p>置き忘れられた気持ちや小さな記憶を、丸く抱えて眠る不思議な存在。</p>
+        <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;"><a class="mn-button mn-button--ghost" href="/characters/wasuredama/" style="display: inline-block;">詳しく見る</a><a class="mn-button mn-button--ghost" href="https://youtube.com/shorts/Vc2Vwxy8lHE?feature=share" target="_blank" rel="noopener noreferrer" style="display: inline-block;">🎬 動画</a><a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37135329/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="display: inline-block; border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+      </article>
+      <article class="mn-character-card">
+        <img class="mn-card-image" src="assets/nukumori-clean.png?v=3" alt="温度番のそばにいるヌクモリ">
+        <p class="mn-kicker">冷えた部屋の灯り</p>
+        <h2>ヌクモリ</h2>
+        <p>誰かが忘れていった温かさを集め、必要な場所へそっと戻す隣人。</p>
+        <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;"><a class="mn-button mn-button--ghost" href="/characters/nukumori/" style="display: inline-block;">詳しく見る</a><a class="mn-button mn-button--ghost" href="https://youtube.com/shorts/efvIdDxQd7U?feature=share" target="_blank" rel="noopener noreferrer" style="display: inline-block;">🎬 動画</a><a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37086186/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="display: inline-block; border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+      </article>
+      <article class="mn-character-card">
+        <img class="mn-card-image" src="assets/henjirou-clean.png?v=3" alt="赤いポストの中で手紙を書くヘンジロウ">
+        <p class="mn-kicker">返事の代筆屋</p>
+        <h2>ヘンジロウ</h2>
+        <p>言えなかった返事や届かなかった声を、少しだけ形にしてくれる隣人。</p>
+        <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;"><a class="mn-button mn-button--ghost" href="/characters/henjirou/" style="display: inline-block;">詳しく見る</a><a class="mn-button mn-button--ghost" href="https://youtu.be/6mIWOXECe68" target="_blank" rel="noopener noreferrer" style="display: inline-block;">🎬 動画</a><a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37090308/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="display: inline-block; border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+      </article>
+      <article class="mn-character-card">
+        <img class="mn-card-image" src="assets/tsumazuki-clean.png?v=3" alt="フードをかぶったツマズキ">
+        <p class="mn-kicker">小さなつまずきの番人</p>
+        <h2>ツマズキ</h2>
+        <p>立ち止まった人の足元に現れ、前へ進むきっかけを残していく隣人。</p>
+        <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;"><a class="mn-button mn-button--ghost" href="/characters/tsumazuki/" style="display: inline-block;">詳しく見る</a><a class="mn-button mn-button--ghost" href="https://youtube.com/shorts/NrK4dyMBNDM?feature=share" target="_blank" rel="noopener noreferrer" style="display: inline-block;">🎬 動画</a><a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37091468/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="display: inline-block; border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+      </article>
+      <article class="mn-character-card">
+        <img class="mn-card-image" src="assets/kazoeru-clean.png?v=3" alt="ノートを持つカゾエル">
+        <p class="mn-kicker">数え忘れの係</p>
+        <h2>カゾエル</h2>
+        <p>数えきれない小さな幸運や、見落とした日々の印を数えている隣人。</p>
+        <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;"><a class="mn-button mn-button--ghost" href="/characters/kazoeru/" style="display: inline-block;">詳しく見る</a><a class="mn-button mn-button--ghost" href="https://youtube.com/shorts/NrBXsSRQdTg?feature=share" target="_blank" rel="noopener noreferrer" style="display: inline-block;">🎬 動画</a><a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37146749/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="display: inline-block; border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+      </article>
+      <article class="mn-character-card">
+        <img class="mn-card-image" src="assets/tomerun-clean.png?v=3" alt="時間を守るトメルン">
+        <p class="mn-kicker">一瞬を止める子</p>
+        <h2>トメルン</h2>
+        <p>大事な場面が流れ去らないよう、ほんの少しだけ時間を押さえてくれる隣人。</p>
+        <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;"><a class="mn-button mn-button--ghost" href="/characters/tomerun/" style="display: inline-block;">詳しく見る</a><a class="mn-button mn-button--ghost" href="https://youtu.be/Hh0RThQdJGM" target="_blank" rel="noopener noreferrer" style="display: inline-block;">🎬 動画</a><a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37146783/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="display: inline-block; border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+      </article>
+      <article class="mn-character-card">
+        <img class="mn-card-image" src="assets/hoshihakobi-clean.png?v=3" alt="星を運ぶホシハコビ">
+        <p class="mn-kicker">星屑の運び手</p>
+        <h2>ホシハコビ</h2>
+        <p>夜のすき間に落ちた小さな光を集め、眠る街へ運んでいく隣人。</p>
+        <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;"><a class="mn-button mn-button--ghost" href="/characters/hoshihakobi/" style="display: inline-block;">詳しく見る</a><a class="mn-button mn-button--ghost" href="https://youtu.be/NZWEeUwiKzQ" target="_blank" rel="noopener noreferrer" style="display: inline-block;">🎬 動画</a><a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37224484/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="display: inline-block; border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+      </article>
+      <article class="mn-character-card">
+        <img class="mn-card-image" src="assets/yumeatsume-clean.png?v=3" alt="夢の保管庫の管理人ユメアツメ">
+        <p class="mn-kicker">夢の保管庫の管理人</p>
+        <h2>ユメアツメ</h2>
+        <p>人が諦めてしまった夢をガラス瓶に集めて保管する、夢の保管庫の管理人。</p>
+        <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;"><a class="mn-button mn-button--ghost" href="/characters/yumeatsume/" style="display: inline-block;">詳しく見る</a><a class="mn-button mn-button--ghost" href="https://youtu.be/VCdgXB4sBl0" target="_blank" rel="noopener noreferrer" style="display: inline-block;">🎬 動画</a><a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37385532/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="display: inline-block; border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+      </article>
+      <article class="mn-character-card">
+        <img class="mn-card-image" src="assets/namidabin-clean.png?v=3" alt="涙瓶職人ナミダビン">
+        <p class="mn-kicker">涙瓶職人</p>
+        <h2>ナミダビン</h2>
+        <p>流れた涙を一滴だけ結晶として集め、美しい宝石へと育てる涙蔵の隣人。</p>
+        <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;"><a class="mn-button mn-button--ghost" href="/characters/namidabin/" style="display: inline-block;">詳しく見る</a><a class="mn-button mn-button--ghost" href="https://youtu.be/HyvFzlkcE-0" target="_blank" rel="noopener noreferrer" style="display: inline-block;">🎬 動画</a><a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37385541/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="display: inline-block; border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+      </article>
+      <article class="mn-character-card">
+        <img class="mn-card-image" src="assets/ashitayobi-clean.png?v=3" alt="朝焼け配達人アシタヨビ">
+        <p class="mn-kicker">朝焼け配達人</p>
+        <h2>アシタヨビ</h2>
+        <p>夜明け前に大きな朝焼け鞄を背負って飛び、人々のもとへ明日を届ける配達人。</p>
+        <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;"><a class="mn-button mn-button--ghost" href="/characters/ashitayobi/" style="display: inline-block;">詳しく見る</a><a class="mn-button mn-button--ghost" href="https://youtu.be/ikeSp81cCj8" target="_blank" rel="noopener noreferrer" style="display: inline-block;">🎬 動画</a><a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37385558/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="display: inline-block; border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+      </article>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="stories-preview">
+<!-- SEO Title: ストーリー一覧 | 見えない隣人たち -->
+<!-- Meta Description: 「見えない隣人たち」のストーリー一覧。全13話のKindle絵本、読み聞かせ動画、配信楽曲へ広がる小さな隣人たちの物語を紹介します。 -->
+<main class="mn-site" id="stories">
+  <section class="mn-page-hero" aria-labelledby="mn-stories-title">
+    <p class="mn-kicker">Stories</p>
+    <h1 id="mn-stories-title">ストーリー一覧</h1>
+    <p>読む、観る、聴く。それぞれの入口から、同じ小さな世界へ。</p>
+  </section>
+
+  <section class="mn-section">
+    <div class="mn-section__intro">
+      <p class="mn-kicker">Story Catalog</p>
+      <h2>絵本・読み聞かせ・楽曲・動くLINEスタンプへ広がる全13話</h2>
+      <p>
+        各ストーリーはKindle絵本、YouTube読み聞かせ動画、配信楽曲、動くLINEスタンプと連動して展開しています。
+        各カードから購入、視聴、配信ページへ移動できます。
+      </p>
+    </div>
+
+    <div class="mn-story-list">
+      <article class="mn-story-card">
+        <img class="mn-story-card__image" src="assets/susunomi-selected.png" alt="鍋をかき混ぜるススノミ">
+        <div class="mn-story-card__body">
+          <span class="mn-story-card__number">Episode 01</span>
+          <h2>換気口の奥の料理人</h2>
+          <p>換気口の奥で集めた匂いを煮詰めるススノミ。その料理は誰にも食べられないのに、朝の部屋に懐かしさを残します。</p>
+          <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>ススノミ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+          <div class="mn-story-actions"><a class="mn-mini-button" href="/stories/susunomi/">作品ページ</a><a class="mn-mini-button" href="https://amzn.asia/d/09BnD076" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtube.com/shorts/QGqUInhA0zA?feature=share" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/3aoNcmkPo3eXXBnmRsc4Ni?si=7e4bb6a58fe048e2" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/36644772/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+        </div>
+      </article>
+      <article class="mn-story-card">
+        <img class="mn-story-card__image" src="assets/kagemichi-selected.png" alt="終電後の駅に立つカゲミチ">
+        <div class="mn-story-card__body">
+          <span class="mn-story-card__number">Episode 02</span>
+          <h2>電車の終点に立つ案内人</h2>
+          <p>終電後のホームに現れるカゲミチは、帰れなかった想いを拾い、誰かの夢の中へ送り届けます。</p>
+          <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>カゲミチ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+          <div class="mn-story-actions"><a class="mn-mini-button" href="/stories/kagemichi/">作品ページ</a><a class="mn-mini-button" href="https://amzn.asia/d/0ibk24mO" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtube.com/shorts/F4VsWpkLn9w?feature=share" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/1WRCNHLleGkJvk0gKQKrAV?si=9caa0586ce1044ae" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/36757128/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+        </div>
+      </article>
+      <article class="mn-story-card">
+        <img class="mn-story-card__image" src="assets/tokitsugi-selected.png" alt="時計を直すトキツギ">
+        <div class="mn-story-card__body">
+          <span class="mn-story-card__number">Episode 03</span>
+          <h2>押し入れの奥の時間職人</h2>
+          <p>古い時計の中で暮らすトキツギは、止まりかけた一日をそっと縫い直そうとします。</p>
+          <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>トキツギ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+          <div class="mn-story-actions"><a class="mn-mini-button" href="/stories/tokitsugi/">作品ページ</a><a class="mn-mini-button" href="https://amzn.asia/d/0j2YuzQV" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtube.com/shorts/qAjC1PyVdks?feature=share" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/0WlKKApZxU5RkSlTEuoJe1?si=af5c6d0e342e45fb" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37100585/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+        </div>
+      </article>
+      <article class="mn-story-card">
+        <img class="mn-story-card__image" src="assets/wasuredama-selected.png" alt="街灯の下にいるワスレダマ">
+        <div class="mn-story-card__body">
+          <span class="mn-story-card__number">Episode 04</span>
+          <h2>街灯の下の忘れ物係</h2>
+          <p>誰にも気づかれない忘れ物の気配は、夜になるとワスレダマの腕の中で静かに息をします。</p>
+          <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>ワスレダマ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+          <div class="mn-story-actions"><a class="mn-mini-button" href="/stories/wasuredama/">作品ページ</a><a class="mn-mini-button" href="https://amzn.asia/d/03YoUM1B" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtube.com/shorts/Vc2Vwxy8lHE?feature=share" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/5HHSSVcJIF3FAWLEVB2to2?si=a1e3aae5e7c04ae0" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37135329/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+        </div>
+      </article>
+      <article class="mn-story-card">
+        <img class="mn-story-card__image" src="assets/nukumori-selected.png" alt="温度番のそばにいるヌクモリ">
+        <div class="mn-story-card__body">
+          <span class="mn-story-card__number">Episode 05</span>
+          <h2>自動販売機の裏の温度番</h2>
+          <p>真冬の夜、自動販売機の裏でヌクモリは街の温度をほんの少しだけ調整し、凍えない夜を作ります。</p>
+          <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>ヌクモリ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+          <div class="mn-story-actions"><a class="mn-mini-button" href="/stories/nukumori/">作品ページ</a><a class="mn-mini-button" href="https://amzn.asia/d/0hFuzXbr" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtube.com/shorts/efvIdDxQd7U?feature=share" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/60WP7qpvSTE7i8ZguJwuJb?si=81d99f0f1a1a47f4" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37086186/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+        </div>
+      </article>
+      <article class="mn-story-card">
+        <img class="mn-story-card__image" src="assets/henjirou-selected.png" alt="赤いポストの中で手紙を書くヘンジロウ">
+        <div class="mn-story-card__body">
+          <span class="mn-story-card__number">Episode 06</span>
+          <h2>ポストの中の返事書き</h2>
+          <p>届かなかった言葉を代わりに整えて、ヘンジロウは誰かの心の中へそっと返事を届けます。</p>
+          <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>ヘンジロウ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+          <div class="mn-story-actions"><a class="mn-mini-button" href="/stories/henjirou/">作品ページ</a><a class="mn-mini-button" href="https://amzn.asia/d/0eqTzdec" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtu.be/6mIWOXECe68" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/6dfOE6Kbp1CXs52Si5G67v?si=bc0cf75a540f4f3d" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37090308/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+        </div>
+      </article>
+      <article class="mn-story-card">
+        <img class="mn-story-card__image" src="assets/tsumazuki-selected.png" alt="階段に立つツマズキ">
+        <div class="mn-story-card__body">
+          <span class="mn-story-card__number">Episode 07</span>
+          <h2>階段の踊り場の見張り番</h2>
+          <p>人が転ばないように、ツマズキはほんの少しだけ時間を遅らせ、足元に小さな奇跡を残します。</p>
+          <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>ツマヅキ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+          <div class="mn-story-actions"><a class="mn-mini-button" href="/stories/tsumazuki/">作品ページ</a><a class="mn-mini-button" href="https://amzn.asia/d/0aDjSGa3" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtube.com/shorts/NrK4dyMBNDM?feature=share" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/0pHXzPKUnUxJA8ldJUMsZV?si=f1f2646aeb444cd9" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37091468/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+        </div>
+      </article>
+      <article class="mn-story-card">
+        <img class="mn-story-card__image" src="assets/kazoeru-selected.png" alt="公園で数を数えるカゾエル">
+        <div class="mn-story-card__body">
+          <span class="mn-story-card__number">Episode 08</span>
+          <h2>公園のブランコの数え役</h2>
+          <p>誰にも見えない頑張りや小さな一日を、カゾエルは夜の公園で静かに数えています。</p>
+          <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>カゾエル</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+          <div class="mn-story-actions"><a class="mn-mini-button" href="/stories/kazoeru/">作品ページ</a><a class="mn-mini-button" href="https://amzn.asia/d/03xEsRIu" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtube.com/shorts/NrBXsSRQdTg?feature=share" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/3nrOJVsnetrkGxX6QxrPda?si=76d3de19fc1946b4" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37146749/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+        </div>
+      </article>
+      <article class="mn-story-card">
+        <img class="mn-story-card__image" src="assets/tomerun-selected.png" alt="時間ランタンを扱うトメルン">
+        <div class="mn-story-card__body">
+          <span class="mn-story-card__number">Episode 09</span>
+          <h2>冷蔵庫の奥の時間保存士</h2>
+          <p>もう少しだけ残したい時間を、トメルンは小さなランタンに入れて、静かに守ります。</p>
+          <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>トメルン</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+          <div class="mn-story-actions"><a class="mn-mini-button" href="/stories/tomerun/">作品ページ</a><a class="mn-mini-button" href="https://amzn.asia/d/01rxv3i4" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtu.be/Hh0RThQdJGM" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/5rNZFD629UY0aLreiBg8Cg?si=fc72bcb830934b4f" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37146783/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+        </div>
+      </article>
+      <article class="mn-story-card">
+        <img class="mn-story-card__image" src="assets/hoshihakobi-selected.png" alt="屋根の上で星を運ぶホシハコビ">
+        <div class="mn-story-card__body">
+          <span class="mn-story-card__number">Episode 10</span>
+          <h2>屋根の上の星運び</h2>
+          <p>夜の屋根の上を歩くホシハコビは、人の願いが空へ届くように星の位置を少しだけ動かします。</p>
+          <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>ホシハコビ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+          <div class="mn-story-actions"><a class="mn-mini-button" href="/stories/hoshihakobi/">作品ページ</a><a class="mn-mini-button" href="https://amzn.asia/d/0eszJSGL" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtu.be/NZWEeUwiKzQ" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/2MSqPsapo4VaqcygbwyNzJ?si=7d4f2069be1b43fe" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37224484/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+        </div>
+      </article>
+      <article class="mn-story-card">
+        <img class="mn-story-card__image" src="assets/yumeatsume-selected.png?v=2" alt="夢の保管庫の管理人ユメアツメ">
+        <div class="mn-story-card__body">
+          <span class="mn-story-card__number">Episode 11</span>
+          <h2>夢の保管庫の管理人</h2>
+          <p>人が諦めてしまった夢をガラス瓶に集めて保管するユメアツメ。夢には賞味期限がないと信じ、再び歩き始めるその日まで大切に守り続けます。</p>
+          <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>ユメアツメ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+          <div class="mn-story-actions"><a class="mn-mini-button" href="/stories/yumeatsume/">作品ページ</a><a class="mn-mini-button" href="https://amzn.asia/d/0i3JGqBu" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtu.be/VCdgXB4sBl0" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/1n4Fi7hlTLxEUm4Bqv9qJf?si=fe8d320f450b42a9" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37385532/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+        </div>
+      </article>
+      <article class="mn-story-card">
+        <img class="mn-story-card__image" src="assets/namidabin-selected.png?v=2" alt="涙瓶職人ナミダビン">
+        <div class="mn-story-card__body">
+          <span class="mn-story-card__number">Episode 12</span>
+          <h2>涙瓶職人</h2>
+          <p>人が流した涙を一滴だけ、青い結晶として集めるナミダビン。地下の「涙蔵」で保管された涙は、流した本人が困難を乗り越えて立ち上がった時、美しい宝石へと姿を変えます。</p>
+          <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>ナミダビン</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+          <div class="mn-story-actions"><a class="mn-mini-button" href="/stories/namidabin/">作品ページ</a><a class="mn-mini-button" href="https://amzn.asia/d/07sZknYo" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtu.be/HyvFzlkcE-0" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/5VGtUWCAVDCvtETmRCAtMo?si=db4e8ecf5bfa4365" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37385541/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+        </div>
+      </article>
+      <article class="mn-story-card">
+        <img class="mn-story-card__image" src="assets/ashitayobi-selected.png?v=2" alt="朝焼け配達人アシタヨビ">
+        <div class="mn-story-card__body">
+          <span class="mn-story-card__number">Episode 13</span>
+          <h2>朝焼け配達人</h2>
+          <p>夜と朝のあいだを飛びながら、世界中へ朝を届けているアシタヨビ。さみしい夜を過ごした人や泣きながら眠った人の窓辺にそっと朝焼けを置き、新しい「明日」と「希望」を届けます。</p>
+          <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>アシタヨビ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+          <div class="mn-story-actions"><a class="mn-mini-button" href="/stories/ashitayobi/">作品ページ</a><a class="mn-mini-button" href="https://amzn.asia/d/06RZ5K78" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtu.be/ikeSp81cCj8" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/2uri015hpRKcSTcqzDMwt6?si=dfc8b001ac4c47f5" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37385558/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="music-preview">
+<!-- SEO Title: 楽曲紹介 | 見えない隣人たち -->
+<!-- Meta Description: 「見えない隣人たち」の全13曲を紹介。Kindle絵本、読み聞かせ動画、各ストーリーと連動する幻想的で温かなオリジナル楽曲ページです。 -->
+<main class="mn-site" id="music">
+  <section class="mn-page-hero" aria-labelledby="mn-music-title">
+    <p class="mn-kicker">Music</p>
+    <h1 id="mn-music-title">楽曲紹介</h1>
+    <p>全13話の物語に寄り添う、小さな隣人たちのサウンドトラック。</p>
+  </section>
+
+  <section class="mn-section" aria-labelledby="mn-theme-title">
+    <div class="mn-section__intro">
+      <p class="mn-kicker">Original Soundtrack</p>
+      <h2 id="mn-theme-title">見えない隣人たち Original Soundtrack</h2>
+      <p>
+        読み聞かせ動画や絵本の余韻に寄り添う、全13曲の楽曲紹介です。
+        各カードから直接音楽配信サービス（Spotify）へ移動して聴くことができます。
+      </p>
+    </div>
+
+    <div class="mn-music-feature">
+      <div class="mn-music-feature__art" aria-hidden="true">
+        <img src="assets/hero-alley.png" alt="" onerror="this.onerror=null;this.src='assets/susunomi-image.png';">
+      </div>
+      <div class="mn-music-feature__body">
+        <span class="mn-story-card__number">Album Concept</span>
+        <h3>読む、観る、聴く。物語が音で続いていく。</h3>
+        <p>
+          柔らかなピアノ、古いオルゴール、ランタンの灯りのような弦の響き。
+          日常の裏側に住む小さな隣人たちの気配を、音楽でも届けます。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mn-section" aria-labelledby="mn-track-title">
+    <div class="mn-section__intro">
+      <p class="mn-kicker">13 Tracks</p>
+      <h2 id="mn-track-title">配信楽曲一覧</h2>
+    </div>
+
+    <div class="mn-track-grid">
+      <article class="mn-track-card" style="display: flex; flex-direction: column; min-height: 8.8rem; justify-content: space-between;">
+        <span class="mn-track-card__tag" style="margin-bottom: 0.5rem; font-size: 1.05rem;">Track 01 / ススノミ</span>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: auto;">
+          <a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/3aoNcmkPo3eXXBnmRsc4Ni?si=7e4bb6a58fe048e2" target="_blank" rel="noopener noreferrer" style="background: #1DB954; color: #fff; border: none; font-size: 0.85rem; min-height: 2.2rem; padding: 0.4rem;">Spotifyで聴く</a>
+          <a class="mn-text-link" href="/stories/susunomi/" style="margin-top: 0.1rem; font-size: 0.85rem;">対応する物語へ</a>
+        </div>
+      </article>
+      <article class="mn-track-card" style="display: flex; flex-direction: column; min-height: 8.8rem; justify-content: space-between;">
+        <span class="mn-track-card__tag" style="margin-bottom: 0.5rem; font-size: 1.05rem;">Track 02 / カゲミチ</span>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: auto;">
+          <a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/1WRCNHLleGkJvk0gKQKrAV?si=9caa0586ce1044ae" target="_blank" rel="noopener noreferrer" style="background: #1DB954; color: #fff; border: none; font-size: 0.85rem; min-height: 2.2rem; padding: 0.4rem;">Spotifyで聴く</a>
+          <a class="mn-text-link" href="/stories/kagemichi/" style="margin-top: 0.1rem; font-size: 0.85rem;">対応する物語へ</a>
+        </div>
+      </article>
+      <article class="mn-track-card" style="display: flex; flex-direction: column; min-height: 8.8rem; justify-content: space-between;">
+        <span class="mn-track-card__tag" style="margin-bottom: 0.5rem; font-size: 1.05rem;">Track 03 / トキツギ</span>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: auto;">
+          <a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/0WlKKApZxU5RkSlTEuoJe1?si=af5c6d0e342e45fb" target="_blank" rel="noopener noreferrer" style="background: #1DB954; color: #fff; border: none; font-size: 0.85rem; min-height: 2.2rem; padding: 0.4rem;">Spotifyで聴く</a>
+          <a class="mn-text-link" href="/stories/tokitsugi/" style="margin-top: 0.1rem; font-size: 0.85rem;">対応する物語へ</a>
+        </div>
+      </article>
+      <article class="mn-track-card" style="display: flex; flex-direction: column; min-height: 8.8rem; justify-content: space-between;">
+        <span class="mn-track-card__tag" style="margin-bottom: 0.5rem; font-size: 1.05rem;">Track 04 / ワスレダマ</span>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: auto;">
+          <a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/5HHSSVcJIF3FAWLEVB2to2?si=a1e3aae5e7c04ae0" target="_blank" rel="noopener noreferrer" style="background: #1DB954; color: #fff; border: none; font-size: 0.85rem; min-height: 2.2rem; padding: 0.4rem;">Spotifyで聴く</a>
+          <a class="mn-text-link" href="/stories/wasuredama/" style="margin-top: 0.1rem; font-size: 0.85rem;">対応する物語へ</a>
+        </div>
+      </article>
+      <article class="mn-track-card" style="display: flex; flex-direction: column; min-height: 8.8rem; justify-content: space-between;">
+        <span class="mn-track-card__tag" style="margin-bottom: 0.5rem; font-size: 1.05rem;">Track 05 / ヌクモリ</span>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: auto;">
+          <a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/60WP7qpvSTE7i8ZguJwuJb?si=81d99f0f1a1a47f4" target="_blank" rel="noopener noreferrer" style="background: #1DB954; color: #fff; border: none; font-size: 0.85rem; min-height: 2.2rem; padding: 0.4rem;">Spotifyで聴く</a>
+          <a class="mn-text-link" href="/stories/nukumori/" style="margin-top: 0.1rem; font-size: 0.85rem;">対応する物語へ</a>
+        </div>
+      </article>
+      <article class="mn-track-card" style="display: flex; flex-direction: column; min-height: 8.8rem; justify-content: space-between;">
+        <span class="mn-track-card__tag" style="margin-bottom: 0.5rem; font-size: 1.05rem;">Track 06 / ヘンジロウ</span>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: auto;">
+          <a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/6dfOE6Kbp1CXs52Si5G67v?si=bc0cf75a540f4f3d" target="_blank" rel="noopener noreferrer" style="background: #1DB954; color: #fff; border: none; font-size: 0.85rem; min-height: 2.2rem; padding: 0.4rem;">Spotifyで聴く</a>
+          <a class="mn-text-link" href="/stories/henjirou/" style="margin-top: 0.1rem; font-size: 0.85rem;">対応する物語へ</a>
+        </div>
+      </article>
+      <article class="mn-track-card" style="display: flex; flex-direction: column; min-height: 8.8rem; justify-content: space-between;">
+        <span class="mn-track-card__tag" style="margin-bottom: 0.5rem; font-size: 1.05rem;">Track 07 / ツマズキ</span>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: auto;">
+          <a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/0pHXzPKUnUxJA8ldJUMsZV?si=f1f2646aeb444cd9" target="_blank" rel="noopener noreferrer" style="background: #1DB954; color: #fff; border: none; font-size: 0.85rem; min-height: 2.2rem; padding: 0.4rem;">Spotifyで聴く</a>
+          <a class="mn-text-link" href="/stories/tsumazuki/" style="margin-top: 0.1rem; font-size: 0.85rem;">対応する物語へ</a>
+        </div>
+      </article>
+      <article class="mn-track-card" style="display: flex; flex-direction: column; min-height: 8.8rem; justify-content: space-between;">
+        <span class="mn-track-card__tag" style="margin-bottom: 0.5rem; font-size: 1.05rem;">Track 08 / カゾエル</span>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: auto;">
+          <a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/3nrOJVsnetrkGxX6QxrPda?si=76d3de19fc1946b4" target="_blank" rel="noopener noreferrer" style="background: #1DB954; color: #fff; border: none; font-size: 0.85rem; min-height: 2.2rem; padding: 0.4rem;">Spotifyで聴く</a>
+          <a class="mn-text-link" href="/stories/kazoeru/" style="margin-top: 0.1rem; font-size: 0.85rem;">対応する物語へ</a>
+        </div>
+      </article>
+      <article class="mn-track-card" style="display: flex; flex-direction: column; min-height: 8.8rem; justify-content: space-between;">
+        <span class="mn-track-card__tag" style="margin-bottom: 0.5rem; font-size: 1.05rem;">Track 09 / トメルン</span>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: auto;">
+          <a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/5rNZFD629UY0aLreiBg8Cg?si=fc72bcb830934b4f" target="_blank" rel="noopener noreferrer" style="background: #1DB954; color: #fff; border: none; font-size: 0.85rem; min-height: 2.2rem; padding: 0.4rem;">Spotifyで聴く</a>
+          <a class="mn-text-link" href="/stories/tomerun/" style="margin-top: 0.1rem; font-size: 0.85rem;">対応する物語へ</a>
+        </div>
+      </article>
+      <article class="mn-track-card" style="display: flex; flex-direction: column; min-height: 8.8rem; justify-content: space-between;">
+        <span class="mn-track-card__tag" style="margin-bottom: 0.5rem; font-size: 1.05rem;">Track 10 / ホシハコビ</span>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: auto;">
+          <a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/2MSqPsapo4VaqcygbwyNzJ?si=7d4f2069be1b43fe" target="_blank" rel="noopener noreferrer" style="background: #1DB954; color: #fff; border: none; font-size: 0.85rem; min-height: 2.2rem; padding: 0.4rem;">Spotifyで聴く</a>
+          <a class="mn-text-link" href="/stories/hoshihakobi/" style="margin-top: 0.1rem; font-size: 0.85rem;">対応する物語へ</a>
+        </div>
+      </article>
+      <article class="mn-track-card" style="display: flex; flex-direction: column; min-height: 8.8rem; justify-content: space-between;">
+        <span class="mn-track-card__tag" style="margin-bottom: 0.5rem; font-size: 1.05rem;">Track 11 / ユメアツメ</span>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: auto;">
+          <a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/1n4Fi7hlTLxEUm4Bqv9qJf?si=fe8d320f450b42a9" target="_blank" rel="noopener noreferrer" style="background: #1DB954; color: #fff; border: none; font-size: 0.85rem; min-height: 2.2rem; padding: 0.4rem;">Spotifyで聴く</a>
+          <a class="mn-text-link" href="/stories/yumeatsume/" style="margin-top: 0.1rem; font-size: 0.85rem;">対応する物語へ</a>
+        </div>
+      </article>
+      <article class="mn-track-card" style="display: flex; flex-direction: column; min-height: 8.8rem; justify-content: space-between;">
+        <span class="mn-track-card__tag" style="margin-bottom: 0.5rem; font-size: 1.05rem;">Track 12 / ナミダビン</span>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: auto;">
+          <a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/5VGtUWCAVDCvtETmRCAtMo?si=db4e8ecf5bfa4365" target="_blank" rel="noopener noreferrer" style="background: #1DB954; color: #fff; border: none; font-size: 0.85rem; min-height: 2.2rem; padding: 0.4rem;">Spotifyで聴く</a>
+          <a class="mn-text-link" href="/stories/namidabin/" style="margin-top: 0.1rem; font-size: 0.85rem;">対応する物語へ</a>
+        </div>
+      </article>
+      <article class="mn-track-card" style="display: flex; flex-direction: column; min-height: 8.8rem; justify-content: space-between;">
+        <span class="mn-track-card__tag" style="margin-bottom: 0.5rem; font-size: 1.05rem;">Track 13 / アシタヨビ</span>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: auto;">
+          <a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/2uri015hpRKcSTcqzDMwt6?si=dfc8b001ac4c47f5" target="_blank" rel="noopener noreferrer" style="background: #1DB954; color: #fff; border: none; font-size: 0.85rem; min-height: 2.2rem; padding: 0.4rem;">Spotifyで聴く</a>
+          <a class="mn-text-link" href="/stories/ashitayobi/" style="margin-top: 0.1rem; font-size: 0.85rem;">対応する物語へ</a>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="story-susunomi-preview">
+<!-- SEO Title: 換気口の奥の料理人 | 見えない隣人たち -->
+<!-- Meta Description: 第1話「換気口の奥の料理人」の作品ページ。Kindle絵本、読み聞かせ動画、楽曲「記憶の味を煮込む夜」へつながる物語紹介。 -->
+<main class="mn-site" id="story-susunomi">
+  <section class="mn-story-detail">
+    <img class="mn-story-detail__image" src="assets/susunomi-selected.png" alt="鍋をかき混ぜるススノミ">
+    <div class="mn-story-detail__content">
+      <p class="mn-kicker">Episode 01</p>
+      <h1>換気口の奥の料理人</h1>
+      <p>換気口の奥で集めた匂いを煮詰めるススノミ。その料理は誰にも食べられないのに、朝の部屋に懐かしさを残します。</p>
+      <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>ススノミ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+      <div class="mn-story-actions"><a class="mn-mini-button" href="https://amzn.asia/d/09BnD076" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtube.com/shorts/QGqUInhA0zA?feature=share" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/3aoNcmkPo3eXXBnmRsc4Ni?si=7e4bb6a58fe048e2" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/36644772/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="story-kagemichi-preview">
+<!-- SEO Title: 電車の終点に立つ案内人 | 見えない隣人たち -->
+<!-- Meta Description: 第2話「電車の終点に立つ案内人」の作品ページ。Kindle絵本、読み聞かせ動画、楽曲「終電後のランタン」へつながる物語紹介。 -->
+<main class="mn-site" id="story-kagemichi">
+  <section class="mn-story-detail">
+    <img class="mn-story-detail__image" src="assets/kagemichi-selected.png" alt="終電後の駅に立つカゲミチ">
+    <div class="mn-story-detail__content">
+      <p class="mn-kicker">Episode 02</p>
+      <h1>電車の終点に立つ案内人</h1>
+      <p>終電後のホームに現れるカゲミチは、帰れなかった想いを拾い、誰かの夢の中へ送り届けます。</p>
+      <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>カゲミチ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+      <div class="mn-story-actions"><a class="mn-mini-button" href="https://amzn.asia/d/0ibk24mO" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtube.com/shorts/F4VsWpkLn9w?feature=share" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/1WRCNHLleGkJvk0gKQKrAV?si=9caa0586ce1044ae" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/36757128/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="story-tokitsugi-preview">
+<!-- SEO Title: 押し入れの奥の時間職人 | 見えない隣人たち -->
+<!-- Meta Description: 第3話「押し入れの奥の時間職人」の作品ページ。Kindle絵本、読み聞かせ動画、楽曲「ほどけた時間の針」へつながる物語紹介。 -->
+<main class="mn-site" id="story-tokitsugi">
+  <section class="mn-story-detail">
+    <img class="mn-story-detail__image" src="assets/tokitsugi-selected.png" alt="時計を直すトキツギ">
+    <div class="mn-story-detail__content">
+      <p class="mn-kicker">Episode 03</p>
+      <h1>押し入れの奥の時間職人</h1>
+      <p>古い時計の中で暮らすトキツギは、止まりかけた一日をそっと縫い直そうとします。</p>
+      <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>トキツギ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+      <div class="mn-story-actions"><a class="mn-mini-button" href="https://amzn.asia/d/0j2YuzQV" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtube.com/shorts/qAjC1PyVdks?feature=share" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/0WlKKApZxU5RkSlTEuoJe1?si=af5c6d0e342e45fb" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37100585/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="story-wasuredama-preview">
+<!-- SEO Title: 街灯の下の忘れ物係 | 見えない隣人たち -->
+<!-- Meta Description: 第4話「街灯の下の忘れ物係」の作品ページ。Kindle絵本、読み聞かせ動画、楽曲「街灯の下の忘れもの」へつながる物語紹介。 -->
+<main class="mn-site" id="story-wasuredama">
+  <section class="mn-story-detail">
+    <img class="mn-story-detail__image" src="assets/wasuredama-selected.png" alt="街灯の下にいるワスレダマ">
+    <div class="mn-story-detail__content">
+      <p class="mn-kicker">Episode 04</p>
+      <h1>街灯の下の忘れ物係</h1>
+      <p>誰にも気づかれない忘れ物の気配は、夜になるとワスレダマの腕の中で静かに息をします。</p>
+      <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>ワスレダマ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+      <div class="mn-story-actions"><a class="mn-mini-button" href="https://amzn.asia/d/03YoUM1B" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtube.com/shorts/Vc2Vwxy8lHE?feature=share" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/5HHSSVcJIF3FAWLEVB2to2?si=a1e3aae5e7c04ae0" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37135329/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="story-nukumori-preview">
+<!-- SEO Title: 自動販売機の裏の温度番 | 見えない隣人たち -->
+<!-- Meta Description: 第5話「自動販売機の裏の温度番」の作品ページ。Kindle絵本、読み聞かせ動画、楽曲「冷えた街の小さな灯り」へつながる物語紹介。 -->
+<main class="mn-site" id="story-nukumori">
+  <section class="mn-story-detail">
+    <img class="mn-story-detail__image" src="assets/nukumori-selected.png" alt="温度番のそばにいるヌクモリ">
+    <div class="mn-story-detail__content">
+      <p class="mn-kicker">Episode 05</p>
+      <h1>自動販売機の裏の温度番</h1>
+      <p>真冬の夜、自動販売機の裏でヌクモリは街の温度をほんの少しだけ調整し、凍えない夜を作ります。</p>
+      <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>ヌクモリ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+      <div class="mn-story-actions"><a class="mn-mini-button" href="https://amzn.asia/d/0hFuzXbr" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtube.com/shorts/efvIdDxQd7U?feature=share" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/60WP7qpvSTE7i8ZguJwuJb?si=81d99f0f1a1a47f4" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37086186/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="story-henjirou-preview">
+<!-- SEO Title: ポストの中の返事書き | 見えない隣人たち -->
+<!-- Meta Description: 第6話「ポストの中の返事書き」の作品ページ。Kindle絵本、読み聞かせ動画、楽曲「ポストの灯りと羽ペン」へつながる物語紹介。 -->
+<main class="mn-site" id="story-henjirou">
+  <section class="mn-story-detail">
+    <img class="mn-story-detail__image" src="assets/henjirou-selected.png" alt="赤いポストの中で手紙を書くヘンジロウ">
+    <div class="mn-story-detail__content">
+      <p class="mn-kicker">Episode 06</p>
+      <h1>ポストの中の返事書き</h1>
+      <p>届かなかった言葉を代わりに整えて、ヘンジロウは誰かの心の中へそっと返事を届けます。</p>
+      <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>ヘンジロウ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+      <div class="mn-story-actions"><a class="mn-mini-button" href="https://amzn.asia/d/0eqTzdec" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtu.be/6mIWOXECe68" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/6dfOE6Kbp1CXs52Si5G67v?si=bc0cf75a540f4f3d" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37090308/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="story-tsumazuki-preview">
+<!-- SEO Title: 階段の踊り場の見張り番 | 見えない隣人たち -->
+<!-- Meta Description: 第7話「階段の踊り場の見張り番」の作品ページ。Kindle絵本、読み聞かせ動画、楽曲「一歩ぶんのやさしさ」へつながる物語紹介。 -->
+<main class="mn-site" id="story-tsumazuki">
+  <section class="mn-story-detail">
+    <img class="mn-story-detail__image" src="assets/tsumazuki-selected.png" alt="階段に立つツマズキ">
+    <div class="mn-story-detail__content">
+      <p class="mn-kicker">Episode 07</p>
+      <h1>階段の踊り場の見張り番</h1>
+      <p>人が転ばないように、ツマズキはほんの少しだけ時間を遅らせ、足元に小さな奇跡を残します。</p>
+      <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>ツマヅキ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+      <div class="mn-story-actions"><a class="mn-mini-button" href="https://amzn.asia/d/0aDjSGa3" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtube.com/shorts/NrK4dyMBNDM?feature=share" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/0pHXzPKUnUxJA8ldJUMsZV?si=f1f2646aeb444cd9" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37091468/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="story-kazoeru-preview">
+<!-- SEO Title: 公園のブランコの数え役 | 見えない隣人たち -->
+<!-- Meta Description: 第8話「公園のブランコの数え役」の作品ページ。Kindle絵本、読み聞かせ動画、楽曲「きみの一日を数えて」へつながる物語紹介。 -->
+<main class="mn-site" id="story-kazoeru">
+  <section class="mn-story-detail">
+    <img class="mn-story-detail__image" src="assets/kazoeru-selected.png" alt="公園で数を数えるカゾエル">
+    <div class="mn-story-detail__content">
+      <p class="mn-kicker">Episode 08</p>
+      <h1>公園のブランコの数え役</h1>
+      <p>誰にも見えない頑張りや小さな一日を、カゾエルは夜の公園で静かに数えています。</p>
+      <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>カゾエル</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+      <div class="mn-story-actions"><a class="mn-mini-button" href="https://amzn.asia/d/03xEsRIu" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtube.com/shorts/NrBXsSRQdTg?feature=share" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/3nrOJVsnetrkGxX6QxrPda?si=76d3de19fc1946b4" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37146749/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="story-tomerun-preview">
+<!-- SEO Title: 冷蔵庫の奥の時間保存士 | 見えない隣人たち -->
+<!-- Meta Description: 第9話「冷蔵庫の奥の時間保存士」の作品ページ。Kindle絵本、読み聞かせ動画、楽曲「もう少しだけの時間」へつながる物語紹介。 -->
+<main class="mn-site" id="story-tomerun">
+  <section class="mn-story-detail">
+    <img class="mn-story-detail__image" src="assets/tomerun-selected.png" alt="時間ランタンを扱うトメルン">
+    <div class="mn-story-detail__content">
+      <p class="mn-kicker">Episode 09</p>
+      <h1>冷蔵庫の奥の時間保存士</h1>
+      <p>もう少しだけ残したい時間を、トメルンは小さなランタンに入れて、静かに守ります。</p>
+      <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>トメルン</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+      <div class="mn-story-actions"><a class="mn-mini-button" href="https://amzn.asia/d/01rxv3i4" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtu.be/Hh0RThQdJGM" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/5rNZFD629UY0aLreiBg8Cg?si=fc72bcb830934b4f" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37146783/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="story-hoshihakobi-preview">
+<!-- SEO Title: 屋根の上の星運び | 見えない隣人たち -->
+<!-- Meta Description: 第10話「屋根の上の星運び」の作品ページ。Kindle絵本、読み聞かせ動画、楽曲「空へ届く小さな星」へつながる物語紹介。 -->
+<main class="mn-site" id="story-hoshihakobi">
+  <section class="mn-story-detail">
+    <img class="mn-story-detail__image" src="assets/hoshihakobi-selected.png" alt="屋根の上で星を運ぶホシハコビ">
+    <div class="mn-story-detail__content">
+      <p class="mn-kicker">Episode 10</p>
+      <h1>屋根の上の星運び</h1>
+      <p>夜の屋根の上を歩くホシハコビは、人の願いが空へ届くように星の位置を少しだけ動かします。</p>
+      <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>ホシハコビ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+      <div class="mn-story-actions"><a class="mn-mini-button" href="https://amzn.asia/d/0eszJSGL" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtu.be/NZWEeUwiKzQ" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/2MSqPsapo4VaqcygbwyNzJ?si=7d4f2069be1b43fe" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37224484/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="story-yumeatsume-preview">
+<!-- SEO Title: 夢の保管庫の管理人 | 見えない隣人たち -->
+<!-- Meta Description: 第11話「夢の保管庫の管理人」の作品ページ。Kindle絵本、楽曲「ユメアツメ」へつながる物語紹介。 -->
+<main class="mn-site" id="story-yumeatsume">
+  <section class="mn-story-detail">
+    <img class="mn-story-detail__image" src="assets/yumeatsume-selected.png?v=2" alt="夢の保管庫の管理人">
+    <div class="mn-story-detail__content">
+      <p class="mn-kicker">Episode 11</p>
+      <h1>夢の保管庫の管理人</h1>
+      <p>人が諦めてしまった夢をガラス瓶に集めて保管するユメアツメ。夢には賞味期限がないと信じ、再び歩き始めるその日まで大切に守り続けます。</p>
+      <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>ユメアツメ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+      <div class="mn-story-actions"><a class="mn-mini-button" href="https://amzn.asia/d/0i3JGqBu" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtu.be/VCdgXB4sBl0" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/1n4Fi7hlTLxEUm4Bqv9qJf?si=fe8d320f450b42a9" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37385532/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="story-namidabin-preview">
+<!-- SEO Title: 涙瓶職人 | 見えない隣人たち -->
+<!-- Meta Description: 第12話「涙瓶職人」の作品ページ。Kindle絵本、楽曲「ナミダビン」へつながる物語紹介。 -->
+<main class="mn-site" id="story-namidabin">
+  <section class="mn-story-detail">
+    <img class="mn-story-detail__image" src="assets/namidabin-selected.png?v=2" alt="涙瓶職人">
+    <div class="mn-story-detail__content">
+      <p class="mn-kicker">Episode 12</p>
+      <h1>涙瓶職人</h1>
+      <p>人が流した涙を一滴だけ、青い結晶として集めるナミダビン。地下の「涙蔵」で保管された涙は、流した本人が困難を乗り越えて立ち上がった時、美しい宝石へと姿を変えます。</p>
+      <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>ナミダビン</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+      <div class="mn-story-actions"><a class="mn-mini-button" href="https://amzn.asia/d/07sZknYo" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtu.be/HyvFzlkcE-0" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/5VGtUWCAVDCvtETmRCAtMo?si=db4e8ecf5bfa4365" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37385541/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="story-ashitayobi-preview">
+<!-- SEO Title: 朝焼け配達人 | 見えない隣人たち -->
+<!-- Meta Description: 第13話「朝焼け配達人」の作品ページ。Kindle絵本、楽曲「アシタヨビ」へつながる物語紹介。 -->
+<main class="mn-site" id="story-ashitayobi">
+  <section class="mn-story-detail">
+    <img class="mn-story-detail__image" src="assets/ashitayobi-selected.png?v=2" alt="朝焼け配達人">
+    <div class="mn-story-detail__content">
+      <p class="mn-kicker">Episode 13</p>
+      <h1>朝焼け配達人</h1>
+      <p>夜と朝のあいだを飛びながら、世界中へ朝を届けているアシタヨビ。さみしい夜を過ごした人や泣きながら眠った人の窓辺にそっと朝焼けを置き、新しい「明日」と「希望」を届けます。</p>
+      <dl class="mn-story-meta"><div><dt>絵本</dt><dd>Kindle版配信中</dd></div><div><dt>動画</dt><dd>YouTubeにて公開中</dd></div><div><dt>楽曲</dt><dd>アシタヨビ</dd></div><div><dt>スタンプ</dt><dd>動くLINEスタンプ販売中</dd></div></dl>
+      <div class="mn-story-actions"><a class="mn-mini-button" href="https://amzn.asia/d/06RZ5K78" target="_blank" rel="noopener noreferrer">Kindleで読む</a><a class="mn-mini-button" href="https://youtu.be/ikeSp81cCj8" target="_blank" rel="noopener noreferrer">動画で観る</a><a class="mn-mini-button" href="https://open.spotify.com/intl-ja/track/2uri015hpRKcSTcqzDMwt6?si=dfc8b001ac4c47f5" target="_blank" rel="noopener noreferrer">Spotifyで聴く</a><a class="mn-mini-button" href="https://line.me/S/sticker/37385558/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 LINEスタンプ</a></div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="char-susunomi-preview">
+<!-- SEO Title: ススノミの詳細 | 見えない隣人たち -->
+<main class="mn-site" id="character-susunomi">
+  <section class="mn-character-detail">
+    <div class="mn-character-detail__header">
+      <img class="mn-character-detail__image" src="assets/susunomi-clean.png?v=3" alt="ススノミ">
+      <div class="mn-character-detail__title">
+        <p class="mn-kicker">換気口の料理人</p>
+        <h1>ススノミ</h1>
+        <p class="mn-character-detail__lead">換気口の奥で集めた匂いを煮詰め、記憶の味を作る小さな料理人。体は煤（すす）のように真っ黒ですが、目は白く光り、料理には誰かの心をホッとさせる不思議な力があります。</p>
+      </div>
+    </div>
+    
+    <div class="mn-character-detail__body">
+      <div class="mn-profile-grid">
+        <dl>
+          <div><dt>身長（サイズ感）</dt><dd>約6cm</dd></div>
+          <div><dt>おもな住処</dt><dd>古びたアパートの換気口の奥</dd></div>
+          <div><dt>好きなもの</dt><dd>あたたかいスープ、古いスパイスの瓶、静かな夜</dd></div>
+          <div><dt>苦手なもの</dt><dd>強い風、焦げた匂い</dd></div>
+          <div><dt>愛用の道具</dt><dd>小さな銅鍋、木のスプーン、ランタン</dd></div>
+        </dl>
+      </div>
+
+      <div class="mn-character-detail__extra">
+        <h2>秘密のレシピ</h2>
+        <p>ススノミの作る料理は、物理的な食べ物ではありません。「あの日の夕飯の匂い」や「お母さんが作ってくれたシチューの記憶」を煮詰めて、部屋中に優しく漂わせるのが彼らの仕事です。</p>
+        <blockquote class="mn-quote">「……コトコト、コトコト。今日の匂いも、いい匂い。」</blockquote>
+      </div>
+
+      <div class="mn-actions">
+        <a class="mn-button mn-button--primary" href="#story-susunomi-preview">この隣人の物語を読む</a>
+        <a class="mn-button mn-button--ghost" href="https://youtube.com/shorts/QGqUInhA0zA?feature=share" target="_blank" rel="noopener noreferrer">🎬 YouTube読み聞かせ動画</a>
+        <a class="mn-button mn-button--ghost" href="https://amzn.asia/d/09BnD076" target="_blank" rel="noopener noreferrer">📖 Kindle絵本</a>
+        <a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/36644772/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 動くLINEスタンプ（販売中）</a>
+        <a class="mn-button mn-button--ghost" href="#characters-preview">図鑑一覧へ戻る</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="char-kagemichi-preview">
+<!-- SEO Title: カゲミチの詳細 | 見えない隣人たち -->
+<main class="mn-site" id="character-kagemichi">
+  <section class="mn-character-detail">
+    <div class="mn-character-detail__header">
+      <img class="mn-character-detail__image" src="assets/kagemichi-clean.png?v=3" alt="カゲミチ">
+      <div class="mn-character-detail__title">
+        <p class="mn-kicker">終電後の案内人</p>
+        <h1>カゲミチ</h1>
+        <p class="mn-character-detail__lead">人の影から生まれた存在。言えなかった言葉や渡せなかった手紙など、行き場のない感情を拾い上げ、そっと誰かの夢へと届けます。</p>
+      </div>
+    </div>
+    
+    <div class="mn-character-detail__body">
+      <div class="mn-profile-grid">
+        <dl>
+          <div><dt>身長（サイズ感）</dt><dd>約120cm</dd></div>
+          <div><dt>おもな住処</dt><dd>終電後の駅、人気のないホーム</dd></div>
+          <div><dt>好きなもの</dt><dd>静かな夜、誰かの優しい記憶</dd></div>
+          <div><dt>苦手なもの</dt><dd>騒々しい場所、心無い言葉</dd></div>
+          <div><dt>愛用の道具</dt><dd>ランタン、想いの箱</dd></div>
+        </dl>
+      </div>
+
+      <div class="mn-character-detail__extra">
+        <h2>想いの箱</h2>
+        <p>カゲミチが持ち歩く古い箱の中には、形を持たない「想いのかけら」が光を放ちながらしまわれています。誰かが心に秘めたまま眠りについた夜、彼はその箱を開けて夢の中へ案内するのです。</p>
+        <blockquote class="mn-quote">「さあ、帰れなかった想いを、夢のなかへ。」</blockquote>
+      </div>
+
+      <div class="mn-actions">
+        <a class="mn-button mn-button--primary" href="#story-kagemichi-preview">この隣人の物語を読む</a>
+        <a class="mn-button mn-button--ghost" href="https://youtube.com/shorts/F4VsWpkLn9w?feature=share" target="_blank" rel="noopener noreferrer">🎬 YouTube読み聞かせ動画</a>
+        <a class="mn-button mn-button--ghost" href="https://amzn.asia/d/0ibk24mO" target="_blank" rel="noopener noreferrer">📖 Kindle絵本</a>
+        <a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/36757128/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 動くLINEスタンプ（販売中）</a>
+        <a class="mn-button mn-button--ghost" href="#characters-preview">図鑑一覧へ戻る</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="char-tokitsugi-preview">
+<!-- SEO Title: トキツギの詳細 | 見えない隣人たち -->
+<main class="mn-site" id="character-tokitsugi">
+  <section class="mn-character-detail">
+    <div class="mn-character-detail__header">
+      <img class="mn-character-detail__image" src="assets/tokitsugi-clean.png?v=3" alt="トキツギ">
+      <div class="mn-character-detail__title">
+        <p class="mn-kicker">古い時間の修復係</p>
+        <h1>トキツギ</h1>
+        <p class="mn-character-detail__lead">壊れた時間や、すれ違った想いをそっと拾い集め、繋ぎ直している時間の職人。人の暮らしの裏側で、誰にも気づかれずに小さな奇跡を起こします。</p>
+      </div>
+    </div>
+    
+    <div class="mn-character-detail__body">
+      <div class="mn-profile-grid">
+        <dl>
+          <div><dt>身長（サイズ感）</dt><dd>約10歳くらい（見た目）</dd></div>
+          <div><dt>おもな住処</dt><dd>どの家の押し入れの奥の隙間</dd></div>
+          <div><dt>好きなもの</dt><dd>時計の音、思い出の欠片、甘いお菓子</dd></div>
+          <div><dt>苦手なもの</dt><dd>忘れられること、時間の無駄遣い</dd></div>
+          <div><dt>愛用の道具</dt><dd>懐中時計の修復キット、時間の糸</dd></div>
+        </dl>
+      </div>
+
+      <div class="mn-character-detail__extra">
+        <h2>時間の糸</h2>
+        <p>すれ違ってしまったタイミングや、もう会えない人との夢。トキツギが使う「時間の糸」は、切れてしまった縁をほんの少しだけ縫い合わせることができます。</p>
+        <blockquote class="mn-quote">「大丈夫、ちゃんと届いてるよ。」</blockquote>
+      </div>
+
+      <div class="mn-actions">
+        <a class="mn-button mn-button--primary" href="#story-tokitsugi-preview">この隣人の物語を読む</a>
+        <a class="mn-button mn-button--ghost" href="https://youtube.com/shorts/qAjC1PyVdks?feature=share" target="_blank" rel="noopener noreferrer">🎬 YouTube読み聞かせ動画</a>
+        <a class="mn-button mn-button--ghost" href="https://amzn.asia/d/0j2YuzQV" target="_blank" rel="noopener noreferrer">📖 Kindle絵本</a>
+        <a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37100585/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 動くLINEスタンプ（販売中）</a>
+        <a class="mn-button mn-button--ghost" href="#characters-preview">図鑑一覧へ戻る</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="char-wasuredama-preview">
+<!-- SEO Title: ワスレダマの詳細 | 見えない隣人たち -->
+<main class="mn-site" id="character-wasuredama">
+  <section class="mn-character-detail">
+    <div class="mn-character-detail__header">
+      <img class="mn-character-detail__image" src="assets/wasuredama-clean.png?v=3" alt="ワスレダマ">
+      <div class="mn-character-detail__title">
+        <p class="mn-kicker">街灯の下の忘れ物係</p>
+        <h1>ワスレダマ</h1>
+        <p class="mn-character-detail__lead">言いかけてやめた夢や、途中で諦めた約束など、「物ではない忘れ物」を拾い集め、まだ必要な人のそばへそっと届ける静かな存在。</p>
+      </div>
+    </div>
+    
+    <div class="mn-character-detail__body">
+      <div class="mn-profile-grid">
+        <dl>
+          <div><dt>身長（サイズ感）</dt><dd>約20cm（りんごくらい）</dd></div>
+          <div><dt>おもな住処</dt><dd>街灯のあかりの下</dd></div>
+          <div><dt>好きなもの</dt><dd>静かな夜、人の小さなこころのかけら</dd></div>
+          <div><dt>苦手なもの</dt><dd>騒音、明るすぎる場所</dd></div>
+          <div><dt>愛用の道具</dt><dd>古い布でできた袋</dd></div>
+        </dl>
+      </div>
+
+      <div class="mn-character-detail__extra">
+        <h2>光る忘れ物</h2>
+        <p>ワスレダマの袋の中には、青や金色の光を放つ「忘れ物」がしまわれています。それらは元の持ち主の元へ返されると、ふとした瞬間に新しい希望へと変わります。</p>
+        <blockquote class="mn-quote">「きっと、だいじょうぶ。」</blockquote>
+      </div>
+
+      <div class="mn-actions">
+        <a class="mn-button mn-button--primary" href="#story-wasuredama-preview">この隣人の物語を読む</a>
+        <a class="mn-button mn-button--ghost" href="https://youtube.com/shorts/Vc2Vwxy8lHE?feature=share" target="_blank" rel="noopener noreferrer">🎬 YouTube読み聞かせ動画</a>
+        <a class="mn-button mn-button--ghost" href="https://amzn.asia/d/03YoUM1B" target="_blank" rel="noopener noreferrer">📖 Kindle絵本</a>
+        <a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37135329/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 動くLINEスタンプ（販売中）</a>
+        <a class="mn-button mn-button--ghost" href="#characters-preview">図鑑一覧へ戻る</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="char-nukumori-preview">
+<!-- SEO Title: ヌクモリの詳細 | 見えない隣人たち -->
+<main class="mn-site" id="character-nukumori">
+  <section class="mn-character-detail">
+    <div class="mn-character-detail__header">
+      <img class="mn-character-detail__image" src="assets/nukumori-clean.png?v=3" alt="ヌクモリ">
+      <div class="mn-character-detail__title">
+        <p class="mn-kicker">冷えた部屋の灯り</p>
+        <h1>ヌクモリ</h1>
+        <p class="mn-character-detail__lead">真冬の夜、街の温度をほんの少しだけ調整して、人々が凍えない夜をこっそり作っている温度番。ふわふわの毛並みで包み込みます。</p>
+      </div>
+    </div>
+    
+    <div class="mn-character-detail__body">
+      <div class="mn-profile-grid">
+        <dl>
+          <div><dt>身長（サイズ感）</dt><dd>約25cm</dd></div>
+          <div><dt>おもな住処</dt><dd>自動販売機の裏側</dd></div>
+          <div><dt>好きなもの</dt><dd>湯気、あたたかい飲み物、人の「ほっ」とした顔</dd></div>
+          <div><dt>苦手なもの</dt><dd>騒がしさ、無関心、心の冷え</dd></div>
+          <div><dt>愛用の道具</dt><dd>温度調整機、あたたかいマフラー</dd></div>
+        </dl>
+      </div>
+
+      <div class="mn-character-detail__extra">
+        <h2>ほっとセンサー</h2>
+        <p>ヌクモリは、人の心の「冷え」を感じ取ることができます。誰かが孤独を感じている夜、自動販売機の裏からこっそりと「ほんのりしたあたたかさ」を送り届けます。</p>
+        <blockquote class="mn-quote">「今日はなんだか凍えないな……それ、たぶんぼくのしごと。」</blockquote>
+      </div>
+
+      <div class="mn-actions">
+        <a class="mn-button mn-button--primary" href="#story-nukumori-preview">この隣人の物語を読む</a>
+        <a class="mn-button mn-button--ghost" href="https://youtube.com/shorts/efvIdDxQd7U?feature=share" target="_blank" rel="noopener noreferrer">🎬 YouTube読み聞かせ動画</a>
+        <a class="mn-button mn-button--ghost" href="https://amzn.asia/d/0hFuzXbr" target="_blank" rel="noopener noreferrer">📖 Kindle絵本</a>
+        <a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37086186/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 動くLINEスタンプ（販売中）</a>
+        <a class="mn-button mn-button--ghost" href="#characters-preview">図鑑一覧へ戻る</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="char-henjirou-preview">
+<!-- SEO Title: ヘンジロウの詳細 | 見えない隣人たち -->
+<main class="mn-site" id="character-henjirou">
+  <section class="mn-character-detail">
+    <div class="mn-character-detail__header">
+      <img class="mn-character-detail__image" src="assets/henjirou-clean.png?v=3" alt="ヘンジロウ">
+      <div class="mn-character-detail__title">
+        <p class="mn-kicker">返事の代筆屋</p>
+        <h1>ヘンジロウ</h1>
+        <p class="mn-character-detail__lead">投函されたまま届かなかった手紙や、言えなかった言葉を代わりに整え、誰かの心の中へ届けてくれるポストの中の手紙屋さん。</p>
+      </div>
+    </div>
+    
+    <div class="mn-character-detail__body">
+      <div class="mn-profile-grid">
+        <dl>
+          <div><dt>身長（サイズ感）</dt><dd>小さなハリネズミサイズ</dd></div>
+          <div><dt>おもな住処</dt><dd>町の赤いポストの中</dd></div>
+          <div><dt>好きなもの</dt><dd>言葉の気持ちを感じ取ること、綺麗な文字</dd></div>
+          <div><dt>苦手なもの</dt><dd>急かされること、悲しい別れの手紙</dd></div>
+          <div><dt>愛用の道具</dt><dd>羽ペンとインク、小さなスタンプ</dd></div>
+        </dl>
+      </div>
+
+      <div class="mn-character-detail__extra">
+        <h2>夜の郵便局</h2>
+        <p>深夜0時を過ぎると、ポストの中は小さな郵便局に変わります。ヘンジロウは小さな眼鏡をかけ、一生懸命に羽ペンを走らせて、不器用な想いを美しい言葉へと紡ぎ直します。</p>
+        <blockquote class="mn-quote">「ちゃんと、届くようにね。」</blockquote>
+      </div>
+
+      <div class="mn-actions">
+        <a class="mn-button mn-button--primary" href="#story-henjirou-preview">この隣人の物語を読む</a>
+        <a class="mn-button mn-button--ghost" href="https://youtu.be/6mIWOXECe68" target="_blank" rel="noopener noreferrer">🎬 YouTube読み聞かせ動画</a>
+        <a class="mn-button mn-button--ghost" href="https://amzn.asia/d/0eqTzdec" target="_blank" rel="noopener noreferrer">📖 Kindle絵本</a>
+        <a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37090308/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 動くLINEスタンプ（販売中）</a>
+        <a class="mn-button mn-button--ghost" href="#characters-preview">図鑑一覧へ戻る</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="char-tsumazuki-preview">
+<!-- SEO Title: ツマズキの詳細 | 見えない隣人たち -->
+<main class="mn-site" id="character-tsumazuki">
+  <section class="mn-character-detail">
+    <div class="mn-character-detail__header">
+      <img class="mn-character-detail__image" src="assets/tsumazuki-clean.png?v=3" alt="ツマズキ">
+      <div class="mn-character-detail__title">
+        <p class="mn-kicker">小さなつまずきの番人</p>
+        <h1>ツマズキ</h1>
+        <p class="mn-character-detail__lead">人が転ばないように、ほんの少しだけ時間を遅らせる存在。足元に現れ、前へ進むきっかけや小さな気づきを残していきます。</p>
+      </div>
+    </div>
+    
+    <div class="mn-character-detail__body">
+      <div class="mn-profile-grid">
+        <dl>
+          <div><dt>身長（サイズ感）</dt><dd>約80cm</dd></div>
+          <div><dt>おもな住処</dt><dd>階段の踊り場</dd></div>
+          <div><dt>好きなもの</dt><dd>階段の踊り場、人の「気づかない優しさ」</dd></div>
+          <div><dt>苦手なもの</dt><dd>急ぎすぎる心、無関心</dd></div>
+          <div><dt>愛用の道具</dt><dd>時間をゆるやかにするフード</dd></div>
+        </dl>
+      </div>
+
+      <div class="mn-character-detail__extra">
+        <h2>奇跡のアシスト</h2>
+        <p>落とした物をキャッチさせたり、ギリギリのタイミングで電車に間に合わせたり。それは決して偶然ではなく、ツマズキがフードの中で時間をコントロールしているからです。</p>
+        <blockquote class="mn-quote">「大丈夫、ほんの少しだけね。」</blockquote>
+      </div>
+
+      <div class="mn-actions">
+        <a class="mn-button mn-button--primary" href="#story-tsumazuki-preview">この隣人の物語を読む</a>
+        <a class="mn-button mn-button--ghost" href="https://youtube.com/shorts/NrK4dyMBNDM?feature=share" target="_blank" rel="noopener noreferrer">🎬 YouTube読み聞かせ動画</a>
+        <a class="mn-button mn-button--ghost" href="https://amzn.asia/d/0aDjSGa3" target="_blank" rel="noopener noreferrer">📖 Kindle絵本</a>
+        <a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37091468/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 動くLINEスタンプ（販売中）</a>
+        <a class="mn-button mn-button--ghost" href="#characters-preview">図鑑一覧へ戻る</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="char-kazoeru-preview">
+<!-- SEO Title: カゾエルの詳細 | 見えない隣人たち -->
+<main class="mn-site" id="character-kazoeru">
+  <section class="mn-character-detail">
+    <div class="mn-character-detail__header">
+      <img class="mn-character-detail__image" src="assets/kazoeru-clean.png?v=3" alt="カゾエル">
+      <div class="mn-character-detail__title">
+        <p class="mn-kicker">数え忘れの係</p>
+        <h1>カゾエル</h1>
+        <p class="mn-character-detail__lead">誰もいないブランコを見守りながら、今日一日をそっと数える不思議な存在。笑った回数、悲しんだ回数、頑張った回数を見逃しません。</p>
+      </div>
+    </div>
+    
+    <div class="mn-character-detail__body">
+      <div class="mn-profile-grid">
+        <dl>
+          <div><dt>身長（サイズ感）</dt><dd>約30cm</dd></div>
+          <div><dt>おもな住処</dt><dd>夜の公園（ブランコのそば）</dd></div>
+          <div><dt>好きなもの</dt><dd>夜の静けさ、星の光、誰かの小さな頑張り</dd></div>
+          <div><dt>苦手なもの</dt><dd>大きな音、無関心な言葉</dd></div>
+          <div><dt>愛用の道具</dt><dd>今日のすべてを数えるノート、えんぴつ</dd></div>
+        </dl>
+      </div>
+
+      <div class="mn-character-detail__extra">
+        <h2>消えない頑張り</h2>
+        <p>誰にも褒められなかった日でも、カゾエルのノートにはしっかりと「がんばったかいすう」が刻まれています。だから、あなたの頑張りは絶対に消えません。</p>
+        <blockquote class="mn-quote">「きみの頑張り、ちゃんと見てるよ。」</blockquote>
+      </div>
+
+      <div class="mn-actions">
+        <a class="mn-button mn-button--primary" href="#story-kazoeru-preview">この隣人の物語を読む</a>
+        <a class="mn-button mn-button--ghost" href="https://youtube.com/shorts/NrBXsSRQdTg?feature=share" target="_blank" rel="noopener noreferrer">🎬 YouTube読み聞かせ動画</a>
+        <a class="mn-button mn-button--ghost" href="https://amzn.asia/d/03xEsRIu" target="_blank" rel="noopener noreferrer">📖 Kindle絵本</a>
+        <a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37146749/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 動くLINEスタンプ（販売中）</a>
+        <a class="mn-button mn-button--ghost" href="#characters-preview">図鑑一覧へ戻る</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="char-tomerun-preview">
+<!-- SEO Title: トメルンの詳細 | 見えない隣人たち -->
+<main class="mn-site" id="character-tomerun">
+  <section class="mn-character-detail">
+    <div class="mn-character-detail__header">
+      <img class="mn-character-detail__image" src="assets/tomerun-clean.png?v=3" alt="トメルン">
+      <div class="mn-character-detail__title">
+        <p class="mn-kicker">一瞬を止める子</p>
+        <h1>トメルン</h1>
+        <p class="mn-character-detail__lead">大事な場面が流れ去らないよう、ほんの少しだけ時間を押さえてくれる存在。「もう少し一緒にいたい」という願いを未来へと繋ぎます。</p>
+      </div>
+    </div>
+    
+    <div class="mn-character-detail__body">
+      <div class="mn-profile-grid">
+        <dl>
+          <div><dt>身長（サイズ感）</dt><dd>約10cm</dd></div>
+          <div><dt>おもな住処</dt><dd>冷蔵庫の奥の小さな棚</dd></div>
+          <div><dt>好きなもの</dt><dd>家族の笑顔、あたたかい食卓</dd></div>
+          <div><dt>苦手なもの</dt><dd>もったいない別れ、寂しい食卓</dd></div>
+          <div><dt>愛用の道具</dt><dd>時間ランタン、小さなはしご</dd></div>
+        </dl>
+      </div>
+
+      <div class="mn-character-detail__extra">
+        <h2>思い出の保存</h2>
+        <p>冷蔵庫の奥で彼らが保存しているのは、食べ物ではなく「時間」です。終わってほしくない食卓の風景や、家族の最後の時間を、大切にビンに詰めて守っています。</p>
+        <blockquote class="mn-quote">「大切な時間は、ちゃんと、守られてるよ。」</blockquote>
+      </div>
+
+      <div class="mn-actions">
+        <a class="mn-button mn-button--primary" href="#story-tomerun-preview">この隣人の物語を読む</a>
+        <a class="mn-button mn-button--ghost" href="https://youtu.be/Hh0RThQdJGM" target="_blank" rel="noopener noreferrer">🎬 YouTube読み聞かせ動画</a>
+        <a class="mn-button mn-button--ghost" href="https://amzn.asia/d/01rxv3i4" target="_blank" rel="noopener noreferrer">📖 Kindle絵本</a>
+        <a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37146783/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 動くLINEスタンプ（販売中）</a>
+        <a class="mn-button mn-button--ghost" href="#characters-preview">図鑑一覧へ戻る</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="char-hoshihakobi-preview">
+<!-- SEO Title: ホシハコビの詳細 | 見えない隣人たち -->
+<main class="mn-site" id="character-hoshihakobi">
+  <section class="mn-character-detail">
+    <div class="mn-character-detail__header">
+      <img class="mn-character-detail__image" src="assets/hoshihakobi-clean.png?v=3" alt="ホシハコビ">
+      <div class="mn-character-detail__title">
+        <p class="mn-kicker">星屑の運び手</p>
+        <h1>ホシハコビ</h1>
+        <p class="mn-character-detail__lead">人々の願いが空へ届くように、星の位置をほんの少し動かしている存在。屋根の上を歩き、夜の奇跡をこっそりと作っています。</p>
+      </div>
+    </div>
+    
+    <div class="mn-character-detail__body">
+      <div class="mn-profile-grid">
+        <dl>
+          <div><dt>身長（サイズ感）</dt><dd>約70cm</dd></div>
+          <div><dt>おもな住処</dt><dd>夜の屋根の上</dd></div>
+          <div><dt>好きなもの</dt><dd>静かな夜、誰かの願いが叶う瞬間</dd></div>
+          <div><dt>苦手なもの</dt><dd>争いの気配、星が曇ってしまうこと</dd></div>
+          <div><dt>愛用の道具</dt><dd>星の箱、星明かりの杖</dd></div>
+        </dl>
+      </div>
+
+      <div class="mn-character-detail__extra">
+        <h2>流れ星の正体</h2>
+        <p>彼らが星明かりの杖を振り、星の箱から新しい星を空へ放り投げたとき、それは地上からは美しい流れ星に見えます。すべては誰かの願いを叶えるための、見えない努力なのです。</p>
+        <blockquote class="mn-quote">「もうすぐ、届くよ。」</blockquote>
+      </div>
+
+      <div class="mn-actions">
+        <a class="mn-button mn-button--primary" href="#story-hoshihakobi-preview">この隣人の物語を読む</a>
+        <a class="mn-button mn-button--ghost" href="https://youtu.be/NZWEeUwiKzQ" target="_blank" rel="noopener noreferrer">🎬 YouTube読み聞かせ動画</a>
+        <a class="mn-button mn-button--ghost" href="https://amzn.asia/d/0eszJSGL" target="_blank" rel="noopener noreferrer">📖 Kindle絵本</a>
+        <a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37224484/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 動くLINEスタンプ（販売中）</a>
+        <a class="mn-button mn-button--ghost" href="#characters-preview">図鑑一覧へ戻る</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="char-yumeatsume-preview">
+<!-- SEO Title: ユメアツメの詳細 | 見えない隣人たち -->
+<main class="mn-site" id="character-yumeatsume">
+  <section class="mn-character-detail">
+    <div class="mn-character-detail__header">
+      <img class="mn-character-detail__image" src="assets/yumeatsume-clean.png?v=3" alt="ユメアツメ">
+      <div class="mn-character-detail__title">
+        <p class="mn-kicker">夢の保管庫の管理人</p>
+        <h1>ユメアツメ</h1>
+        <p class="mn-character-detail__lead">人が諦めてしまった夢を拾い集め、ガラス瓶にしまって大切に保管している隣人。「夢に賞味期限はない」と誰よりも信じており、持ち主が思い出して再び歩き始めるその日まで、静かに守り続けます。</p>
+      </div>
+    </div>
+    
+    <div class="mn-character-detail__body">
+      <div class="mn-profile-grid">
+        <dl>
+          <div><dt>身長（サイズ感）</dt><dd>約20cm</dd></div>
+          <div><dt>おもな住処</dt><dd>常世町の西の丘にある「夢の保管庫」</dd></div>
+          <div><dt>好きなもの</dt><dd>眠っている夢の光、ガラス瓶、古いギター</dd></div>
+          <div><dt>苦手なもの</dt><dd>諦める言葉、賞味期限切れという言葉</dd></div>
+          <div><dt>愛用の道具</dt><dd>ガラス瓶、夢の保管庫の棚</dd></div>
+        </dl>
+      </div>
+
+      <div class="mn-character-detail__extra">
+        <h2>夢の保管庫</h2>
+        <p>常世町の西の丘に建つ温室のような「夢の保管庫」。そこには無数のガラス瓶が並び、中では持ち主が迎えに来る日を待つ夢の光がきらきらと眠っています。</p>
+        <blockquote class="mn-quote">「夢には、賞味期限なんてない。」</blockquote>
+      </div>
+
+      <div class="mn-actions">
+        <a class="mn-button mn-button--primary" href="#story-yumeatsume-preview">この隣人の物語を読む</a>
+        <a class="mn-button mn-button--ghost" href="https://youtu.be/VCdgXB4sBl0" target="_blank" rel="noopener noreferrer">🎬 YouTube読み聞かせ動画</a>
+        <a class="mn-button mn-button--ghost" href="https://amzn.asia/d/0i3JGqBu" target="_blank" rel="noopener noreferrer">📖 Kindle絵本</a>
+        <a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37385532/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 動くLINEスタンプ（販売中）</a>
+        <a class="mn-button mn-button--ghost" href="#characters-preview">図鑑一覧へ戻る</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="char-namidabin-preview">
+<!-- SEO Title: ナミダビンの詳細 | 見えない隣人たち -->
+<main class="mn-site" id="character-namidabin">
+  <section class="mn-character-detail">
+    <div class="mn-character-detail__header">
+      <img class="mn-character-detail__image" src="assets/namidabin-clean.png?v=3" alt="ナミダビン">
+      <div class="mn-character-detail__title">
+        <p class="mn-kicker">涙瓶職人</p>
+        <h1>ナミダビン</h1>
+        <p class="mn-character-detail__lead">人が流した涙を集め、地下の「涙蔵（なみだぐら）」で大切に管理している隣人。涙を「心ががんばった証」と信じ、悲しい涙や嬉しい涙、どんな涙も決して捨てずに、世界に一つだけの宝石へと変わる日を待ちます。</p>
+      </div>
+    </div>
+    
+    <div class="mn-character-detail__body">
+      <div class="mn-profile-grid">
+        <dl>
+          <div><dt>身長（サイズ感）</dt><dd>約15cm</dd></div>
+          <div><dt>おもな住処</dt><dd>常世町の地下にある「涙蔵（なみだぐら）」</dd></div>
+          <div><dt>好きなもの</dt><dd>きらきら光る涙、青い結晶、がんばる心</dd></div>
+          <div><dt>苦手なもの</dt><dd>心配すること、涙を恥ずかしがること</dd></div>
+          <div><dt>愛用の道具</dt><dd>青いローブ、涙採集瓶、涙蔵の棚</dd></div>
+        </dl>
+      </div>
+
+      <div class="mn-character-detail__extra">
+        <h2>涙蔵の光</h2>
+        <p>ナミダビンが管理する「涙蔵」の棚には、何万本もの瓶が並び、涙がきらきらと眠っています。前を向いて歩き出した瞬間、それらは美しい宝石へと姿を変えます。</p>
+        <blockquote class="mn-quote">「涙は、弱さじゃない。未来へ続く、小さな宝物。」</blockquote>
+      </div>
+
+      <div class="mn-actions">
+        <a class="mn-button mn-button--primary" href="#story-namidabin-preview">この隣人の物語を読む</a>
+        <a class="mn-button mn-button--ghost" href="https://youtu.be/HyvFzlkcE-0" target="_blank" rel="noopener noreferrer">🎬 YouTube読み聞かせ動画</a>
+        <a class="mn-button mn-button--ghost" href="https://amzn.asia/d/07sZknYo" target="_blank" rel="noopener noreferrer">📖 Kindle絵本</a>
+        <a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37385541/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 動くLINEスタンプ（販売中）</a>
+        <a class="mn-button mn-button--ghost" href="#characters-preview">図鑑一覧へ戻る</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+</div>
+
+<div class="preview-page" id="char-ashitayobi-preview">
+<!-- SEO Title: アシタヨビの詳細 | 見えない隣人たち -->
+<main class="mn-site" id="character-ashitayobi">
+  <section class="mn-character-detail">
+    <div class="mn-character-detail__header">
+      <img class="mn-character-detail__image" src="assets/ashitayobi-clean.png?v=3" alt="アシタヨビ">
+      <div class="mn-character-detail__title">
+        <p class="mn-kicker">朝焼け配達人</p>
+        <h1>アシタヨビ</h1>
+        <p class="mn-character-detail__lead">夜と朝のあいだに大きな朝焼け鞄を背負って空を飛び、人々のもとへ「明日」を届けている配達人。鞄に入ったオレンジや桃色の朝焼けを窓辺に置き、新しい一日を始めさせる希望を運びます。</p>
+      </div>
+    </div>
+    
+    <div class="mn-character-detail__body">
+      <div class="mn-profile-grid">
+        <dl>
+          <div><dt>身長（サイズ感）</dt><dd>約40cm</dd></div>
+          <div><dt>おもな住処</dt><dd>常世町の東門、または夜明け前の空</dd></div>
+          <div><dt>好きなもの</dt><dd>夜明け前の空、いろいろな色の朝焼け、誰かの笑顔</dd></div>
+          <div><dt>苦手なもの</dt><dd>暗すぎる夜、閉まったままの窓</dd></div>
+          <div><dt>愛用の道具</dt><dd>朝焼け鞄、東門の鍵</dd></div>
+        </dl>
+      </div>
+
+      <div class="mn-character-detail__extra">
+        <h2>朝焼けの鞄</h2>
+        <p>アシタヨビが背負う大きな鞄には、オレンジや桃色、金色の朝焼けが詰まっています。頑張った人や泣いた人、それぞれに合わせた特別な色が窓辺に届けられます。</p>
+        <blockquote class="mn-quote">「朝は、空が運んでくるだけじゃない。」</blockquote>
+      </div>
+
+      <div class="mn-actions">
+        <a class="mn-button mn-button--primary" href="#story-ashitayobi-preview">この隣人の物語を読む</a>
+        <a class="mn-button mn-button--ghost" href="https://youtu.be/ikeSp81cCj8" target="_blank" rel="noopener noreferrer">🎬 YouTube読み聞かせ動画</a>
+        <a class="mn-button mn-button--ghost" href="https://amzn.asia/d/06RZ5K78" target="_blank" rel="noopener noreferrer">📖 Kindle絵本</a>
+        <a class="mn-button mn-button--ghost" href="https://line.me/S/sticker/37385558/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer" style="border-color: rgba(6, 199, 85, 0.45); color: #86efac;">💬 動くLINEスタンプ（販売中）</a>
+        <a class="mn-button mn-button--ghost" href="#characters-preview">図鑑一覧へ戻る</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+</div>
+  </main>
+
+  <!-- サイト共通フッター -->
+  <footer style="text-align: center; padding: 4.5rem 1rem 5.5rem; color: #cfc3af; font-size: 0.85rem; border-top: 1px solid rgba(255, 242, 210, 0.14); margin-top: 4rem; background: #0c0c12;">
+    <div style="display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 2rem;">
+      <a class="mn-button mn-button--ghost" href="https://x.com/mienai_rinjin" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.65rem 1.4rem; font-size: 0.9rem;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+        <span>公式 X (Twitter)</span>
+      </a>
+      <a class="mn-button mn-button--ghost" href="https://www.instagram.com/mienai_rinjin" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.65rem 1.4rem; font-size: 0.9rem;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+        </svg>
+        <span>公式 Instagram</span>
+      </a>
+      <a class="mn-button mn-button--ghost" href="https://line.me/S/shop/sticker/author/6654833/new?lang=ja&utm_source=gnsh_staut" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.65rem 1.4rem; font-size: 0.9rem; border-color: rgba(6, 199, 85, 0.45); color: #86efac;">
+        <span>💬 動くLINEスタンプ一覧（LINE STORE）</span>
+      </a>
+    </div>
+    <p style="margin: 0; color: #8f8576;">© 見えない隣人たち All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    // 内部リンクのマッピング解決
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('a[href="/characters/"]').forEach((link) => {
+        link.setAttribute("href", "#characters-preview");
+      });
+      document.querySelectorAll('a[href="/stories/"]').forEach((link) => {
+        link.setAttribute("href", "#stories-preview");
+      });
+      document.querySelectorAll('a[href="/music/"]').forEach((link) => {
+        link.setAttribute("href", "#music-preview");
+      });
+
+      const storyPreviewMap = {
+        "/stories/susunomi/": "#story-susunomi-preview",
+        "/stories/kagemichi/": "#story-kagemichi-preview",
+        "/stories/tokitsugi/": "#story-tokitsugi-preview",
+        "/stories/wasuredama/": "#story-wasuredama-preview",
+        "/stories/nukumori/": "#story-nukumori-preview",
+        "/stories/henjirou/": "#story-henjirou-preview",
+        "/stories/tsumazuki/": "#story-tsumazuki-preview",
+        "/stories/kazoeru/": "#story-kazoeru-preview",
+        "/stories/tomerun/": "#story-tomerun-preview",
+        "/stories/hoshihakobi/": "#story-hoshihakobi-preview",
+        "/stories/yumeatsume/": "#story-yumeatsume-preview",
+        "/stories/namidabin/": "#story-namidabin-preview",
+        "/stories/ashitayobi/": "#story-ashitayobi-preview"
+      };
+      Object.entries(storyPreviewMap).forEach(([href, target]) => {
+        document.querySelectorAll(`a[href="${href}"]`).forEach((link) => {
+          link.setAttribute("href", target);
+        });
+      });
+
+      const charPreviewMap = {
+        "/characters/susunomi/": "#char-susunomi-preview",
+        "/characters/kagemichi/": "#char-kagemichi-preview",
+        "/characters/tokitsugi/": "#char-tokitsugi-preview",
+        "/characters/wasuredama/": "#char-wasuredama-preview",
+        "/characters/nukumori/": "#char-nukumori-preview",
+        "/characters/henjirou/": "#char-henjirou-preview",
+        "/characters/tsumazuki/": "#char-tsumazuki-preview",
+        "/characters/kazoeru/": "#char-kazoeru-preview",
+        "/characters/tomerun/": "#char-tomerun-preview",
+        "/characters/hoshihakobi/": "#char-hoshihakobi-preview",
+        "/characters/yumeatsume/": "#char-yumeatsume-preview",
+        "/characters/namidabin/": "#char-namidabin-preview",
+        "/characters/ashitayobi/": "#char-ashitayobi-preview",
+      };
+      Object.entries(charPreviewMap).forEach(([href, target]) => {
+        document.querySelectorAll(`a[href="${href}"]`).forEach((link) => {
+          link.setAttribute("href", target);
+        });
+      });
+
+      const script = document.createElement("script");
+      script.src = "invisible-neighbors.js";
+      document.body.appendChild(script);
+    });
+  </script>
+</body>
+</html>

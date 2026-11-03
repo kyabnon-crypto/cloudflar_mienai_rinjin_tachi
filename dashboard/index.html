@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#070b1a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="隣人コックピット">
+  <link rel="apple-touch-icon" href="../game/assets/icons/icon-192.png">
+  <title>『見えない隣人たち』統合管理ダッシュボード ― 社長室コックピット</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="top-header">
+    <div class="brand-area">
+      <span class="brand-lantern">🏮</span>
+      <div>
+        <h1 class="brand-title">『見えない隣人たち』社長室コックピット</h1>
+        <p class="brand-sub">AI社員リアルタイム稼働モニター ＆ 外出先スマホリモート発注システム</p>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <div id="live-indicator" class="live-pill snapshot">
+        <span class="live-dot"></span>
+        <span id="live-text">読み込み中...</span>
+      </div>
+      <button id="btn-mobile-qr" class="btn btn-amber" title="外出先・スマホで開くためのQRコードとURLを表示">📱 スマホ・外出先接続</button>
+      <button id="btn-refresh" class="btn" title="今すぐ最新状態をスキャン">🔄 更新</button>
+      <a href="../game/play.html" target="_blank" rel="noopener" class="btn">🏮 ゲーム</a>
+      <a href="../output/cloudflare-site/index.html" target="_blank" rel="noopener" class="btn">🌐 公式サイト</a>
+      <a href="https://line.me/S/shop/sticker/author/6654833/new?lang=ja&utm_source=gnsh_staut" target="_blank" rel="noopener" class="btn" style="border-color: rgba(6, 199, 85, 0.55); color: #86efac;">💬 LINEスタンプ一覧</a>
+    </div>
+  </header>
+
+  <!-- Mobile QR Modal -->
+  <div id="qr-modal" class="qr-modal hidden">
+    <div class="qr-card">
+      <h3 style="margin:0 0 0.4rem; color:var(--amber);">📱 スマホ・外出先から接続する</h3>
+      <p style="margin:0 0 0.75rem; font-size:0.8rem; color:var(--text-muted);">
+        接続モードを切り替えて、スマホのカメラでQRコードを読み取ってください。
+      </p>
+
+      <div style="display:flex; gap:0.4rem; margin-bottom:0.85rem;">
+        <button type="button" id="qr-tab-public" class="btn btn-amber" style="flex:1; justify-content:center;">🌐 外出先 (4G/5G)</button>
+        <button type="button" id="qr-tab-lan" class="btn" style="flex:1; justify-content:center;">🏠 自宅Wi-Fi</button>
+      </div>
+
+      <div class="qr-img-wrap">
+        <img id="qr-img" src="" alt="QR Code" width="180" height="180">
+      </div>
+      <div style="margin:0.85rem 0;">
+        <code id="qr-url-text" style="display:block; padding:0.55rem; background:var(--bg-surface); border-radius:8px; color:var(--amber); font-size:0.82rem; word-break:break-all;">読み込み中...</code>
+      </div>
+      <p id="qr-mode-note" style="margin:0 0 1rem; font-size:0.75rem; color:var(--text-muted);">
+        💡 Safari / Chromeの「共有 ➔ ホーム画面に追加」を押すと、専用アプリとしていつでもワンタップで開けます。
+      </p>
+      <div style="display:flex; gap:0.5rem;">
+        <button id="btn-copy-lan-url" class="btn btn-amber" style="flex:1; justify-content:center;">📋 URLをコピー</button>
+        <button id="btn-close-qr" class="btn" style="flex:1; justify-content:center;">とじる</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="container">
+
+    <!-- Current Campaign Banner -->
+    <section class="campaign-banner">
+      <div class="campaign-info">
+        <span class="phase-tag" id="banner-prev">Week 4（第7話：ツマヅキ）完了</span>
+        <h2 id="banner-current">🔥 現在フェーズ：Week 5（第5話：ヌクモリ特集）</h2>
+        <p>ゲーム『みつけて、となりびと』第5夜への無料体験誘導 × note/SNS連載 × 未登録YouTube動画（11〜13話）完遂</p>
+      </div>
+      <div style="display:flex; gap:0.55rem; flex-wrap:wrap;">
+        <a href="../game/play.html?preview=zukan" target="_blank" rel="noopener" class="btn">🔍 5号プレビュー：図鑑モーダル</a>
+        <a href="../game/play.html?preview=complete" target="_blank" rel="noopener" class="btn">🎁 5号プレビュー：13夜コンプ特典</a>
+        <button id="btn-order-all-week5" class="btn btn-amber">🚀 スマホからWeek 5を一斉発注する</button>
+      </div>
+    </section>
+
+    <!-- KPI Grid -->
+    <section class="kpi-grid" id="kpi-grid">
+      <!-- Dynamically populated by dashboard.js -->
+    </section>
+
+    <!-- 1. AI Employees Real-time Monitor -->
+    <section>
+      <div class="section-header">
+        <h2 class="section-title">🤖 5人のAI社員 リアルタイム稼働モニター（ワンタップ発注対応）</h2>
+        <span style="font-size:0.8rem; color:var(--text-muted);">「🚀 このAIに発注」を押すと、外出先のスマホから直接Macの指示キューへ発注されます</span>
+      </div>
+      <div class="agents-grid" id="agents-grid">
+        <!-- Dynamically populated by dashboard.js -->
+      </div>
+    </section>
+
+    <!-- 1.5 Remote Order Dispatch Center (Smartphone One-Tap & Custom Order Queue) -->
+    <section class="panel-card" id="remote-order-section">
+      <div class="section-header" style="margin-bottom:0;">
+        <h2 class="section-title">📲 外出先スマホ・リモート指令センター（発注フォーム ＆ 実行キュー）</h2>
+        <span id="order-queue-badge" class="status-badge standby">待機中の発注: 0件</span>
+      </div>
+
+      <!-- Quick One-Tap Presets -->
+      <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+        <span style="font-size:0.78rem; color:var(--amber); font-weight:700;">⚡ ワンタップ定型発注：</span>
+        <button type="button" class="btn btn-quick-preset" data-agent="rinjin-2-sns" data-name="2号：SNS広報AI" data-inst="Week 5『ヌクモリ（第5話）』のX投稿セット（140字短編・ゲーム第5夜誘導スレッド）とInstagramカルーセル案を output/sns-drafts/week5_nukumori/ に作成してください。">
+          📱 2号にWeek5 SNS作成を発注
+        </button>
+        <button type="button" class="btn btn-quick-preset" data-agent="rinjin-3-editorial" data-name="3号：連載ライター＆編集AI" data-inst="Week 5『ヌクモリ（第5話）』のnote記事（ゲーム『みつけて、となりびと』のかけら紹介＆リンク集付き）を output/note-articles/week5_nukumori.md に執筆してください。">
+          📝 3号にWeek5 note執筆を発注
+        </button>
+        <button type="button" class="btn btn-quick-preset" data-agent="rinjin-4-multimedia" data-name="4号：マルチメディア制作AI" data-inst="未登録となっている第11話（ユメアツメ）・第12話（ナミダビン）・第13話（アシタヨビ）の読み聞かせ動画生成と、睡眠導入長尺BGM動画の構成案を作成してください。">
+          🎬 4号に11〜13話動画化を発注
+        </button>
+        <button type="button" class="btn btn-quick-preset" data-agent="rinjin-5-game-md" data-name="5号：ゲーム＆MDグロースAI" data-inst="ゲーム『みつけて、となりびと』（game/）の隣人図鑑モーダルや全13夜クリア画面にnote連載・LINEスタンプ・コンプリート特典の導線を追加し、cloudflare-site/game/ にも同期してください。">
+          🏮 5号にゲーム導線強化を発注
+        </button>
+      </div>
+
+      <div class="two-col" style="margin-top:0.4rem;">
+        <!-- Custom Order Form -->
+        <form id="remote-order-form" class="feedback-form">
+          <div class="form-row">
+            <label for="order-agent">発注先のAI社員</label>
+            <select id="order-agent" class="select-input">
+              <option value="all" data-name="全員 (1号〜5号)">🚀 全員（1号が統括して2号〜5号へ割り振り）</option>
+              <option value="rinjin-1-producer" data-name="1号：プロデューサーAI">👑 1号：プロデューサーAI（企画・週間計画）</option>
+              <option value="rinjin-2-sns" data-name="2号：SNS広報AI" selected>📱 2号：SNS広報AI（X / Instagram / ゲーム誘導）</option>
+              <option value="rinjin-3-editorial" data-name="3号：連載ライター＆編集AI">📝 3号：連載ライター＆編集AI（note / Substack / Kindle）</option>
+              <option value="rinjin-4-multimedia" data-name="4号：マルチメディア制作AI">🎬 4号：マルチメディア制作AI（YouTube動画 / 長尺BGM）</option>
+              <option value="rinjin-5-game-md" data-name="5号：ゲーム＆MDグロースAI">🏮 5号：ゲーム＆MDグロースAI（ゲーム改修 / スタンプ / BOOTH）</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="order-instruction">業務指示内容（スマホから自由に入力して発注できます）</label>
+            <textarea id="order-instruction" class="textarea-input" rows="3" placeholder="例：雨の日の帰り道に合わせた『ヌクモリ』の140字Xポストを3パターン作って、ゲーム第5夜への誘導リンクを添えてください。"></textarea>
+          </div>
+          <button type="submit" class="btn btn-amber" style="justify-content:center; padding:0.65rem;">
+            🚀 この内容でAI社員へ発注する
+          </button>
+        </form>
+
+        <!-- Order Queue List -->
+        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+          <div style="font-size:0.8rem; font-weight:700; color:var(--amber);">📋 リモート発注キュー履歴 (remote-orders.json)</div>
+          <div id="orders-list-box" class="orders-list-box">
+            <!-- Dynamically populated by dashboard.js -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 13 Characters x All Media Progress Matrix -->
+    <section>
+      <div class="section-header">
+        <h2 class="section-title">🏮 全13隣人 × 全メディア展開マトリクス（自動ファイル検出）</h2>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+          <button class="btn" id="filter-all">全13話表示</button>
+          <button class="btn" id="filter-missing">⚠️ 未完了項目がある話のみ</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>隣人名 / サブタイトル</th>
+              <th>週間進行</th>
+              <th>🏮 ゲーム</th>
+              <th>📖 Kindle</th>
+              <th>🎵 Spotify</th>
+              <th>💬 動くスタンプ</th>
+              <th>🎬 YouTube</th>
+              <th>📝 note記事</th>
+              <th>📱 SNS下書き</th>
+            </tr>
+          </thead>
+          <tbody id="matrix-tbody">
+            <!-- Dynamically populated by dashboard.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 3. Live Document Previewer & Feedback Console -->
+    <section class="two-col" id="viewer-section">
+
+      <!-- Left: Document & Drafts Viewer -->
+      <div class="panel-card">
+        <div class="section-header" style="margin-bottom:0;">
+          <h3 class="section-title">📄 原稿・進行ボード ライブビューアー</h3>
+          <button class="btn" id="btn-copy-preview">📋 表示中のテキストをコピー</button>
+        </div>
+
+        <div class="tab-bar">
+          <button class="tab-btn active" data-tab="weekly_plan">📋 週間計画 (Week 5)</button>
+          <button class="tab-btn" data-tab="note">📝 note記事下書き</button>
+          <button class="tab-btn" data-tab="sns">📱 SNS投稿下書き</button>
+          <button class="tab-btn" data-tab="revenue_tracker">💰 収益トラッカー</button>
+        </div>
+
+        <div id="file-selector-wrap" class="file-selector-bar" style="display:none;">
+          <select id="draft-file-select" class="select-input"></select>
+          <span id="draft-file-meta" style="font-size:0.76rem; color:var(--text-muted);"></span>
+        </div>
+
+        <div id="preview-box" class="preview-box">読み込み中...</div>
+      </div>
+
+      <!-- Right: AI Employee Training / Feedback Console -->
+      <div class="panel-card">
+        <div class="section-header" style="margin-bottom:0;">
+          <h3 class="section-title">🌱 AI社員 育成・赤入れコンソール</h3>
+        </div>
+        <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">
+          ここで追加した赤入れ・方針は <code>.agent/feedback-log.md</code> に記録され、全AI社員が次回作業時に必ず参照します。
+        </p>
+
+        <form id="feedback-form" class="feedback-form">
+          <div class="form-row">
+            <label for="fb-target">対象AI社員</label>
+            <select id="fb-target" class="select-input">
+              <option value="全員 (1〜5号)">全員 (1〜5号共通ルール)</option>
+              <option value="1号 (プロデューサーAI)">1号：プロデューサーAI</option>
+              <option value="2号 (SNS広報AI)">2号：SNS広報AI</option>
+              <option value="3号 (連載ライター＆編集AI)">3号：連載ライター＆編集AI</option>
+              <option value="4号 (マルチメディア制作AI)">4号：マルチメディア制作AI</option>
+              <option value="5号 (ゲーム＆MDグロースAI)">5号：ゲーム＆MDグロースAI</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="fb-text">オーナーからの赤入れ・改善指示</label>
+            <textarea id="fb-text" class="textarea-input" rows="3" placeholder="例：Xの夜投稿は、1行目に季節の空気感（白い息、冷たい缶コーヒーなど）を入れると共感されやすい"></textarea>
+          </div>
+          <div class="form-row">
+            <label for="fb-rule">今後のアクションルール（任意）</label>
+            <input type="text" id="fb-rule" class="text-input" placeholder="例：次回Week 5の原稿作成から必ず適用すること">
+          </div>
+          <div style="display:flex; gap:0.5rem;">
+            <button type="submit" class="btn btn-amber" style="flex:1; justify-content:center;">✍️ 育成ノートに記録する</button>
+          </div>
+        </form>
+
+        <div style="font-size:0.8rem; font-weight:700; color:var(--amber);">📚 現在の育成ノート (feedback-log.md)</div>
+        <div id="feedback-box" class="preview-box" style="max-height:280px;">読み込み中...</div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <div id="toast" class="toast-msg">コピーしました！</div>
+
+  <script src="data-snapshot.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

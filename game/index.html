@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0b1230">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="『見えない隣人たち』の世界、常世町。日常の隙間に隠れた13人の隣人たちを、ランタンの光でみつける無料スマホ絵本ゲーム。寝る前の5分にどうぞ。">
+  <meta property="og:title" content="みつけて、となりびと ― 見えない隣人たち">
+  <meta property="og:description" content="常世町の夜の隙間に隠れた13人の隣人たちを、ランタンの光でみつける無料スマホ絵本ゲーム。寝る前の5分にどうぞ。">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/img/ogp.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="みつけて、となりびと ― 見えない隣人たち">
+  <meta name="twitter:description" content="常世町の夜の隙間に隠れた13人の隣人たちを、ランタンの光でみつける無料スマホ絵本ゲーム。寝る前の5分にどうぞ。">
+  <meta name="twitter:image" content="assets/img/ogp.jpg">
+  <title>みつけて、となりびと ― 見えない隣人たち</title>
+  <script>
+    // 旧Service Workerとキャッシュを静かに解除（リロードループ防止）
+    (function(){
+      try {
+        if ('caches' in window) {
+          caches.keys().then(function(keys) {
+            keys.forEach(function(k) { caches.delete(k); });
+          });
+        }
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            regs.forEach(function(r) { r.unregister(); });
+          });
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=9">
+</head>
+<body>
+  <div id="app">
+
+    <!-- タイトル -->
+    <section id="screen-title" class="screen active">
+      <div class="title-bg"></div>
+      <div class="title-bottom">
+        <p class="title-sub">― 常世町の隣人さがし ―</p>
+        <h1 class="title-main">みつけて、となりびと</h1>
+        <button id="btn-start" class="btn btn-primary">はじめる</button>
+        <p class="title-note">音が出ます。寝る前の5分にどうぞ。</p>
+        <p class="title-note" style="margin-top: 0.35rem; display: flex; gap: 0.9rem; justify-content: center; flex-wrap: wrap;">
+          <a href="https://mienai-rinjin-tachi.pages.dev/" target="_blank" rel="noopener" style="color: rgba(255, 235, 195, 0.85); text-decoration: underline; font-size: 0.78rem;">🌐 公式サイトへ</a>
+          <a href="https://line.me/S/shop/sticker/author/6654833/new?lang=ja&utm_source=gnsh_staut" target="_blank" rel="noopener" style="color: #86efac; text-decoration: underline; font-size: 0.78rem;">💬 動くLINEスタンプ（全13種）</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- 町マップ -->
+    <section id="screen-map" class="screen">
+      <header class="topbar">
+        <button id="btn-back-title" class="icon-btn" aria-label="ホームへもどる">←</button>
+        <div class="topbar-title">常世町</div>
+        <div class="topbar-right">
+          <span id="map-count" class="chip">灯り 0 / 13</span>
+          <button id="btn-zukan" class="icon-btn" aria-label="隣人図鑑">📖</button>
+          <button class="icon-btn btn-sound" aria-label="音">🔈</button>
+        </div>
+      </header>
+      <div class="map-scroll">
+        <div id="map" class="map">
+          <img src="assets/img/map.jpg" alt="常世町の地図" class="map-img" draggable="false">
+          <div id="map-spots"></div>
+        </div>
+      </div>
+      <p class="map-hint">灯りの消えた場所を、タップしてみよう。</p>
+    </section>
+
+    <!-- 夜のはじまり（イントロ） -->
+    <section id="screen-intro" class="screen">
+      <div class="intro-inner">
+        <p id="intro-night" class="intro-night">第5夜</p>
+        <h2 id="intro-title" class="intro-title"></h2>
+        <p id="intro-text" class="intro-text"></p>
+        <button id="btn-intro-go" class="btn btn-primary">ランタンを持って出かける</button>
+        <button class="btn btn-ghost btn-back-map">町へもどる</button>
+      </div>
+    </section>
+
+    <!-- さがす -->
+    <section id="screen-play" class="screen">
+      <header class="topbar">
+        <button class="icon-btn btn-back-map" aria-label="もどる">←</button>
+        <div class="topbar-title"><span id="play-night">第5夜</span>&nbsp;<span id="play-stage"></span></div>
+        <button class="icon-btn btn-sound" aria-label="音">🔈</button>
+      </header>
+      <p id="play-lead" class="play-lead"></p>
+      <div id="stage" class="stage">
+        <img id="stage-bg" class="stage-bg" alt="" draggable="false">
+        <div id="stage-targets"></div>
+        <canvas id="dark"></canvas>
+        <div id="toast" class="toast"></div>
+      </div>
+      <footer class="tray">
+        <div id="tray-slots" class="tray-slots"></div>
+        <button id="btn-hint" class="hint-btn" aria-label="ヒント">
+          <span class="hint-lantern">🏮</span><span class="hint-label">ヒント</span>
+        </button>
+      </footer>
+    </section>
+
+    <!-- 見つけた！ -->
+    <section id="screen-reveal" class="screen">
+      <div class="reveal-inner">
+        <div class="reveal-glow"></div>
+        <img id="reveal-sprite" class="reveal-sprite" alt="">
+        <p class="reveal-label">みつけた！</p>
+        <h2 id="reveal-name" class="reveal-name"></h2>
+        <p id="reveal-title" class="reveal-title"></p>
+        <p id="reveal-text" class="reveal-text"></p>
+        <button id="btn-to-book" class="btn btn-primary">絵本をひらく</button>
+      </div>
+    </section>
+
+    <!-- 絵本 -->
+    <section id="screen-book" class="screen">
+      <header class="topbar">
+        <button class="icon-btn btn-back-map" aria-label="もどる">←</button>
+        <div id="book-title" class="topbar-title"></div>
+        <span id="book-page" class="chip">1 / 12</span>
+      </header>
+      <div class="book">
+        <img id="book-img" class="book-img" alt="">
+        <p id="book-text" class="book-text"></p>
+      </div>
+      <footer class="book-nav">
+        <button id="book-prev" class="btn btn-ghost">まえ</button>
+        <button id="book-next" class="btn btn-primary">つぎ</button>
+      </footer>
+    </section>
+
+    <!-- 図鑑 -->
+    <section id="screen-zukan" class="screen">
+      <header class="topbar">
+        <button class="icon-btn btn-back-map" aria-label="もどる">←</button>
+        <div class="topbar-title">隣人図鑑</div>
+        <span id="zukan-count" class="chip">0 / 13</span>
+      </header>
+      <div id="zukan-grid" class="zukan-grid"></div>
+      <footer class="zukan-footer" style="display:flex;flex-direction:column;gap:8px;">
+        <button id="btn-share-zukan" class="btn btn-ghost">🏮 灯りの記録・公式リンク集を見る</button>
+      </footer>
+    </section>
+
+    <!-- 図鑑の詳細 / お知らせ用モーダル -->
+    <div id="modal" class="modal hidden">
+      <div class="modal-card">
+        <div id="modal-body"></div>
+        <button id="modal-close" class="btn btn-ghost">とじる</button>
+      </div>
+    </div>
+
+  </div>
+
+  <audio id="bgm" loop preload="none"></audio>
+  <script src="js/episodes.js?v=12"></script>
+  <script src="js/game.js?v=12"></script>
+</body>
+</html>
