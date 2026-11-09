@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>見えない隣人たち メモリーマッチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef0e9;
+    --bg2:#e3e6da;
+    --ink:#1c2333;
+    --ink2:#4a5266;
+    --ink3:#7a8194;
+    --card-face:#ffffff;
+    --card-face2:#f7f5ee;
+    --card-back:#232a44;
+    --card-back2:#2e3757;
+    --line:rgba(28,35,51,.14);
+    --amber:#b7791f;
+    --amber-soft:#fdf3d7;
+    --quote-bg:#1e253e;
+    --quote-ink:#f3ecd9;
+    --quote-sub:#b9c0d4;
+    --shadow:0 10px 24px rgba(20,26,44,.14);
+    --radius:14px;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0e111d;
+      --bg2:#12172a;
+      --ink:#ece8da;
+      --ink2:#b9bece;
+      --ink3:#828aa0;
+      --card-face:#1c2238;
+      --card-face2:#232a45;
+      --card-back:#252d4d;
+      --card-back2:#303a61;
+      --line:rgba(236,232,218,.14);
+      --amber:#e8c07d;
+      --amber-soft:#2a2416;
+      --quote-bg:#171d33;
+      --quote-ink:#f3ecd9;
+      --quote-sub:#a9b1c8;
+      --shadow:0 10px 24px rgba(0,0,0,.45);
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Zen Kaku Gothic New", system-ui, -apple-system, "Hiragino Kaku Gothic ProN", sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    -webkit-tap-highlight-color:transparent;
+  }
+  /* star field only in dark mode via body background dots */
+  .wrap{max-width:720px;margin:0 auto;padding:18px 16px 40px;position:relative}
+  /* header */
+  .town-row{display:flex;align-items:center;gap:10px;margin-top:2px}
+  .moon{width:34px;height:34px;flex:0 0 auto;border-radius:50%;background:radial-gradient(circle at 35% 35%, #f7e8b8, #e8c07d 70%);position:relative;box-shadow:0 0 0 6px rgba(232,192,125,.14)}
+  .moon::after{content:"";position:absolute;inset:6px auto auto 14px;width:7px;height:7px;border-radius:50%;background:rgba(160,120,40,.25)}
+  .moon::before{content:"";position:absolute;inset:auto auto 7px 8px;width:5px;height:5px;border-radius:50%;background:rgba(160,120,40,.22)}
+  .town{font-family:"Shippori Mincho",serif;font-weight:700;font-size:13px;letter-spacing:.22em;color:var(--ink2)}
+  .town small{display:block;letter-spacing:.08em;font-family:"Zen Kaku Gothic New",sans-serif;font-weight:500;font-size:11px;color:var(--ink3);margin-top:1px}
+  h1{font-family:"Shippori Mincho",serif;font-size:27px;line-height:1.25;font-weight:800;margin:14px 0 6px;letter-spacing:.02em}
+  h1 .accent{color:var(--amber)}
+  .lead{margin:0;font-size:14px;line-height:1.75;color:var(--ink2)}
+  .lead strong{color:var(--ink)}
+  /* controls */
+  .controls{margin-top:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+  .seg{display:inline-flex;background:var(--card-face);border:1px solid var(--line);border-radius:999px;padding:3px;box-shadow:var(--shadow)}
+  .seg button{
+    appearance:none;border:0;background:transparent;color:var(--ink2);
+    font-family:inherit;font-weight:700;font-size:13px;padding:8px 13px;border-radius:999px;cursor:pointer;white-space:nowrap;
+  }
+  .seg button[aria-pressed="true"]{background:var(--card-back);color:#f3ecd9}
+  @media (prefers-color-scheme: light){ .seg button[aria-pressed="true"]{background:#232a44} }
+  .restart{
+    appearance:none;border:1px solid var(--line);background:var(--card-face);color:var(--ink);
+    font-family:inherit;font-weight:700;font-size:13px;padding:9px 14px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--shadow)
+  }
+  .restart:active{transform:scale(.97)}
+  /* stats */
+  .stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+  .stat{background:var(--card-face);border:1px solid var(--line);border-radius:12px;padding:9px 10px;text-align:center}
+  .stat b{display:block;font-family:"Shippori Mincho",serif;font-size:20px;line-height:1;font-weight:800}
+  .stat span{display:block;margin-top:5px;font-size:11px;letter-spacing:.08em;color:var(--ink3);font-weight:700}
+  .progress{height:6px;background:var(--bg2);border-radius:99px;overflow:hidden;margin-top:10px;border:1px solid var(--line)}
+  .progress i{display:block;height:100%;width:0%;background:var(--amber);transition:width .45s ease;border-radius:99px}
+  /* board */
+  .board{margin-top:16px;display:grid;gap:8px;perspective:900px}
+  .board.c12{grid-template-columns:repeat(3,1fr)}
+  .board.c16{grid-template-columns:repeat(4,1fr)}
+  .board.c26{grid-template-columns:repeat(4,1fr)}
+  @media(min-width:620px){
+    .board.c12{grid-template-columns:repeat(4,1fr)}
+    .board.c16{grid-template-columns:repeat(4,1fr)}
+    .board.c26{grid-template-columns:repeat(6,1fr)}
+    .board{gap:10px}
+  }
+  .card{position:relative;aspect-ratio:3/4;border:0;padding:0;background:transparent;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
+  .card:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:12px}
+  .card-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .48s cubic-bezier(.2,.7,.3,1.15)}
+  .card.flipped .card-inner,.card.matched .card-inner{transform:rotateY(180deg)}
+  @media (prefers-reduced-motion: reduce){ .card-inner{transition:none} .progress i{transition:none} }
+  .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .face-back{
+    background:var(--card-back);
+    background-image:radial-gradient(rgba(255,255,255,.16) 1px, transparent 1.4px), radial-gradient(rgba(255,255,255,.09) 1px, transparent 1.4px);
+    background-size:18px 18px, 26px 26px; background-position:0 0, 9px 13px;
+    border:1px solid rgba(255,255,255,.10);
+    color:#e8dfc2;
+  }
+  .face-back .crest{width:40px;height:40px;border:1.5px solid rgba(232,223,194,.55);border-radius:50%;display:grid;place-items:center}
+  .face-back .crest svg{width:22px;height:22px}
+  .face-back .back-label{margin-top:7px;font-family:"Shippori Mincho",serif;font-size:10px;letter-spacing:.28em;text-indent:.28em;color:rgba(232,223,194,.85);font-weight:700}
+  .board.c26 .face-back .crest{width:30px;height:30px}
+  .board.c26 .face-back .crest svg{width:16px;height:16px}
+  .board.c26 .face-back .back-label{font-size:8px;margin-top:4px}
+  .face-front{
+    background:linear-gradient(180deg, var(--card-face), var(--card-face2));
+    border:1.5px solid var(--line);
+    transform:rotateY(180deg);
+    padding:6px 4px;gap:2px;
+  }
+  .card.matched .face-front{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent), 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);background:var(--amber-soft)}
+  @media (prefers-color-scheme: dark){ .card.matched .face-front{background:#252a18} }
+  .icon-wrap{width:44%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb, var(--accent) 16%, transparent);color:var(--accent);flex:0 0 auto}
+  .icon-wrap svg{width:62%;height:62%}
+  .stamp-img{width:80%;aspect-ratio:1;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 2px 5px rgba(20,26,44,.20))}
+  .board.c26 .stamp-img{width:86%}
+  .ctrl-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .music-btn{
+    appearance:none;border:1px solid var(--line);background:var(--card-face);color:var(--ink);
+    font-family:inherit;font-weight:700;font-size:13px;padding:9px 14px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--shadow)
+  }
+  .music-btn:active{transform:scale(.97)}
+  .music-btn[aria-pressed="false"]{color:var(--ink3)}
+  .cname{font-family:"Shippori Mincho",serif;font-weight:800;font-size:13px;line-height:1.2;text-align:center;color:var(--ink);word-break:keep-all}
+  .crole{font-size:8.5px;line-height:1.35;color:var(--ink3);text-align:center;font-weight:500;padding:0 2px}
+  .board.c26 .cname{font-size:11px}
+  .board.c26 .crole{display:none}
+  .board.c16 .crole{font-size:8px}
+  .card.matched{cursor:pointer}
+  .card:not(.flipped):not(.matched):active .card-inner{transform:rotateY(14deg)}
+  /* quote panel */
+  .quote-panel{
+    margin-top:16px;background:var(--quote-bg);color:var(--quote-ink);border-radius:16px;padding:18px 18px 16px;position:relative;overflow:hidden;min-height:118px;
+  }
+  .quote-panel::before{content:"“";position:absolute;top:-14px;right:10px;font-family:"Shippori Mincho",serif;font-size:84px;color:rgba(243,236,217,.09);line-height:1}
+  .quote-panel .q-label{font-size:11px;letter-spacing:.16em;font-weight:700;color:var(--amber);display:flex;align-items:center;gap:8px}
+  .quote-panel .q-label::after{content:"";flex:1;height:1px;background:rgba(243,236,217,.16)}
+  .quote-panel .q-name{margin-top:10px;font-family:"Shippori Mincho",serif;font-weight:800;font-size:17px}
+  .quote-panel .q-name small{font-family:"Zen Kaku Gothic New",sans-serif;font-weight:500;font-size:11.5px;color:var(--quote-sub);margin-left:8px}
+  .quote-panel .q-head{display:flex;align-items:center;gap:12px;margin-top:10px}
+  .quote-panel .q-head .q-name{margin-top:0}
+  .quote-panel .q-img{width:58px;height:58px;object-fit:contain;background:rgba(243,236,217,.08);border-radius:12px;padding:4px;flex:0 0 auto}
+  .quote-panel blockquote{margin:8px 0 0;font-family:"Shippori Mincho",serif;font-size:16.5px;line-height:1.85;font-weight:500}
+  .quote-panel .q-empty{margin-top:10px;font-size:13.5px;line-height:1.8;color:var(--quote-sub)}
+  .song-btn{
+    margin-top:12px;appearance:none;border:1px solid rgba(243,236,217,.35);background:rgba(243,236,217,.10);color:var(--quote-ink);
+    font-family:inherit;font-weight:700;font-size:13px;padding:9px 14px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+  }
+  .song-btn:active{transform:scale(.97)}
+  .song-btn .eq{display:none;align-items:flex-end;gap:2px;height:12px}
+  .song-btn .eq i{display:block;width:3px;background:var(--amber);border-radius:2px;animation:eqb 0.9s ease-in-out infinite}
+  .song-btn .eq i:nth-child(2){animation-delay:.25s}.song-btn .eq i:nth-child(3){animation-delay:.5s}
+  @keyframes eqb{0%,100%{height:4px}50%{height:12px}}
+  .song-btn.playing .eq{display:inline-flex}
+  @media (prefers-reduced-motion: reduce){ .song-btn .eq i{animation:none;height:8px} }
+  .card.playing .face-front{border-color:var(--amber);box-shadow:0 0 0 3px color-mix(in srgb, var(--amber) 45%, transparent)}
+  .win-item.clickable{cursor:pointer}
+  .win-item.clickable:active{opacity:.75}
+  .quote-panel.pop{animation:pop .4s ease}
+  @keyframes pop{0%{transform:scale(.985)}60%{transform:scale(1.006)}100%{transform:scale(1)}}
+  @media (prefers-reduced-motion: reduce){ .quote-panel.pop{animation:none} }
+  /* collection */
+  .collection{margin-top:18px}
+  .collection h2{font-family:"Shippori Mincho",serif;font-size:15px;margin:0 0 4px;font-weight:800}
+  .collection p{margin:0 0 10px;font-size:12px;color:var(--ink3);line-height:1.6}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{
+    display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card-face);
+    border-radius:999px;padding:6px 10px 6px 7px;font-size:12px;font-weight:700;color:var(--ink3);opacity:.55;transition:opacity .3s, color .3s;
+  }
+  .chip .dot{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--bg2);color:var(--ink3)}
+  .chip .dot svg{width:12px;height:12px}
+  .chip img.chip-thumb{width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--bg2);flex:0 0 auto}
+  .chip{padding-left:5px}
+  .chip.found{opacity:1;color:var(--ink);border-color:var(--chip-accent)}
+  .chip.found .dot{background:color-mix(in srgb, var(--chip-accent) 20%, transparent);color:var(--chip-accent)}
+  /* howto */
+  .howto{margin-top:20px;border-top:1px dashed var(--line);padding-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .howto div b{display:block;font-size:12px;margin-bottom:3px}
+  .howto div p{margin:0;font-size:11.5px;line-height:1.6;color:var(--ink2)}
+  .howto .num{font-family:"Shippori Mincho",serif;color:var(--amber);font-size:15px;font-weight:800}
+  @media(max-width:480px){ .howto{grid-template-columns:1fr} .howto div{display:flex;gap:10px} .howto div p{flex:1} }
+  footer{margin-top:22px;text-align:center;font-size:11px;color:var(--ink3);line-height:1.7}
+  /* win overlay */
+  .overlay{position:fixed;inset:0;background:rgba(10,13,24,.72);backdrop-filter:blur(3px);display:none;align-items:flex-end;justify-content:center;z-index:50;padding:0}
+  .overlay.open{display:flex}
+  .sheet{background:var(--card-face);color:var(--ink);width:100%;max-width:720px;max-height:88dvh;overflow:auto;border-radius:20px 20px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom))}
+  @media(min-width:620px){ .overlay{align-items:center;padding:20px} .sheet{border-radius:20px} }
+  .sheet .win-moon{font-size:26px}
+  .sheet h2{font-family:"Shippori Mincho",serif;margin:6px 0 4px;font-size:22px;font-weight:800;line-height:1.35}
+  .sheet .win-sub{margin:0;font-size:13px;color:var(--ink2);line-height:1.7}
+  .win-stats{display:flex;gap:8px;margin-top:14px}
+  .win-stats div{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+  .win-stats b{display:block;font-family:"Shippori Mincho",serif;font-size:19px}
+  .win-stats span{font-size:11px;color:var(--ink3);font-weight:700;letter-spacing:.06em}
+  .win-list{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+  .win-item{border-left:3px solid var(--accent);padding:2px 0 2px 12px}
+  .win-item b{font-family:"Shippori Mincho",serif;font-size:14px}
+  .win-item b small{font-family:"Zen Kaku Gothic New",sans-serif;font-weight:500;color:var(--ink3);font-size:11px;margin-left:6px}
+  .win-item p{margin:3px 0 0;font-family:"Shippori Mincho",serif;font-size:13.5px;line-height:1.7;color:var(--ink2)}
+  .win-item{display:flex;gap:10px;align-items:flex-start}
+  .win-item .win-thumb{width:46px;height:46px;object-fit:contain;border-radius:10px;background:var(--bg);border:1px solid var(--line);padding:3px;flex:0 0 auto}
+  .sheet-actions{display:flex;gap:8px;margin-top:18px}
+  .btn-primary{flex:1;appearance:none;border:0;background:var(--card-back);color:#f3ecd9;font-family:inherit;font-weight:900;font-size:14px;padding:13px;border-radius:12px;cursor:pointer}
+  .btn-ghost{appearance:none;border:1px solid var(--line);background:transparent;color:var(--ink);font-family:inherit;font-weight:700;font-size:14px;padding:13px 16px;border-radius:12px;cursor:pointer}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="town-row">
+    <div class="moon" aria-hidden="true"></div>
+    <div class="town">常世町<span style="font-size:11px;letter-spacing:.1em"> とこよまち</span><small>TOKOYO — 静かな夜の町</small></div>
+  </div>
+
+  <h1>見えない隣人たち<br><span class="accent">メモリーマッチ</span></h1>
+  <p class="lead">カードをめくって、<strong>同じ隣人をそろえる神経衰弱</strong>です。ペアがそろうと、その隣人の言葉が聞こえてきます。<strong>そろえたカードをもう一度タップすると、その隣人の曲（dreamy ver.）</strong>が流れます。夜の常世町で、13人の小さな存在たちと出会ってください。</p>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="難易度">
+      <button type="button" data-diff="6" aria-pressed="false">かんたん 6組</button>
+      <button type="button" data-diff="8" aria-pressed="true">ふつう 8組</button>
+      <button type="button" data-diff="13" aria-pressed="false">ぜんぶ 13組</button>
+    </div>
+    <div class="ctrl-actions">
+      <button type="button" class="music-btn" id="musicBtn" aria-pressed="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span id="musicLabel">音楽 オン</span></button>
+      <button type="button" class="restart" id="restartBtn">↻ シャッフルして最初から</button>
+    </div>
+  </div>
+
+  <div class="stats" aria-label="成績">
+    <div class="stat"><b id="statPairs">0 / 8</b><span>そろったペア</span></div>
+    <div class="stat"><b id="statMoves">0</b><span>めくった回数</span></div>
+    <div class="stat"><b id="statTime">0:00</b><span>経過時間</span></div>
+  </div>
+  <div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
+
+  <div class="board c16" id="board" role="group" aria-label="カード"></div>
+
+  <section class="quote-panel" id="quotePanel" aria-live="polite">
+    <div class="q-label">隣人の言葉</div>
+    <div id="quoteBody">
+      <p class="q-empty">まだ誰とも出会っていません。<br>カードを2枚めくって、同じ隣人を探してみてください。</p>
+    </div>
+  </section>
+
+  <section class="collection">
+    <h2>出会った隣人たち</h2>
+    <p>そろえたペアはここに灯ります。今回のゲームで使う隣人だけが並んでいます。</p>
+    <div class="chips" id="chips"></div>
+  </section>
+
+  <div class="howto">
+    <div><span class="num">1</span><div><b>カードをめくる</b><p>伏せられたカードをタップすると、隣人の姿があらわれます。</p></div></div>
+    <div><span class="num">2</span><div><b>同じ隣人を探す</b><p>2枚が同じ隣人ならそのまま残り、違えば裏に戻ります。場所を覚えるのがコツです。</p></div></div>
+    <div><span class="num">3</span><div><b>言葉と曲を受け取る</b><p>ペアがそろうたび、その隣人の代表セリフが表示されます。そろえたカードをタップすると、その隣人の曲（dreamy ver.）が流れ、もう一度タップでBGMに戻ります。</p></div></div>
+  </div>
+
+  <footer>見えない隣人たち — 常世町に住む13の小さな存在<br>絵本 × 音楽 × 朗読のシリーズより<br>BGM：「月舟のゆりかご」（inte_code）<br>ペアの曲：各隣人の楽曲（dreamy ver.）</footer>
+</div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+  <div class="sheet">
+    <div class="win-moon" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#b7791f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg></div>
+    <h2 id="winTitle">常世町の全員と、出会えました</h2>
+    <p class="win-sub" id="winSub">おつかれさまでした。今夜出会った隣人たちの言葉を、もう一度どうぞ。</p>
+    <div class="win-stats">
+      <div><b id="winPairs">—</b><span>ペア</span></div>
+      <div><b id="winMoves">—</b><span>めくった回数</span></div>
+      <div><b id="winTime">—</b><span>かかった時間</span></div>
+    </div>
+    <div class="win-list" id="winList"></div>
+    <div class="sheet-actions">
+      <button type="button" class="btn-primary" id="playAgainBtn">もう一度遊ぶ</button>
+      <button type="button" class="btn-ghost" id="closeWinBtn">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<audio id="bgm" src="assets/bgm_tsukifune.mp3" loop preload="auto"></audio>
+<audio id="songPlayer" preload="none"></audio>
+
+<script>
+(function(){
+  "use strict";
+
+  var ICONS = {
+    pot: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11h16"/><path d="M5.5 11v5.5A2.5 2.5 0 0 0 8 19h8a2.5 2.5 0 0 0 2.5-2.5V11"/><path d="M9.5 7.2c0-1 .9-1.1.9-2.2M14 7.2c0-1 .9-1.1.9-2.2"/><path d="M2.8 13.5H4M20 13.5h1.2"/></svg>',
+    sign: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21V4"/><path d="M12 5.5 19 3.8 17.8 7 12 8.2"/><path d="M12 11.5 5.5 10 6.6 13.2 12 14.4"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.5V12l3.2 2"/></svg>',
+    lamp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21v-8"/><path d="M7 21h10"/><path d="M9 3.5h6l1.2 5H7.8L9 3.5Z"/><path d="M12 13a2.2 2.2 0 1 0 0-4.4"/></svg>',
+    thermo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 4a2 2 0 0 1 4 0v9.2a4.5 4.5 0 1 1-4 0V4Z"/><circle cx="12" cy="17.5" r="1.6"/><path d="M12 16V9"/></svg>',
+    mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4 7 8 6 8-6"/></svg>',
+    stairs: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h4.5v-4.5H12V11h4.5V6.5H21"/><circle cx="7" cy="7.5" r="1.7"/></svg>',
+    swing: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16"/><path d="M7 4 5 20M17 4l2 16"/><path d="M9.5 4 10.5 14M14.5 4 13.5 14"/><path d="M8.8 14h6.4"/></svg>',
+    snow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M12 3l-2.2 2.2M12 3l2.2 2.2M12 21l-2.2-2.2M12 21l2.2-2.2M4.2 7.5l15.6 9M4.2 7.5 4 10.4M4.2 7.5 7 8.2M19.8 16.5l.2-2.9M19.8 16.5l-2.8-.7M19.8 7.5l-15.6 9M19.8 7.5l.2 2.9M19.8 7.5 17 8.2M4.2 16.5l-.2-2.9M4.2 16.5l2.8-.7"/></svg>',
+    star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.5 2.5 5.3 5.8.7-4.3 4 1.1 5.7L12 16.4l-5.1 2.8L8 13.5l-4.3-4 5.8-.7L12 3.5Z"/></svg>',
+    moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg>',
+    bottle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3h4M10.5 3v4L8 10.5V19a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-8.5L13.5 7V3"/><path d="M8 14.5c1.3-1 2.7-1 4 0s2.7 1 4 0"/></svg>',
+    sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 18a7 7 0 0 1 14 0"/><path d="M2.5 18h19M5 21h14"/><path d="M12 5V3M5.6 7.6 4.2 6.2M18.4 7.6l1.4-1.4"/></svg>'
+  };
+  var MOON_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg>';
+
+  var CHARACTERS = [
+    { id:"susunomi", name:"ススノミ", role:"換気口の奥の料理人", quote:"なんだか今日は、懐かしい気分だな", icon:"pot", color:"#c97b3d", stamp:"assets/stamp_susunomi.png", song:"assets/songs/song_susunomi.mp3" },
+    { id:"kagemichi", name:"カゲミチ", role:"電車の終点に立つ案内人", quote:"それでいい、とカゲミチは思う。", icon:"sign", color:"#5b7fa6", stamp:"assets/stamp_kagemichi.png", song:"assets/songs/song_kagemichi.mp3" },
+    { id:"tokitsugi", name:"トキツギ", role:"押し入れの奥の時間職人", quote:"それは偶然ではない。トキツギが、静かに仕事をした証だ。", icon:"clock", color:"#a68a2e", stamp:"assets/stamp_tokitsugi.png", song:"assets/songs/song_tokitsugi.mp3" },
+    { id:"wasuredama", name:"ワスレダマ", role:"街灯の下の忘れ物係", quote:"そこには、昔の自分の夢が書いてあった。", icon:"lamp", color:"#b8930f", stamp:"assets/stamp_wasuredama.png", song:"assets/songs/song_wasuredama.mp3" },
+    { id:"nukumori", name:"ヌクモリ", role:"自動販売機の裏の温度番", quote:"今日は、なんだか凍えないな", icon:"thermo", color:"#c65a3a", stamp:"assets/stamp_nukumori.png", song:"assets/songs/song_nukumori.mp3" },
+    { id:"henjirou", name:"ヘンジロウ", role:"ポストの中の返事書き", quote:"相手は何も聞いていないのに、なぜか理解してくれる。", icon:"mail", color:"#b84a4a", stamp:"assets/stamp_henjirou.png", song:"assets/songs/song_henjirou.mp3" },
+    { id:"tsumazuki", name:"ツマヅキ", role:"階段の踊り場の見張り番", quote:"つまずきそうになって踏みとどまる。それは偶然ではない。", icon:"stairs", color:"#7a6fa0", stamp:"assets/stamp_tsumazuki.png", song:"assets/songs/song_tsumazuki.mp3" },
+    { id:"kazoeru", name:"カゾエル", role:"公園のブランコの数え役", quote:"誰にも褒められなかった日でも、その頑張りは消えていない。", icon:"swing", color:"#3f8f7a", stamp:"assets/stamp_kazoeru.png", song:"assets/songs/song_kazoeru.mp3" },
+    { id:"tomerun", name:"トメルン", role:"冷蔵庫の奥の時間保存士", quote:"“腐りそうな時間”を、ほんの少しだけ延ばしている。", icon:"snow", color:"#4a8fa8", stamp:"assets/stamp_tomerun.png", song:"assets/songs/song_tomerun.mp3" },
+    { id:"hoshihakobi", name:"ホシハコビ", role:"屋根の上の星運び", quote:"それは、空の偶然ではない。", icon:"star", color:"#c19a12", stamp:"assets/stamp_hoshihakobi.png", song:"assets/songs/song_hoshihakobi.mp3" },
+    { id:"yumeatsume", name:"ユメアツメ", role:"夢の保管庫の管理人", quote:"夢には賞味期限がないから。「おかえり」", icon:"moon", color:"#8a6fb8", stamp:"assets/stamp_yumeatsume.png", song:"assets/songs/song_yumeatsume.mp3" },
+    { id:"namidabin", name:"ナミダビン", role:"涙瓶職人", quote:"悲しみは、いつか輝きになる。それを知っているから。", icon:"bottle", color:"#3f7fb5", stamp:"assets/stamp_namidabin.png", song:"assets/songs/song_namidabin.mp3" },
+    { id:"ashitayobi", name:"アシタヨビ", role:"朝焼け配達人", quote:"明日は希望そのものじゃない。でも、希望を運ぶことはできる。", icon:"sun", color:"#c96a3a", stamp:"assets/stamp_ashitayobi.png", song:"assets/songs/song_ashitayobi.mp3" }
+  ];
+
+  var boardEl = document.getElementById("board");
+  var chipsEl = document.getElementById("chips");
+  var quotePanel = document.getElementById("quotePanel");
+  var quoteBody = document.getElementById("quoteBody");
+  var statPairs = document.getElementById("statPairs");
+  var statMoves = document.getElementById("statMoves");
+  var statTime = document.getElementById("statTime");
+  var progressBar = document.getElementById("progressBar");
+  var overlay = document.getElementById("overlay");
+  var winList = document.getElementById("winList");
+
+  var pairCount = 8;
+  var deck = [];
+  var firstCard = null;
+  var lock = false;
+  var matched = 0;
+  var moves = 0;
+  var startedAt = null;
+  var timerId = null;
+  var elapsed = 0;
+  var foundOrder = [];
+  var currentSet = [];
+
+  /* ---- audio: BGM loop + WebAudio sound effects ---- */
+  var bgm = document.getElementById("bgm");
+  bgm.volume = 0.45;
+  var musicBtn = document.getElementById("musicBtn");
+  var musicLabel = document.getElementById("musicLabel");
+  var musicOn = true;
+  var bgmStarted = false;
+  var actx = null;
+
+  function ensureBgm(){
+    if(!musicOn || bgmStarted) return;
+    var p = bgm.play();
+    if(p && typeof p.then === "function"){
+      p.then(function(){ bgmStarted = true; }).catch(function(){});
+    } else {
+      bgmStarted = true;
+    }
+  }
+  function ensureCtx(){
+    if(!actx){
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if(AC) actx = new AC();
+    }
+    if(actx && actx.state === "suspended") actx.resume();
+    return actx;
+  }
+  function tone(freq, delay, dur, peak){
+    if(!musicOn) return;
+    var ctx = ensureCtx();
+    if(!ctx) return;
+    var t = ctx.currentTime + delay;
+    var osc = ctx.createOscillator();
+    var g = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(g); g.connect(ctx.destination);
+    osc.start(t); osc.stop(t + dur + 0.05);
+  }
+  function sfxFlip(){ tone(740, 0, 0.16, 0.05); }
+  function sfxMatch(){ tone(880, 0, 0.22, 0.07); tone(1318.5, 0.09, 0.3, 0.07); }
+  function sfxWin(){ tone(659.3, 0, 0.3, 0.06); tone(880, 0.12, 0.3, 0.06); tone(1174.7, 0.24, 0.45, 0.06); }
+
+  musicBtn.addEventListener("click", function(){
+    musicOn = !musicOn;
+    musicBtn.setAttribute("aria-pressed", musicOn ? "true" : "false");
+    musicLabel.textContent = musicOn ? "音楽 オン" : "音楽 オフ";
+    if(musicOn){
+      bgmStarted = false;
+      ensureBgm();
+    } else {
+      stopSong(false);
+      bgm.pause();
+    }
+  });
+
+  /* ---- per-character songs (dreamy ver.): tap a matched card to play ---- */
+  var songPlayer = document.getElementById("songPlayer");
+  songPlayer.volume = 0.85;
+  var playingId = null;
+  var lastQuoteCh = null;
+
+  function charById(id){
+    for(var i=0;i<CHARACTERS.length;i++){ if(CHARACTERS[i].id === id) return CHARACTERS[i]; }
+    return null;
+  }
+  function updateSongUI(){
+    document.querySelectorAll(".card.matched").forEach(function(c){
+      c.classList.toggle("playing", c.dataset.charId === playingId);
+    });
+    var btn = document.getElementById("songBtn");
+    if(btn && lastQuoteCh){
+      var isPlaying = playingId === lastQuoteCh.id;
+      btn.classList.toggle("playing", isPlaying);
+      btn.setAttribute("aria-pressed", isPlaying ? "true" : "false");
+      btn.querySelector(".song-btn-label").textContent = isPlaying
+        ? lastQuoteCh.name + "の曲を止める（BGMに戻る）"
+        : lastQuoteCh.name + "の曲（dreamy ver.）を聴く";
+    }
+  }
+  function resumeBgm(){
+    if(musicOn){
+      bgmStarted = false;
+      ensureBgm();
+    }
+  }
+  function stopSong(backToBgm){
+    if(playingId === null && songPlayer.paused) { updateSongUI(); return; }
+    songPlayer.pause();
+    playingId = null;
+    updateSongUI();
+    if(backToBgm) resumeBgm();
+  }
+  function toggleSong(ch){
+    if(!ch) return;
+    if(!musicOn){
+      musicOn = true;
+      musicBtn.setAttribute("aria-pressed", "true");
+      musicLabel.textContent = "音楽 オン";
+    }
+    if(playingId === ch.id){
+      stopSong(true);
+      return;
+    }
+    playingId = ch.id;
+    bgm.pause();
+    if(songPlayer.getAttribute("src") !== ch.song) songPlayer.src = ch.song;
+    songPlayer.currentTime = 0;
+    var p = songPlayer.play();
+    if(p && typeof p.catch === "function"){
+      p.catch(function(){ playingId = null; updateSongUI(); resumeBgm(); });
+    }
+    updateSongUI();
+  }
+  songPlayer.addEventListener("ended", function(){ stopSong(true); });
+  songPlayer.addEventListener("error", function(){ if(playingId !== null){ playingId = null; updateSongUI(); resumeBgm(); } });
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var t=a[i]; a[i]=a[j]; a[j]=t;
+    }
+    return a;
+  }
+  function fmt(sec){
+    var m = Math.floor(sec/60), s = sec%60;
+    return m + ":" + (s<10?"0":"") + s;
+  }
+  function startTimer(){
+    if(timerId) return;
+    startedAt = Date.now() - elapsed*1000;
+    timerId = setInterval(function(){
+      elapsed = Math.floor((Date.now()-startedAt)/1000);
+      statTime.textContent = fmt(elapsed);
+    }, 500);
+  }
+  function stopTimer(){
+    if(timerId){ clearInterval(timerId); timerId=null; }
+  }
+  function updateStats(){
+    statPairs.textContent = matched + " / " + pairCount;
+    statMoves.textContent = moves;
+    progressBar.style.width = (pairCount? (matched/pairCount*100):0) + "%";
+  }
+
+  function showQuote(ch){
+    lastQuoteCh = ch;
+    quoteBody.innerHTML =
+      '<div class="q-head"><img class="q-img" src="' + ch.stamp + '" alt="">' +
+      '<div class="q-name">' + ch.name + '<small>' + ch.role + '</small></div></div>' +
+      '<blockquote>「' + ch.quote + '」</blockquote>' +
+      '<button type="button" class="song-btn" id="songBtn" aria-pressed="false">' +
+      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>' +
+      '<span class="song-btn-label">' + ch.name + 'の曲（dreamy ver.）を聴く</span>' +
+      '<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span></button>';
+    document.getElementById("songBtn").addEventListener("click", function(){ toggleSong(ch); });
+    quotePanel.classList.remove("pop");
+    void quotePanel.offsetWidth;
+    quotePanel.classList.add("pop");
+    updateSongUI();
+  }
+
+  function buildGame(){
+    stopTimer();
+    stopSong(false);
+    lastQuoteCh = null;
+    elapsed = 0; moves = 0; matched = 0; firstCard = null; lock = false; foundOrder = [];
+    statTime.textContent = "0:00";
+    overlay.classList.remove("open");
+
+    currentSet = shuffle(CHARACTERS).slice(0, pairCount);
+    deck = shuffle(currentSet.concat(currentSet));
+
+    boardEl.className = "board c" + (pairCount*2);
+    boardEl.innerHTML = "";
+    deck.forEach(function(ch, idx){
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "card";
+      btn.style.setProperty("--accent", ch.color);
+      btn.setAttribute("aria-label", "伏せられたカード " + (idx+1));
+      btn.dataset.charId = ch.id;
+      btn.dataset.pos = idx + 1;
+      btn.innerHTML =
+        '<span class="card-inner">' +
+          '<span class="face face-back" aria-hidden="true"><span class="crest">' + MOON_SMALL + '</span><span class="back-label">常世町</span></span>' +
+          '<span class="face face-front" aria-hidden="true"><img class="stamp-img" src="' + ch.stamp + '" alt="" draggable="false"><span class="cname">' + ch.name + '</span><span class="crole">' + ch.role + '</span></span>' +
+        '</span>';
+      btn.addEventListener("click", function(){ flip(btn, ch); });
+      boardEl.appendChild(btn);
+    });
+
+    chipsEl.innerHTML = "";
+    currentSet.forEach(function(ch){
+      var chip = document.createElement("span");
+      chip.className = "chip";
+      chip.id = "chip-" + ch.id;
+      chip.style.setProperty("--chip-accent", ch.color);
+      chip.innerHTML = '<img class="chip-thumb" src="' + ch.stamp + '" alt="">' + ch.name;
+      chipsEl.appendChild(chip);
+    });
+
+    quoteBody.innerHTML = '<p class="q-empty">まだ誰とも出会っていません。<br>カードを2枚めくって、同じ隣人を探してみてください。</p>';
+    updateStats();
+  }
+
+  function flip(btn, ch){
+    if(btn.classList.contains("matched")){
+      showQuote(ch);
+      toggleSong(ch);
+      return;
+    }
+    if(lock) return;
+    if(btn.classList.contains("flipped")) return;
+    ensureBgm();
+    sfxFlip();
+    startTimer();
+    statTime.textContent = fmt(Math.floor((Date.now()-startedAt)/1000));
+    btn.classList.add("flipped");
+    btn.setAttribute("aria-label", ch.name + "（" + ch.role + "）");
+
+    if(!firstCard){
+      firstCard = { btn: btn, ch: ch };
+      return;
+    }
+    moves++;
+    updateStats();
+    var first = firstCard;
+    firstCard = null;
+
+    if(first.ch.id === ch.id){
+      first.btn.classList.add("matched");
+      btn.classList.add("matched");
+      first.btn.setAttribute("aria-label", ch.name + " — ペア成立。タップで" + ch.name + "の曲を再生・停止");
+      btn.setAttribute("aria-label", ch.name + " — ペア成立。タップで" + ch.name + "の曲を再生・停止");
+      matched++;
+      sfxMatch();
+      foundOrder.push(ch);
+      var chip = document.getElementById("chip-" + ch.id);
+      if(chip) chip.classList.add("found");
+      showQuote(ch);
+      updateStats();
+      if(matched === pairCount){
+        elapsed = Math.floor((Date.now()-startedAt)/1000);
+        statTime.textContent = fmt(elapsed);
+        stopTimer();
+        setTimeout(showWin, 650);
+      }
+    } else {
+      lock = true;
+      setTimeout(function(){
+        first.btn.classList.remove("flipped");
+        btn.classList.remove("flipped");
+        first.btn.setAttribute("aria-label", "伏せられたカード " + first.btn.dataset.pos);
+        btn.setAttribute("aria-label", "伏せられたカード " + btn.dataset.pos);
+        lock = false;
+      }, 820);
+    }
+  }
+
+  function showWin(){
+    sfxWin();
+    document.getElementById("winPairs").textContent = pairCount + "組";
+    document.getElementById("winMoves").textContent = moves + "回";
+    document.getElementById("winTime").textContent = fmt(elapsed);
+    winList.innerHTML = "";
+    foundOrder.forEach(function(ch){
+      var d = document.createElement("div");
+      d.className = "win-item clickable";
+      d.style.setProperty("--accent", ch.color);
+      d.setAttribute("role", "button");
+      d.setAttribute("tabindex", "0");
+      d.setAttribute("aria-label", ch.name + "の曲（dreamy ver.）を再生・停止");
+      d.innerHTML = '<img class="win-thumb" src="' + ch.stamp + '" alt=""><div><b>' + ch.name + "<small>" + ch.role + "</small></b><p>「" + ch.quote + "」</p></div>";
+      d.addEventListener("click", function(){ toggleSong(ch); });
+      d.addEventListener("keydown", function(e){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggleSong(ch); } });
+      winList.appendChild(d);
+    });
+    overlay.classList.add("open");
+  }
+
+  document.querySelectorAll(".seg button").forEach(function(b){
+    b.addEventListener("click", function(){
+      ensureBgm();
+      document.querySelectorAll(".seg button").forEach(function(x){ x.setAttribute("aria-pressed","false"); });
+      b.setAttribute("aria-pressed","true");
+      pairCount = parseInt(b.dataset.diff, 10);
+      buildGame();
+    });
+  });
+  document.getElementById("restartBtn").addEventListener("click", function(){ ensureBgm(); buildGame(); });
+  document.getElementById("playAgainBtn").addEventListener("click", function(){ ensureBgm(); buildGame(); });
+  document.getElementById("closeWinBtn").addEventListener("click", function(){ overlay.classList.remove("open"); });
+  overlay.addEventListener("click", function(e){ if(e.target === overlay) overlay.classList.remove("open"); });
+
+  buildGame();
+})();
+</script>
+</body>
+</html>
