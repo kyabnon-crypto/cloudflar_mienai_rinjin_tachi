@@ -703,3 +703,19 @@ a:hover {
     text-align: center;
   }
 }
+
+/* ==== Social Feed (added by Muse) ==== */
+.sf-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.sf-row { display: flex; align-items: center; gap: 0.7rem; background: var(--bg-card); border: 1px solid rgba(255, 207, 122, 0.14); border-radius: 12px; padding: 0.65rem 0.8rem; text-decoration: none; color: inherit; }
+.sf-row:active { background: var(--bg-card-hover); }
+.sf-badge { flex: 0 0 auto; font-size: 0.68rem; font-weight: 700; padding: 0.22rem 0.5rem; border-radius: 999px; color: #10131f; background: #ffd782; }
+.sf-instagram { background: #f9a8d4; }
+.sf-threads { background: #e5e7eb; }
+.sf-note { background: #86efac; }
+.sf-substack { background: #fdba74; }
+.sf-date { flex: 0 0 auto; font-size: 0.75rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.sf-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.sf-title { font-size: 0.9rem; color: #fff7e8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sf-sub { font-size: 0.72rem; color: var(--text-muted); }
+.sf-arrow { flex: 0 0 auto; color: var(--amber); font-size: 0.85rem; }
+.sf-empty { color: var(--text-muted); font-size: 0.85rem; }

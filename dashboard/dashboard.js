@@ -566,3 +566,39 @@
   fetchState();
   setInterval(fetchState, 4000);
 })();
+
+// ==== Social Feed (added by Muse; data: social-feed.js, regenerated daily) ====
+(function () {
+  function escSf(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function renderSocialFeed() {
+    var list = document.getElementById("social-feed-list");
+    if (!list) return;
+    var data = window.RINJIN_SOCIAL_FEED;
+    var upd = document.getElementById("social-feed-updated");
+    if (!data || !data.items) {
+      list.innerHTML = '<p class="sf-empty">投稿データはまだありません。</p>';
+      return;
+    }
+    if (upd) upd.textContent = "最終更新: " + (data.updated_at || "");
+    list.innerHTML = data.items.map(function (it) {
+      var meta = [];
+      if (it.likes != null) meta.push("♥ " + it.likes);
+      if (it.comments != null) meta.push("💬 " + it.comments);
+      return '<a class="sf-row" href="' + escSf(it.url) + '" target="_blank" rel="noopener noreferrer">' +
+        '<span class="sf-badge sf-' + escSf(it.source) + '">' + escSf(it.source_label) + '</span>' +
+        '<span class="sf-date">' + escSf(it.date) + '</span>' +
+        '<span class="sf-main"><span class="sf-title">' + escSf(it.title) + '</span>' +
+        '<span class="sf-sub">@' + escSf(it.account) + (meta.length ? ' ・ ' + meta.join(' ・ ') : '') + '</span></span>' +
+        '<span class="sf-arrow">↗</span></a>';
+    }).join("");
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", renderSocialFeed);
+  } else {
+    renderSocialFeed();
+  }
+})();
