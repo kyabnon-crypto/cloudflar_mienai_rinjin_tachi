@@ -705,7 +705,7 @@ a:hover {
 }
 
 /* ==== Social Feed (added by Muse) ==== */
-.sf-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.sf-list { display: flex; flex-direction: column; gap: 0.5rem; max-height: 430px; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-right: 0.25rem; scrollbar-width: thin; }
 .sf-row { display: flex; align-items: center; gap: 0.7rem; background: var(--bg-card); border: 1px solid rgba(255, 207, 122, 0.14); border-radius: 12px; padding: 0.65rem 0.8rem; text-decoration: none; color: inherit; }
 .sf-row:active { background: var(--bg-card-hover); }
 .sf-badge { flex: 0 0 auto; font-size: 0.68rem; font-weight: 700; padding: 0.22rem 0.5rem; border-radius: 999px; color: #10131f; background: #ffd782; }
