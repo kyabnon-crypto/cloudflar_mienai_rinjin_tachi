@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ナミダビンの部屋 — 見えない隣人たち</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<style>
+:root{--bg:#1a1220;--ink:#f1e4d8;--btn:#3a2d45;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#2a2133}}
+:root[data-theme="light"]{--bg:#2a2133}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;overflow:hidden}
+#frame{position:relative;background:#16111d;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px #0008}
+canvas{display:block}
+#fade{position:absolute;inset:0;background:#16111d;opacity:1;pointer-events:none}
+#title{position:absolute;left:0;right:0;top:4%;text-align:center;font-weight:700;font-size:calc(var(--fs)*1.3);color:#ffe9cf;letter-spacing:.14em;text-shadow:0 0 .6em #000b;pointer-events:none}
+#title small{display:block;font-weight:500;font-size:.55em;letter-spacing:.22em;opacity:.85;margin-top:.4em}
+#cap{position:absolute;left:6%;right:6%;bottom:5%;text-align:center;font-weight:700;font-size:calc(var(--fs)*1.2);line-height:1.6;color:#fff3e2;text-shadow:0 0 .5em #000,0 .05em .4em #000;transition:opacity .8s;opacity:0;pointer-events:none}
+#cap.on{opacity:1}
+#bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+button{font:inherit;font-weight:700;background:var(--btn);color:var(--ink);border:2px solid #7a5f6e;border-radius:999px;padding:.4em 1.1em;cursor:pointer}
+button[aria-pressed="true"]{background:#f2b58e;color:#3b2218;border-color:#f2b58e}
+button:focus-visible{outline:3px solid #8fd0c4;outline-offset:2px}
+</style>
+</head>
+<body>
+<div id="frame"><canvas id="c"></canvas><div id="title">ナミダビンの部屋<small>涙瓶職人</small></div><div id="cap"></div><div id="fade"></div></div>
+<div id="bar"><button id="bL" aria-pressed="true">横 16:9</button><button id="bP" aria-pressed="false">縦 9:16</button><button id="bPl" aria-pressed="false">一時停止</button><button id="bR">最初から</button></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const T=THREE,cv=document.getElementById('c'),frame=document.getElementById('frame'),cap=document.getElementById('cap'),fade=document.getElementById('fade'),ttl=document.getElementById('title');
+const R=new T.WebGLRenderer({canvas:cv,antialias:true});
+R.shadowMap.enabled=true;R.shadowMap.type=T.PCFShadowMap;R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=.9;
+const S=new T.Scene();S.background=new T.Color(0x0c1020);S.fog=new T.FogExp2(0x0c1020,.012);
+const cam=new T.PerspectiveCamera(50,1,.1,120);
+const SM=(c,o)=>new T.MeshStandardMaterial(Object.assign({color:c,roughness:.85,metalness:0,envMapIntensity:.5},o||{}));
+const BM=c=>new T.MeshBasicMaterial({color:c});
+const add=(g,m,x,y,z,p)=>{const o=new T.Mesh(g,m);o.position.set(x||0,y||0,z||0);(p||S).add(o);return o};
+const box=(w,h,d)=>new T.BoxGeometry(w,h,d),cyl=(a,b,h,s)=>new T.CylinderGeometry(a,b,h,s||24),sph=(r,a,b)=>new T.SphereGeometry(r,a||20,b||14);
+let sd=7;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647;
+function ctex(w,h,fn,rx,ry){const c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d'),w,h);const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rx||1,ry||1);return t}
+const plaster=(base,rx,ry)=>ctex(512,512,(g,w,h)=>{g.fillStyle=base;g.fillRect(0,0,w,h);for(let i=0;i<2500;i++){g.fillStyle='rgba('+(rnd()<.5?'255,255,255':'15,10,20')+','+rnd()*.07+')';g.fillRect(rnd()*w,rnd()*h,2+rnd()*3,2+rnd()*3)}for(let i=0;i<12;i++){const gr=g.createLinearGradient(0,0,0,h*(.4+rnd()*.6));gr.addColorStop(0,'rgba(30,20,15,.22)');gr.addColorStop(1,'rgba(30,20,15,0)');g.fillStyle=gr;g.fillRect(rnd()*w,0,4+rnd()*10,h)}},rx,ry);
+const floorT=ctex(512,512,(g,w)=>{for(let i=0;i<8;i++){g.fillStyle='hsl(25,'+(30+rnd()*8)+'%,'+(22+rnd()*8)+'%)';g.fillRect(0,i*64,w,64);g.fillStyle='rgba(0,0,0,.4)';g.fillRect(0,i*64,w,3)}},2,1.6);
+const gT=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d'),r=g.createRadialGradient(64,64,0,64,64,64);g.fillStyle='#000';g.fillRect(0,0,128,128);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.25,'rgba(255,255,255,.45)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,128,128);return new T.CanvasTexture(c)})();
+const glow=(col,s,x,y,z,op,p)=>{const m=new T.Sprite(new T.SpriteMaterial({map:gT,color:col,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:op==null?.8:op}));m.scale.set(s,s,1);m.position.set(x,y,z);(p||S).add(m);return m};
+/* ===== v8 helpers: テクスチャと旋盤形状 ===== */
+const lathe=(pts,seg)=>new T.LatheGeometry(pts.map(p=>new T.Vector2(p[0],p[1])),seg||32);
+const late=[];const lateDraw=fn=>{fn();late.push(fn)};if(document.fonts)document.fonts.ready.then(()=>late.forEach(f=>f()));
+const woodT=(h,rx,ry,n,l0)=>ctex(256,256,(g,w,hh)=>{n=n||4;const ph=hh/n;l0=l0||26;for(let i=0;i<n;i++){const l=l0+rnd()*9,y0=i*ph;g.fillStyle='hsl('+(h+rnd()*6)+','+(32+rnd()*10)+'%,'+l+'%)';g.fillRect(0,y0,w,ph);
+ for(let k=0;k<26;k++){g.strokeStyle='rgba('+(rnd()<.5?'20,10,5':'255,220,170')+','+(.04+rnd()*.09)+')';g.lineWidth=.6+rnd()*1.4;const yy=y0+rnd()*ph;g.beginPath();g.moveTo(0,yy);g.bezierCurveTo(w*.3,yy+(rnd()-.5)*5,w*.6,yy+(rnd()-.5)*5,w,yy+(rnd()-.5)*3);g.stroke()}
+ if(rnd()<.6){const kx=rnd()*w,ky=y0+ph*(.3+rnd()*.4);for(let r=7;r>1;r-=2){g.strokeStyle='rgba(30,15,8,'+(.3-r*.025)+')';g.lineWidth=1.2;g.beginPath();g.ellipse(kx,ky,r*1.8,r*.8,0,0,6.3);g.stroke()}}
+ g.fillStyle='rgba(10,5,3,.55)';g.fillRect(0,y0,w,2.5)}},rx,ry);
+const staveT=ctex(256,128,(g,w,hh)=>{for(let i=0;i<8;i++){g.fillStyle='hsl('+(24+rnd()*6)+',36%,'+(22+rnd()*9)+'%)';g.fillRect(i*32,0,32,hh);for(let k=0;k<12;k++){g.strokeStyle='rgba(20,10,5,'+(.05+rnd()*.1)+')';g.beginPath();const x=i*32+rnd()*32;g.moveTo(x,0);g.lineTo(x+(rnd()-.5)*4,hh);g.stroke()}g.fillStyle='rgba(8,4,2,.6)';g.fillRect(i*32,0,2,hh)}},2,1);
+const hamT=ctex(256,256,(g,w,h)=>{g.fillStyle='#808080';g.fillRect(0,0,w,h);for(let i=0;i<420;i++){const x=rnd()*w,y=rnd()*h,r=5+rnd()*9,gr=g.createRadialGradient(x-r*.25,y-r*.25,0,x,y,r),v=rnd()<.5?60:200;gr.addColorStop(0,'rgba('+v+','+v+','+v+',.45)');gr.addColorStop(1,'rgba(128,128,128,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2)}},3,2);
+const specT=(col,speck,rx)=>ctex(128,128,(g,w,h)=>{g.fillStyle=col;g.fillRect(0,0,w,h);if(speck){for(let i=0;i<900;i++){const l=rnd()<.5;g.fillStyle=l?'rgba(255,245,220,'+rnd()*.5+')':'rgba(20,10,5,'+rnd()*.45+')';g.fillRect(rnd()*w,rnd()*h,1+rnd()*2.5,1+rnd()*2.5)}}else{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'rgba(255,255,255,.28)');gr.addColorStop(1,'rgba(0,0,0,.28)');g.fillStyle=gr;g.fillRect(0,0,w,h)}},rx||2,1);
+const weaveT=ctex(128,128,(g,w,h)=>{g.fillStyle='#8a6a3a';g.fillRect(0,0,w,h);for(let y=0;y<h;y+=8)for(let x=0;x<w;x+=16){const o=((y/8)%2)*8;g.fillStyle='hsl(36,'+(35+rnd()*10)+'%,'+(36+rnd()*14)+'%)';g.fillRect(x+o,y,15,7);g.fillStyle='rgba(20,10,0,.4)';g.fillRect(x+o,y+7,16,1)}},4,2);
+const crustT=ctex(128,128,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#e0a560');gr.addColorStop(1,'#a8692f');g.fillStyle=gr;g.fillRect(0,0,w,h);for(let i=0;i<500;i++){g.fillStyle='rgba(255,230,170,'+rnd()*.18+')';g.fillRect(rnd()*w,rnd()*h,2,2)}[.3,.5,.7].forEach(y=>{g.strokeStyle='#f3d9a2';g.lineWidth=7;g.beginPath();g.moveTo(w*.2,h*y-5);g.lineTo(w*.8,h*y+5);g.stroke()})},1,1);
+const quiltT=ctex(128,128,(g,w,h)=>{const cs=['#6f8fb0','#c97b6b','#e6c58a','#7fa890'];for(let i=0;i<4;i++)for(let j=0;j<4;j++){g.fillStyle=cs[(i+j*2)%4];g.fillRect(i*32,j*32,32,32);g.strokeStyle='rgba(255,255,255,.35)';g.setLineDash([3,3]);g.strokeRect(i*32+3,j*32+3,26,26)}for(let i=0;i<700;i++){g.fillStyle='rgba(0,0,0,'+rnd()*.08+')';g.fillRect(rnd()*w,rnd()*h,2,2)}},1,1);
+const skyT=ctex(256,256,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#0f1a3a');gr.addColorStop(1,'#4a5f9a');g.fillStyle=gr;g.fillRect(0,0,w,h);for(let i=0;i<70;i++){g.fillStyle='rgba(255,255,240,'+(.3+rnd()*.7)+')';g.beginPath();g.arc(rnd()*w,rnd()*h*.8,.5+rnd()*1.3,0,6.3);g.fill()}g.fillStyle='#fff6d0';g.beginPath();g.arc(w*.72,h*.3,20,0,6.3);g.fill();g.fillStyle='#0f1a3a';g.beginPath();g.arc(w*.72+9,h*.3-4,18,0,6.3);g.fill()},1,1);
+const soupT=ctex(128,128,(g,w,h)=>{g.fillStyle='#e9a24a';g.fillRect(0,0,w,h);for(let i=0;i<60;i++){const x=rnd()*w,y=rnd()*h,r=3+rnd()*10,gr=g.createRadialGradient(x,y,0,x,y,r);const c=rnd()<.5?'255,220,150':'190,100,40';gr.addColorStop(0,'rgba('+c+',.6)');gr.addColorStop(1,'rgba('+c+',0)');g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2)}},1,1);
+const rugT=ctex(512,512,(g,w,h)=>{g.fillStyle='#e6d8b8';g.fillRect(0,0,w,h);const rings=[['#4d6b66',250],['#e6d8b8',225],['#b4553f',205],['#e6d8b8',180],['#6f8f86',165],['#d9a84a',120],['#4d6b66',100],['#e6d8b8',60]];rings.forEach(r=>{g.fillStyle=r[0];g.beginPath();g.arc(256,256,r[1],0,6.3);g.fill()});g.strokeStyle='#4a3626';g.lineWidth=3;for(let i=0;i<24;i++){const a=i/24*6.283;g.beginPath();g.moveTo(256+Math.cos(a)*165,256+Math.sin(a)*165);g.lineTo(256+Math.cos(a)*205,256+Math.sin(a)*205);g.stroke()}for(let i=0;i<5000;i++){g.fillStyle='rgba('+(rnd()<.5?'255,255,255':'0,0,0')+','+rnd()*.07+')';g.fillRect(rnd()*w,rnd()*h,2,2)}},1,1);
+const labT=(txt,col)=>{const c=document.createElement('canvas');c.width=128;c.height=96;const t=new T.CanvasTexture(c);lateDraw(()=>{const g=c.getContext('2d');g.fillStyle='#eadfc4';g.fillRect(0,0,128,96);g.strokeStyle=col||'#7a5a3a';g.lineWidth=5;g.strokeRect(5,5,118,86);t.needsUpdate=true});return t};
+/* 材質 */
+const br=SM(0xc99a4a,{metalness:.8,roughness:.32,envMapIntensity:1.5}),fe=SM(0x2b2b30,{metalness:.7,roughness:.5,envMapIntensity:1}),
+ glassM=SM(0xdfe9ee,{transparent:true,opacity:.26,roughness:.05,metalness:.1,envMapIntensity:1.8,side:T.DoubleSide,depthWrite:false}),
+ cork=SM(0xb88a55,{roughness:.95}),
+ cuM=SM(0xc27a45,{metalness:.65,roughness:.32,bumpMap:hamT,bumpScale:1.6,envMapIntensity:1.5,side:T.DoubleSide}),
+ cream=SM(0xe9e0cc,{roughness:.35,envMapIntensity:.8,side:T.DoubleSide});
+/* ガラス瓶: 本体(ガラス)+中身(粒つぶ)+コルク+紙ラベル */
+function jar(x,y,z,r,h,col,txt,o){o=o||{};const g=new T.Group();g.position.set(x,y,z);S.add(g);
+ add(lathe([[0,0],[r*.92,0],[r,h*.05],[r,h*.72],[r*.82,h*.84],[r*.56,h*.9],[r*.56,h]],28),glassM,0,0,0,g);
+ const cm=SM(0xffffff,{map:specT(col,!o.liq,2),roughness:o.liq?.25:.9,emissive:o.em?col:0x000000,emissiveIntensity:o.em||0,envMapIntensity:o.liq?1.2:.3});
+ add(cyl(r*.92,r*.92,h*(o.fill||.62),24),cm,0,h*(o.fill||.62)/2+.01,0,g);
+ add(cyl(r*.6,r*.5,.07,14),cork,0,h+.02,0,g);
+ const fa=o.fa==null?Math.PI/2:o.fa;add(new T.CylinderGeometry(r*1.012,r*1.012,h*.36,20,1,true,fa-.95,1.9),new T.MeshStandardMaterial({map:labT(txt),roughness:.9,side:T.DoubleSide}),0,h*.42,0,g);return g}
+function ladle(x,y,z,l,m){const g=new T.Group();g.position.set(x,y,z);S.add(g);add(cyl(.018,.018,l,8),m||fe,0,-l/2,0,g);add(new T.SphereGeometry(.11,14,8,0,Math.PI*2,0,Math.PI/2),m||cuM,0,-l,.0,g).rotation.x=-Math.PI/2;add(new T.TorusGeometry(.02,.006,6,10),m||fe,0,-.03,0,g);return g}
+/* layout */
+let mode='L';
+function resize(){const aw=innerWidth-24,ah=innerHeight-90,r=mode==='L'?16/9:9/16;let w=aw,h=w/r;if(h>ah){h=ah;w=h*r}
+ frame.style.width=w+'px';frame.style.height=h+'px';frame.style.setProperty('--fs',(mode==='L'?h*.034:w*.05)+'px');
+ R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(w,h,false);cv.style.width=w+'px';cv.style.height=h+'px';
+ cam.aspect=w/h;cam.fov=mode==='L'?50:62;cam.updateProjectionMatrix()}
+addEventListener('resize',resize);
+const bL=document.getElementById('bL'),bP=document.getElementById('bP'),bPl=document.getElementById('bPl');
+function setMode(m){mode=m;bL.setAttribute('aria-pressed',m==='L');bP.setAttribute('aria-pressed',m==='P');resize()}
+bL.onclick=()=>setMode('L');bP.onclick=()=>setMode('P');
+let paused=false,t=0,last=performance.now();
+bPl.onclick=()=>{paused=!paused;bPl.textContent=paused?'再生':'一時停止';bPl.setAttribute('aria-pressed',paused)};
+document.getElementById('bR').onclick=()=>{t=0;ci=-1};
+resize();
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,cl=(x,a,b)=>Math.min(b,Math.max(a,x));
+const tmp=new T.Vector3();
+/* ===== ナミダビンの部屋: 夜の路地、地下への石段、涙蔵(なみだぐら) ===== */
+const V3=(x,y,z)=>new T.Vector3(x,y,z);
+const FNT="'Zen Maru Gothic','Hiragino Maru Gothic ProN','Yu Gothic',sans-serif";
+const nTx=(w,h,fn)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const tx=new T.CanvasTexture(c);lateDraw(()=>{fn(c.getContext('2d'),w,h);tx.needsUpdate=true});return tx};
+const nPaper=(lines,w,h,bg,ink)=>nTx(w||256,h||180,(g,W,H)=>{g.fillStyle=bg||'#f1ead6';g.fillRect(0,0,W,H);for(let i=0;i<300;i++){g.fillStyle='rgba(120,100,70,'+rnd()*.07+')';g.fillRect(rnd()*W,rnd()*H,2,2)}g.fillStyle=ink||'#34506a';g.font='700 '+Math.round(H*(lines.length>2?.15:.2))+'px '+FNT;g.textBaseline='middle';lines.forEach((s,i)=>g.fillText(s,W*.09,H*((lines.length>1?.28:.5)+i*(lines.length>2?.23:.3))))});
+const nb=(w,h,d,m,x,y,z,p)=>add(box(w,h,d),m,x,y,z,p);
+const nseg=(a,b,r,m,p)=>{const d=new T.Vector3(b.x-a.x,b.y-a.y,b.z-a.z),l=d.length(),o=add(cyl(r,r,l,6),m,(a.x+b.x)/2,(a.y+b.y)/2,(a.z+b.z)/2,p);o.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),d.normalize());return o};
+const VY=-4.2;
+S.background=new T.Color(0x070b1c);S.fog=new T.FogExp2(0x070b1c,.015);cam.far=320;cam.updateProjectionMatrix();
+const nEnvF=(top,bot,spot)=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d'),gr=g.createLinearGradient(0,0,0,64);gr.addColorStop(0,top);gr.addColorStop(1,bot);g.fillStyle=gr;g.fillRect(0,0,64,64);if(spot){const r=g.createRadialGradient(32,26,0,32,26,30);r.addColorStop(0,spot);r.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=r;g.fillRect(0,0,64,64)}return c};
+try{const eT=new T.CubeTexture([nEnvF('#3a5a90','#182440','#cfe4ff'),nEnvF('#3a5a90','#182440'),nEnvF('#5a80b8','#243450','#e8f4ff'),nEnvF('#101a2c','#182440'),nEnvF('#3a5a90','#182440','#cfe4ff'),nEnvF('#28406a','#141e34')]);eT.needsUpdate=true;const pm=new T.PMREMGenerator(R);S.environment=pm.fromCubemap(eT).texture}catch(e){}
+/* --- 光 --- */
+S.add(new T.HemisphereLight(0x8ab0e0,0x24344c,.5));
+const nMoonD=new T.DirectionalLight(0x9db8f0,.3);nMoonD.position.set(-12,18,20);S.add(nMoonD);
+const nEntL=new T.PointLight(0xbfe0ff,.8,9,1.3);nEntL.position.set(0,1.6,1.2);S.add(nEntL);
+const nStairL=new T.PointLight(0xa0c8ff,.9,7,1.4);nStairL.position.set(0,-2.0,-4.5);S.add(nStairL);
+const nCenL=new T.PointLight(0xbfe0ff,1.5,10,1.4);nCenL.position.set(0,VY+2.2,-15.4);S.add(nCenL);
+const nLeftL=new T.PointLight(0x9fc0ff,.7,8,1.4);nLeftL.position.set(-2.5,VY+2.6,-11);S.add(nLeftL);
+const nRightL=new T.PointLight(0x9fe8ff,.7,8,1.4);nRightL.position.set(2.5,VY+2.6,-19);S.add(nRightL);
+const nBackL=new T.PointLight(0xc8d8ff,.6,7,1.4);nBackL.position.set(0,VY+3.0,-21);S.add(nBackL);
+/* --- 材質 --- */
+const nBrickT=(rx,ry)=>ctex(256,256,(g,w,h)=>{g.fillStyle='#1a2230';g.fillRect(0,0,w,h);for(let j=0;j<8;j++)for(let i=0;i<6;i++){const x=i*52+(j%2?26:0)-26;g.fillStyle='hsl('+(215+rnd()*10)+','+(16+rnd()*10)+'%,'+(30+rnd()*10)+'%)';g.fillRect(x+2,j*32+2,48,28);for(let k=0;k<20;k++){g.fillStyle='rgba(255,255,255,'+rnd()*.05+')';g.fillRect(x+2+rnd()*46,j*32+2+rnd()*26,2,2)}}},rx,ry);
+const nBrickV=SM(0xffffff,{map:nBrickT(5,7),roughness:.9,side:T.DoubleSide});
+const nBrickW=SM(0xffffff,{map:nBrickT(7,1),roughness:.9});
+const nBrickC=SM(0xffffff,{map:nBrickT(2,5),roughness:.9});
+const nWinT=ctex(64,80,(g,w,h)=>{g.fillStyle='#10141f';g.fillRect(0,0,w,h);const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#e9b66a');gr.addColorStop(1,'#a8743a');g.fillStyle=gr;g.fillRect(5,5,w-10,h-10);g.fillStyle='#10141f';g.fillRect(w/2-2,5,4,h-10);g.fillRect(5,h*.45,w-10,4)},1,1);
+const nStone=SM(0xffffff,{map:plaster('#56627a',.5,.5),roughness:.9});
+const nWallM=SM(0xffffff,{map:plaster('#2c3a52',.5,.5),roughness:.95});
+const nDark=SM(0x161c2a,{roughness:.7,metalness:.3});
+const nRib=SM(0x3a465c,{roughness:.8});
+const nFlM=SM(0xffffff,{map:ctex(256,256,(g,w,h)=>{for(let i=0;i<4;i++)for(let j=0;j<4;j++){g.fillStyle=(i+j)%2?'#4a566a':'#3e4a5e';g.fillRect(i*64,j*64,64,64)}for(let i=0;i<600;i++){g.fillStyle='rgba(255,255,255,'+rnd()*.06+')';g.fillRect(rnd()*w,rnd()*h,2,2)}g.strokeStyle='rgba(10,15,25,.5)';g.lineWidth=2;for(let i=0;i<=4;i++){g.beginPath();g.moveTo(i*64,0);g.lineTo(i*64,h);g.stroke();g.beginPath();g.moveTo(0,i*64);g.lineTo(w,i*64);g.stroke()}},4,7),roughness:.4,envMapIntensity:.8});
+const nWoodD=SM(0xffffff,{map:woodT(24,2,3,5,20),roughness:.75});
+const nWoodL=SM(0xffffff,{map:woodT(30,2,2,5,30),roughness:.7});
+const nGoldM=SM(0xe0b850,{metalness:.8,roughness:.3,envMapIntensity:1.4});
+const nMarble=SM(0xcfd8e0,{roughness:.35,envMapIntensity:.9});
+const nBlue=SM(0x2a5ab0,{roughness:.8,side:T.DoubleSide});
+const nCream=SM(0xefe6cf,{roughness:.85});
+const nCoreC=[0x7fc8ff,0xa8e0ff,0x6f9cff,0x8fffe8];
+const nCoreM=nCoreC.map(c=>SM(0x203048,{emissive:c,emissiveIntensity:.8,roughness:.5}));
+const nGl=[];const nGlow=(col,s,x,y,z,op,p)=>{const g=glow(col,s,x,y,z,op,p);g.material.fog=false;nGl.push([g,s,rnd()*6]);return g};
+const nPoolT=(c1)=>{const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d'),r=g.createRadialGradient(128,128,0,128,128,128);g.fillStyle='#000';g.fillRect(0,0,256,256);r.addColorStop(0,'rgba('+c1+',.8)');r.addColorStop(.5,'rgba('+c1+',.3)');r.addColorStop(1,'rgba('+c1+',0)');g.fillStyle=r;g.fillRect(0,0,256,256);return new T.CanvasTexture(c)};
+const nBeamT=(()=>{const c=document.createElement('canvas');c.width=8;c.height=128;const g=c.getContext('2d'),r=g.createLinearGradient(0,0,0,128);g.fillStyle='#000';g.fillRect(0,0,8,128);r.addColorStop(0,'rgba(170,215,255,.9)');r.addColorStop(1,'rgba(170,215,255,.04)');g.fillStyle=r;g.fillRect(0,0,8,128);return new T.CanvasTexture(c)})();
+const nMat4=new T.Matrix4(),nQ=new T.Quaternion();
+const nInst=(geo,mat,arr)=>{const m=new T.InstancedMesh(geo,mat,arr.length);arr.forEach((a,i)=>{const r=a[6]||0;nQ.x=0;nQ.y=Math.sin(r/2);nQ.z=0;nQ.w=Math.cos(r/2);nMat4.compose(new T.Vector3(a[0],a[1],a[2]),nQ,new T.Vector3(a[3],a[4],a[5]));m.setMatrixAt(i,nMat4)});m.frustumCulled=false;S.add(m);return m};
+
+/* ===== 夜空 ===== */
+{const mk=(n,size,op)=>{const p=new Float32Array(n*3);for(let i=0;i<n;i++){const a=rnd()*6.2832,y=.04+rnd()*.96,r=Math.sqrt(1-y*y),R0=120;p[i*3]=Math.cos(a)*r*R0;p[i*3+1]=y*R0;p[i*3+2]=Math.sin(a)*r*R0}const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(p,3));const m=new T.PointsMaterial({color:0xfff2d6,size:size,sizeAttenuation:false,transparent:true,opacity:op,fog:false,depthWrite:false});S.add(new T.Points(g,m));return m};
+ window.nSkyA=mk(1000,1.8,.8);window.nSkyB=mk(150,3.4,.9)}
+{add(sph(4.2,24,16),new T.MeshBasicMaterial({color:0xe8f0ff,fog:false}),-24,26,-46);const mg=glow(0xbcd0ff,34,-24,26,-46.5,.5);mg.material.fog=false;const hz=glow(0x35508f,170,0,6,-95,.5);hz.material.fog=false}
+
+/* ===== 夜の路地: 石畳・両側の建物・街灯 ===== */
+{const gt=ctex(256,256,(g,w,h)=>{g.fillStyle='#161c28';g.fillRect(0,0,w,h);for(let i=0;i<260;i++){g.fillStyle='hsl('+(215+rnd()*10)+','+(10+rnd()*10)+'%,'+(20+rnd()*10)+'%)';g.beginPath();g.ellipse(rnd()*w,rnd()*h,6+rnd()*5,4+rnd()*3,rnd()*3,0,6.3);g.fill()}},1,1);
+ const gp=(x0,x1,z0,z1)=>{const w=x1-x0,d=z1-z0,tx=gt.clone();tx.needsUpdate=true;tx.repeat.set(w/1.6,d/1.6);const m=add(new T.PlaneGeometry(w,d),SM(0xffffff,{map:tx,roughness:.6,envMapIntensity:.7}),(x0+x1)/2,-.02,(z0+z1)/2);m.rotation.x=-Math.PI/2};
+ gp(-30,30,-.3,70);gp(-30,30,-50,-5.4);gp(-30,-1.5,-5.4,-.3);gp(1.5,30,-5.4,-.3)}
+{const bodies=[],w1=[];
+ const win=(x,y,z,ry)=>{if(rnd()<.65)w1.push([x,y,z,.7,.9,1,ry])};
+ for(let z=40;z>-14;z-=6.5)[-1,1].forEach(s=>{const w=5+rnd()*2.5,h=6+rnd()*5,x=s*(5.8+w/2),zz=z+(rnd()-.5)*.8;bodies.push([x,h/2-.02,zz,w,h,5.6]);const xi=x-s*w/2-s*.02;for(let r=0;r<Math.floor(h/3);r++)for(let c=0;c<2;c++)win(xi,1.8+r*2.8,zz+(c-.5)*2.2,-s*Math.PI/2)});
+ for(let x=-14;x<=14.1;x+=6.5){const h=6+rnd()*5,zz=-12-rnd()*.5;bodies.push([x,h/2-.02,zz,6,h,6]);for(let r=0;r<Math.floor(h/3);r++)for(let c=0;c<2;c++)win(x+(c-.5)*2.4,1.8+r*2.8,zz+3.02,0)}
+ nInst(box(1,1,1),SM(0x3a4258,{roughness:.9}),bodies);nInst(new T.PlaneGeometry(1,1),new T.MeshBasicMaterial({map:nWinT,color:0xe8d2a8,side:T.DoubleSide}),w1)}
+[[-4.2,14],[4.2,22],[-4.2,31],[4.2,7]].forEach(a=>{const g=new T.Group();g.position.set(a[0],0,a[1]);S.add(g);add(cyl(.05,.07,3.4,6),nDark,0,1.7,0,g);add(sph(.2,12,10),SM(0xfff0c8,{emissive:0xffcf80,emissiveIntensity:1,roughness:.5}),0,3.5,0,g);nGlow(0xffd290,3.2,0,3.5,0,.5,g)});
+
+/* ===== 石の小屋(地下への入口) ===== */
+const nArc=(cx,y0,hw,ya)=>{const p=new T.Path();p.moveTo(cx-hw,y0);p.lineTo(cx+hw,y0);p.lineTo(cx+hw,ya);p.absarc(cx,ya,hw,0,Math.PI,false);p.lineTo(cx-hw,y0);return p};
+{const sh=new T.Shape();sh.moveTo(-1.7,-.5);sh.lineTo(1.7,-.5);sh.lineTo(1.7,3.3);sh.lineTo(-1.7,3.3);sh.lineTo(-1.7,-.5);sh.holes.push(nArc(0,0,.75,1.55));
+ const wl=new T.Mesh(new T.ExtrudeGeometry(sh,{depth:.3,bevelEnabled:false,curveSegments:24}),[nStone,nDark]);wl.position.z=-.3;S.add(wl)}
+nb(.2,3.3,5.0,nStone,-1.6,1.65,-2.8);nb(.2,3.3,5.0,nStone,1.6,1.65,-2.8);nb(3.4,3.3,.2,nStone,0,1.65,-5.4);nb(3.9,.25,5.7,nStone,0,3.43,-2.75);
+add(new T.TorusGeometry(.8,.06,8,28,Math.PI),nRib,0,1.55,.03);nb(1.7,.1,.3,nRib,0,.04,.12);
+add(new T.PlaneGeometry(1.5,.5),new T.MeshStandardMaterial({map:nTx(480,160,(g,W,H)=>{g.fillStyle='#1f2a40';g.fillRect(0,0,W,H);g.strokeStyle='#9fc8ff';g.lineWidth=6;g.strokeRect(8,8,W-16,H-16);g.fillStyle='#cfe4ff';g.font='700 100px '+FNT;g.textBaseline='middle';g.textAlign='center';g.fillText('涙蔵',W/2,H/2+4)},1,1),roughness:.8,emissive:0x203858,emissiveIntensity:.5}),0,2.7,.015);
+{const g=new T.Group();g.position.set(1.15,2.2,.4);S.add(g);nb(.05,.05,.5,nDark,0,.3,-.2,g);add(new T.CylinderGeometry(.1,.08,.22,6,1,true),new T.MeshStandardMaterial({color:0xcfe4ff,transparent:true,opacity:.35,roughness:.1,side:T.DoubleSide,depthWrite:false}),0,0,0,g);add(sph(.05,10,8),SM(0xcfe8ff,{emissive:0x8fc8ff,emissiveIntensity:1.2,roughness:.4}),0,0,0,g);nGlow(0x9fd0ff,1.8,0,0,0,.6,g)}
+const nDoorGl=glow(0x9fd0ff,2.4,0,1.1,.7,.5);nDoorGl.material.fog=false;
+/* 石段の廊下(下へ降りる) */
+for(let i=0;i<17;i++)nb(2.4,.3,.5,nStone,0,-.26*i-.15,-.3-.5*i-.25);
+nb(2.4,.2,.3,nStone,0,-.1,-.15);
+[-1.3,1.3].forEach(x=>nb(.2,4.8,8.6,nStone,x,-2.2,-4.6));
+{const c=nb(2.8,.2,9.2,[nStone,nStone,nStone,nBrickC,nStone,nStone],0,.32,-4.3);c.rotation.x=-.4795}
+[[-1.1,-2.2],[1.1,-4.6],[-1.1,-6.6]].forEach(a=>{const y=.52*(a[1]+.3)+1.5;nb(.1,.2,.12,nDark,a[0]>0?1.15:-1.15,y,a[1]);const s=add(sph(.06,10,8),SM(0xcfe8ff,{emissive:0x8fc8ff,emissiveIntensity:1.2,roughness:.4}),a[0]*.97,y,a[1]);nGlow(0x9fd0ff,1.5,a[0]*.97,y,a[1],.5)});
+
+/* ===== 涙蔵の躯体(アーチ天井の地下室) ===== */
+const nV=new T.Group();nV.position.y=VY;S.add(nV);
+{const fl=add(new T.PlaneGeometry(8,14),nFlM,0,.01,-15.4,nV);fl.rotation.x=-Math.PI/2;
+ nb(.2,2.0,14,[nBrickW,nDark,nDark,nDark,nDark,nDark],-4.1,1.0,-15.4,nV);nb(.2,2.0,14,[nDark,nBrickW,nDark,nDark,nDark,nDark],4.1,1.0,-15.4,nV);
+ const vt=add(new T.CylinderGeometry(4,4,14,28,1,true,Math.PI/2,Math.PI),nBrickV,0,2.0,-15.4,nV);vt.rotation.x=Math.PI/2;vt.scale.z=.6;
+ [-9.4,-12.2,-15.0,-17.8,-20.6].forEach(z=>{const r=add(new T.TorusGeometry(4,.09,6,28,Math.PI),nRib,0,2.0,z,nV);r.scale.y=.6;[-1,1].forEach(s=>nb(.2,2.0,.22,nRib,s*3.95,1.0,z,nV))});
+ const es=new T.Shape();es.moveTo(-4,0);es.lineTo(4,0);es.lineTo(4,2);es.absellipse(0,2,4,2.4,0,Math.PI,false);es.lineTo(-4,2);es.lineTo(-4,0);
+ const em=new T.Mesh(new T.ShapeGeometry(es,28),nWallM);em.position.set(0,0,-22.35);nV.add(em);
+ const fs=new T.Shape();fs.moveTo(-4,0);fs.lineTo(4,0);fs.lineTo(4,2);fs.absellipse(0,2,4,2.4,0,Math.PI,false);fs.lineTo(-4,2);fs.lineTo(-4,0);fs.holes.push(nArc(0,0,1.1,1.0));
+ const fm=new T.Mesh(new T.ShapeGeometry(fs,28),nWallM);fm.position.set(0,0,-8.38);fm.rotation.y=Math.PI;nV.add(fm)}
+
+/* ===== 涙の瓶の棚(瓶はインスタンスで数百本) ===== */
+{const jars=[];const col=[[],[],[],[]];
+ const put=(x,y,z)=>{const s=.9+rnd()*.2,k=Math.floor(rnd()*4);jars.push([x,y+VY+.02,z,s,s,s]);col[k].push([x,y+VY+.1*s+.02,z,s,s,s])};
+ [-1,1].forEach(sd2=>{[.45,.95,1.45,1.95,2.45].forEach(y=>{add(box(.38,.04,12.2),nWoodD,sd2*3.6,y,-15.4,nV);for(let z=-9.5;z>-21.4;z-=.27)if(rnd()>.1)put(sd2*3.6,y,z);nGlow(0xa8d8ff,1.6,sd2*3.3,y+VY+.2,-12-rnd()*8,.2)});
+  [-9.0,-12,-15,-18,-21.2].forEach(z=>add(box(.38,2.9,.05),nWoodD,sd2*3.6,1.45,z,nV))});
+ [.5,1.1,1.7,2.3,2.9,3.5].forEach(y=>{const q=(y+.35-2)/2.4,mx=y+.35<=2?3.3:4*Math.sqrt(Math.max(0,1-q*q))-.5;if(mx<.6)return;add(box(mx*2+.2,.04,.35),nWoodD,0,y,-22.2,nV);for(let x=-mx;x<=mx+.01;x+=.27)if(rnd()>.08)put(x,y,-22.2)});
+ nInst(lathe([[0,0],[.095,0],[.1,.02],[.1,.17],[.075,.21],[.05,.225],[.05,.25]],14),new T.MeshStandardMaterial({color:0xdfeef8,transparent:true,opacity:.28,roughness:.05,metalness:.1,envMapIntensity:1.6,depthWrite:false}),jars);
+ nInst(cyl(.055,.045,.05,8),SM(0xb88a55,{roughness:.9}),jars.map(a=>[a[0],a[1]+.26*a[4],a[2],a[3],a[4],a[5]]));
+ col.forEach((l,k)=>nInst(cyl(.08,.08,.14,10),nCoreM[k],l));
+ [.5,1.7,2.9].forEach(y=>nGlow(0xa8d8ff,1.8,0,y+VY+.2,-21.8,.2))}
+/* ===== 涙蔵の中: 宝石の瓶・作業台・机・はしご・荷車・青い布 ===== */
+function nJarG(x,y,z,r,h,p){const g=new T.Group();g.position.set(x,y,z);(p||S).add(g);add(lathe([[0,0],[r*.92,0],[r,h*.05],[r,h*.72],[r*.82,h*.84],[r*.56,h*.9],[r*.56,h]],28),glassM,0,0,0,g);add(cyl(r*.6,r*.5,.07,14),cork,0,h+.02,0,g);return g}
+const nGemM=SM(0x6fb8ff,{metalness:.1,roughness:.1,emissive:0x3a7cff,emissiveIntensity:.9,envMapIntensity:2,flatShading:true});
+/* 床のメダリオン */
+{const rg=add(new T.CircleGeometry(1.9,48),SM(0xffffff,{map:nTx(512,512,(g,W,H)=>{g.fillStyle='#1c2c48';g.beginPath();g.arc(256,256,256,0,6.3);g.fill();g.strokeStyle='#9fc8ff';g.lineWidth=7;g.beginPath();g.arc(256,256,236,0,6.3);g.stroke();g.lineWidth=3;g.beginPath();g.arc(256,256,200,0,6.3);g.stroke();g.beginPath();g.arc(256,256,120,0,6.3);g.stroke();
+ g.fillStyle='#cfe4ff';for(let i=0;i<12;i++){const a=i/12*6.283,r=218;g.save();g.translate(256+Math.cos(a)*r,256+Math.sin(a)*r);g.rotate(a);g.beginPath();g.moveTo(0,-12);g.lineTo(8,0);g.lineTo(0,12);g.lineTo(-8,0);g.closePath();g.fill();g.restore()}
+ for(let i=0;i<4000;i++){g.fillStyle='rgba('+(rnd()<.5?'255,255,255':'0,0,0')+','+rnd()*.06+')';g.fillRect(rnd()*W,rnd()*H,2,2)}},1,1),roughness:.9}),0,.02,-15.4,nV);rg.rotation.x=-Math.PI/2}
+/* 台座と、宝石になった涙の瓶 */
+const nGem=new T.Group();
+{add(cyl(.55,.6,.12,32),nMarble,0,.06,-15.4,nV);add(cyl(.34,.4,.62,28),nMarble,0,.43,-15.4,nV);add(cyl(.46,.4,.06,32),nMarble,0,.8,-15.4,nV);add(new T.TorusGeometry(.44,.012,6,36),nGoldM,0,.835,-15.4,nV).rotation.x=Math.PI/2;
+ nJarG(0,.83,-15.4,.36,.85,nV);
+ nGem.position.set(0,1.2,-15.4);nV.add(nGem);add(new T.OctahedronGeometry(.22),nGemM,0,0,0,nGem).scale.set(.9,1.4,.9);
+ [0,1,2,3,4].forEach(i=>{const a=i*1.256,s=add(new T.OctahedronGeometry(.06),nCoreM[i%4],Math.cos(a)*.2,-.32+(i%2)*.05,Math.sin(a)*.2,nGem);s.rotation.y=i});
+ nGlow(0xbfe0ff,2.2,0,1.2,-15.4,.7,nV);nGlow(0x6f9cff,3.8,0,1.2,-15.4,.3,nV);
+ add(new T.PlaneGeometry(.3,.17),new T.MeshStandardMaterial({map:nPaper(['優勝した日の','涙の宝石'],240,136,'#f1ead6','#2a4a7a'),roughness:.9}),0,.42,-15.4+.37,nV);
+ /* 天井から落ちる光の筋 */
+ const bm=new T.MeshBasicMaterial({map:nBeamT,transparent:true,blending:T.AdditiveBlending,depthWrite:false,opacity:.16,side:T.DoubleSide});add(new T.PlaneGeometry(1.4,3.8),bm,0,1.9,-15.4,nV);const q=add(new T.PlaneGeometry(1.4,3.8),bm,0,1.9,-15.4,nV);q.rotation.y=Math.PI/2}
+/* 作業台(涙を受けとめる採集瓶) */
+{nb(1.0,.07,1.9,nWoodL,2.3,.86,-12.2,nV);[[-.45,-.85],[.45,-.85],[-.45,.85],[.45,.85]].forEach(p=>nb(.07,.84,.07,nWoodD,2.3+p[0],.42,-12.2+p[1],nV));nb(.9,.04,1.8,nWoodD,2.3,.3,-12.2,nV);
+ for(let i=0;i<3;i++){const j=jar(2.3+(i-1)*.0,.9,-12.9+i*.3,.07,.19,['#9fd0ff','#a8e0ff','#8fffe8'][i],'なみだ',{em:.55,fill:.6});nV.add(j);j.position.set(2.15,.9,-12.9+i*.3)}
+ add(cyl(.1,.02,.14,10),SM(0xcfd8e0,{metalness:.8,roughness:.25,envMapIntensity:1.5}),2.45,.99,-12.0,nV);
+ add(cyl(.012,.012,.3,6),glassM,2.45,1.03,-11.7,nV).rotation.z=.4;add(sph(.03,8,6),nCoreM[0],2.58,1.04,-11.7,nV);
+ const tr=add(cyl(.17,.14,.03,16),nGoldM,2.4,.9,-11.5,nV);for(let i=0;i<4;i++){const s=add(new T.OctahedronGeometry(.035),nCoreM[i%4],2.4+(i%2?.06:-.06),.94,-11.5+(i<2?-.05:.05),nV);s.rotation.y=i}nGlow(0xa8d8ff,.8,2.4,.95+VY,-11.5,.45);
+ const cl2=nb(.3,.03,.22,nBlue,2.65,.9,-12.7,nV);cl2.rotation.y=.4;
+ add(cyl(.22,.22,.05,18),nWoodL,1.5,.46,-12.2,nV);[0,1,2].forEach(i=>{const a=i*2.094+.4;add(cyl(.02,.025,.44,6),nWoodD,1.5+Math.cos(a)*.14,.22,-12.2+Math.sin(a)*.14,nV)})}
+/* 机(ラベルとインク) */
+{nb(1.5,.06,.75,nWoodL,2.3,.78,-18.5,nV);[[-.7,-.33],[.7,-.33],[-.7,.33],[.7,.33]].forEach(p=>nb(.06,.76,.06,nWoodD,2.3+p[0],.38,-18.5+p[1],nV));
+ const nbk=nb(.34,.035,.24,SM(0x23406e,{roughness:.7}),1.95,.83,-18.45,nV);nbk.rotation.y=.25;const pg=nb(.3,.02,.2,nCream,1.95,.855,-18.45,nV);pg.rotation.y=.25;
+ add(cyl(.04,.045,.07,10),nDark,2.45,.845,-18.65,nV);add(cyl(.02,.02,.03,8),cork,2.45,.9,-18.65,nV);const qu=add(cyl(.004,.004,.3,5),nCream,2.52,.93,-18.6,nV);qu.rotation.z=-.5;qu.rotation.x=.3;add(new T.PlaneGeometry(.05,.2),new T.MeshStandardMaterial({color:0xf3ead0,side:T.DoubleSide,roughness:.9}),2.6,1.04,-18.63,nV).rotation.z=-.5;
+ add(cyl(.07,.08,.02,14),nGoldM,1.7,.82,-18.8,nV);add(cyl(.007,.007,.4,5),nGoldM,1.7,1.03,-18.8,nV);add(new T.CylinderGeometry(.035,.11,.12,14,1,true),SM(0xdfeeff,{emissive:0x8fc8ff,emissiveIntensity:.7,roughness:.5,side:T.DoubleSide}),1.7,1.25,-18.8,nV);nGlow(0x9fd0ff,1.4,1.7,1.2+VY,-18.8,.5);
+ for(let i=0;i<3;i++){const tg=nb(.12,.003,.08,nCream,2.25+i*.02,.815+i*.004,-18.2,nV);tg.rotation.y=i*.4}
+ add(cyl(.22,.22,.05,18),nWoodL,2.3,.45,-17.7,nV);[0,1,2].forEach(i=>{const a=i*2.094+.4;add(cyl(.02,.025,.44,6),nWoodD,2.3+Math.cos(a)*.14,.22,-17.7+Math.sin(a)*.14,nV)})}
+/* 移動はしご(左の棚用) */
+{add(cyl(.02,.02,12,6),nDark,-3.42,2.85,-15.4,nV).rotation.x=Math.PI/2;
+ const A=[-2.7,0],B=[-3.4,2.85];[-.22,.22].forEach(dz=>nseg(V3(A[0],A[1]+VY,-18.5+dz),V3(B[0],B[1]+VY,-18.5+dz),.025,nWoodD));
+ for(let i=1;i<10;i++){const f=i/10;nb(.04,.03,.44,nWoodL,A[0]+(B[0]-A[0])*f,A[1]+(B[1]-A[1])*f,-18.5,nV)}}
+/* 荷車(採集瓶の木箱) */
+{nb(.9,.3,1.4,nWoodL,-2.3,.45,-11.0,nV);[[-.5,-.6],[.5,-.6],[-.5,.6],[.5,.6]].forEach(p=>{const w=add(cyl(.18,.18,.06,14),nWoodD,-2.3+p[0],.18,-11.0+p[1],nV);w.rotation.z=Math.PI/2});
+ nb(.04,.6,.04,nWoodD,-2.3,.9,-10.2,nV);nb(.04,.04,.9,nWoodD,-2.3,1.2,-10.2,nV);
+ for(let i=0;i<6;i++){const j=jar(-2.5+(i%3)*.2,.6,-11.4+Math.floor(i/3)*.4,.07,.19,['#9fd0ff','#a8e0ff','#8fffe8'][i%3],'なみだ',{em:.55,fill:.6});nV.add(j);j.position.set(-2.5+(i%3)*.2,.6,-11.4+Math.floor(i/3)*.4)}}
+/* 青い布: 天井の旗とローブ */
+const nBan=[];
+[[-2.4,-10.6],[2.4,-10.6],[-2.4,-19.2],[2.4,-19.2]].forEach(a=>{const g=new T.Group();g.position.set(a[0],3.85,a[1]);nV.add(g);add(cyl(.02,.02,.9,6),nGoldM,0,0,0,g).rotation.z=Math.PI/2;add(new T.PlaneGeometry(.75,1.4),nBlue,0,-.72,0,g);add(box(.75,.04,.02),nGoldM,0,-1.4,0,g);g.userData.ph=nBan.length*1.3;nBan.push(g)});
+{const g=new T.Group();g.position.set(2.7,0,-21.0);nV.add(g);add(cyl(.03,.03,1.9,6),nDark,0,.95,0,g);add(cyl(.25,.25,.04,16),nDark,0,.02,0,g);[-.15,.15].forEach(x=>add(cyl(.01,.01,.2,5),nGoldM,x,1.8,0,g).rotation.z=Math.PI/2);
+ add(cyl(.14,.34,1.15,16,1,true),nBlue,0,1.2,0,g);add(sph(.16,14,10),nBlue,0,1.8,0,g).scale.set(1,.9,1);add(sph(.025,8,6),nGoldM,0,1.45,.14,g)}
+/* 浮かぶ涙の結晶と、ほこり */
+const nFl2=[];for(let i=0;i<16;i++){const g=new T.Group();const x=(rnd()*2-1)*2.8,y=1.0+rnd()*2.4,z=-9.5-rnd()*11;g.position.set(x,y+VY,z);S.add(g);add(new T.OctahedronGeometry(.045),nCoreM[i%4],0,0,0,g).scale.set(.8,1.3,.8);nGlow(nCoreC[i%4],.45,0,0,0,.5,g);g.userData={x:x,y:y+VY,z:z,ph:rnd()*6};nFl2.push(g)}
+const nMN=100,ndp=new Float32Array(nMN*3),ndb=[];for(let i=0;i<nMN;i++){const b=[(rnd()*2-1)*3.5,rnd()*3.6,-9-rnd()*13,rnd()*6];ndb.push(b);ndp[i*3]=b[0];ndp[i*3+1]=VY+.3+b[1];ndp[i*3+2]=b[2]}
+const ndg=new T.BufferGeometry();ndg.setAttribute('position',new T.BufferAttribute(ndp,3));S.add(new T.Points(ndg,new T.PointsMaterial({color:0xc8e4ff,size:.07,map:gT,transparent:true,opacity:.8,blending:T.AdditiveBlending,depthWrite:false})));
+/* 天井からゆっくり落ちる涙の結晶(台座の上) */
+const nDrop=[];for(let i=0;i<8;i++){const o=add(new T.OctahedronGeometry(.03),nCoreM[i%4],(rnd()*2-1)*.25,0,-15.4+(rnd()*2-1)*.25,nV);o.scale.set(.8,1.4,.8);o.userData={ph:i/8*3.4,x:o.position.x,z:o.position.z};nDrop.push(o)}
+/* 外: 小屋のまわりに浮かぶ青い光 */
+const nEN=50,nep=new Float32Array(nEN*3),neb=[];for(let i=0;i<nEN;i++){const b=[(rnd()*2-1)*3,rnd()*4,-1+rnd()*5,rnd()*6];neb.push(b);nep[i*3]=b[0];nep[i*3+1]=b[1];nep[i*3+2]=b[2]}
+const neg=new T.BufferGeometry();neg.setAttribute('position',new T.BufferAttribute(nep,3));S.add(new T.Points(neg,new T.PointsMaterial({color:0x9fd0ff,size:.2,map:gT,transparent:true,opacity:.9,blending:T.AdditiveBlending,depthWrite:false})));
+/* camera path: 夜の路地→石の小屋→石段を降りる→涙蔵 */
+const KT=[0,9,15,19,22,25.5,28.5,31.5,35,40,45,50,56,62,68,74,80,86,92,95.5],
+KP=[[0,12,36],[-3.2,7,22],[-2,3.6,11],[-.4,2.0,5.2],[0,1.65,1.8],[0,1.2,-1.2],[0,-.3,-4.0],[0,-1.65,-6.6],[0,-2.65,-10.2],[-.8,-2.7,-11.5],[.7,-2.7,-12.8],[.9,-2.7,-14.0],[-.6,-2.7,-13.4],[-.3,-2.7,-13.0],[-.2,-2.7,-16.0],[-.3,-2.7,-16.2],[.2,-2.7,-18.5],[.5,-2.5,-17.0],[0,-2.5,-12.5],[0,-2.6,-11.0]],
+KL=[[0,1.5,0],[0,1.5,0],[0,1.6,0],[0,1.8,0],[0,.4,-3],[0,-.4,-5],[0,-2.5,-9],[0,-2.8,-12],[0,-1.6,-16],[-3.7,-2.6,-13.5],[0,-3.0,-15.4],[0,-3.1,-15.4],[-3.7,-3.2,-16.0],[2.4,-3.3,-12.2],[-3.3,-1.6,-18.5],[2.4,-3.3,-18.5],[2.6,-2.6,-21.2],[0,-2.4,-15.4],[0,-3.0,-15.4],[0,-3.0,-15.4]];
+const mk=a=>new T.CatmullRomCurve3(a.map(v=>new T.Vector3(v[0],v[1],v[2])),false,'centripetal'),cP=mk(KP),cL=mk(KL);
+const U=t=>{let i=0;while(i<KT.length-2&&t>KT[i+1])i++;return(i+Math.min(1,Math.max(0,(t-KT[i])/(KT[i+1]-KT[i]))))/(KT.length-1)};
+const caps=[[0,''],[3.5,'夜の町の路地に、青い灯りがひとつ。'],[8,'地下へつづく、小さな石段。'],[13.5,'ここが、涙蔵(なみだぐら)の入口です。'],[19,'ひんやりした空気が、階段の下からのぼってきます。'],[23.5,'ゆっくり、ゆっくり、降りていきます。'],
+[27.5,'石のアーチの天井に、静かな青い光。'],[32.5,'棚には、何万本もの瓶。'],[38.5,'どの瓶にも、きらきら光る涙が、大切にしまわれています。'],[44.5,'真ん中の台座には、ひときわ輝く青い宝石。'],[50.5,'一年がんばった女の子の、うれし涙。'],[56.5,'悲しい涙も、くやしい涙も、さよならの涙も。'],
+[62.5,'作業台には、涙を受けとめる採集瓶。'],[68.5,'移動はしごで、高い棚まで。'],[74.5,'机には、ラベルとインク。ひとつずつ、書きとめて。'],[80.5,'壁には、青い布がかかっています。'],[86,'涙は、心ががんばったしるし。'],[90.5,'悲しみは、いつか輝きになる。']];
+const LOOP=96;let ci=-1;
+function setCap(i){ci=i;cap.classList.remove('on');setTimeout(()=>{if(ci===i){cap.textContent=caps[i][1];if(caps[i][1])cap.classList.add('on')}},450)}
+function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.1);last=now;if(!paused)t+=dt*(reduce?.4:1);
+ const lt=t%LOOP,u=U(Math.min(lt,LOOP-.1));cP.getPoint(u,cam.position);cL.getPoint(u,tmp);
+ const walk=cl((lt-34)/3,0,1);cam.position.y+=walk*.03*Math.sin(lt*2.4);cam.position.x+=walk*.02*Math.sin(lt*1.2);cam.lookAt(tmp);
+ fade.style.opacity=lt<1.2?1-lt/1.2:lt>LOOP-1.6?(lt-(LOOP-1.6))/1.6:0;ttl.style.opacity=lt<6?1:cl(1-(lt-6)/2,0,1);
+ S.fog.density=.015+.004*cl((lt-22)/4,0,1);
+ R.toneMappingExposure=(.62+.33*cl(lt/9,0,1))-.08*cl((lt-28)/4,0,1);
+ const ex=1-cl((lt-23)/3,0,1);
+ nDoorGl.scale.setScalar(2.4*(1+.04*Math.sin(t*2.1)));nDoorGl.material.opacity=.5*ex;nEntL.intensity=.8*ex*(1+.04*Math.sin(t*3.1));
+ nStairL.intensity=.9*(1+.05*Math.sin(t*2.3));
+ nCenL.intensity=1.5*(1+.1*Math.sin(t*1.3)+.04*Math.sin(t*4.1));nLeftL.intensity=.7*(1+.08*Math.sin(t*1.1));nRightL.intensity=.7*(1+.08*Math.sin(t*1.4+1));nBackL.intensity=.6*(1+.06*Math.sin(t*.9+2));
+ nGl.forEach(a=>{a[0].scale.setScalar(a[1]*(1+.05*Math.sin(t*2.2+a[2])))});
+ nCoreM.forEach((m,i)=>{m.emissiveIntensity=.8+.3*Math.sin(t*1.2+i*1.7)});nGemM.emissiveIntensity=.9+.3*Math.sin(t*1.5);
+ nSkyA.opacity=.75+.1*Math.sin(t*1.3);nSkyB.opacity=.85+.12*Math.sin(t*.9+1);
+ nGem.rotation.y=t*.5;nGem.position.y=1.2+.025*Math.sin(t*.8);
+ nBan.forEach(g=>{g.rotation.z=.04*Math.sin(t*.7+g.userData.ph);g.rotation.x=.03*Math.sin(t*.5+g.userData.ph)});
+ nFl2.forEach(g=>{const d=g.userData;g.position.y=d.y+.09*Math.sin(t*.8+d.ph);g.position.x=d.x+.05*Math.sin(t*.5+d.ph);g.rotation.y=t*.5+d.ph});
+ nDrop.forEach(o=>{const d=o.userData,p=((t*.25+d.ph)%3.4)/3.4;o.position.y=3.5-p*2.7;o.rotation.y=t+d.ph;o.material.opacity=1});
+ for(let i=0;i<nMN;i++){const b=ndb[i];ndp[i*3]=b[0]+Math.sin(t*.22+b[3])*.3;ndp[i*3+1]=VY+.3+((b[1]+t*.03)%3.6);ndp[i*3+2]=b[2]+Math.cos(t*.18+b[3])*.3}
+ ndg.attributes.position.needsUpdate=true;
+ for(let i=0;i<nEN;i++){const b=neb[i];nep[i*3]=b[0]+Math.sin(t*.3+b[3])*.6;nep[i*3+1]=.3+((b[1]+t*.12)%4.2);nep[i*3+2]=b[2]+Math.cos(t*.25+b[3])*.6}
+ neg.attributes.position.needsUpdate=true;
+ let k=0;caps.forEach((c,i)=>{if(lt>=c[0])k=i});if(k!==ci)setCap(k);
+ R.render(S,cam)}
+requestAnimationFrame(tick);
+</script>
+<a href="index.html" aria-label="部屋マップへ戻る" style="position:fixed;top:10px;left:10px;z-index:999;padding:7px 14px;border-radius:999px;background:rgba(20,14,28,.72);color:#f1e4d8;font:600 13px/1 'Zen Maru Gothic',sans-serif;text-decoration:none;border:1px solid rgba(241,228,216,.35);backdrop-filter:blur(4px)">← 部屋マップ</a>
+</body>
+</html>
+
+</body></html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>カゲミチの部屋 — 見えない隣人たち</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<style>
+:root{--bg:#1b1522;--ink:#f1e4d8;--btn:#3a2d45;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#2a2133}}
+:root[data-theme="light"]{--bg:#2a2133}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;overflow:hidden}
+#frame{position:relative;background:#16111d;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px #0008}
+canvas{display:block}
+#fade{position:absolute;inset:0;background:#16111d;opacity:1;pointer-events:none}
+#title{position:absolute;left:0;right:0;top:4%;text-align:center;font-weight:700;font-size:calc(var(--fs)*1.3);color:#ffe9cf;letter-spacing:.14em;text-shadow:0 0 .6em #000b;pointer-events:none}
+#title small{display:block;font-weight:500;font-size:.55em;letter-spacing:.22em;opacity:.85;margin-top:.4em}
+#cap{position:absolute;left:6%;right:6%;bottom:5%;text-align:center;font-weight:700;font-size:calc(var(--fs)*1.2);line-height:1.6;color:#fff3e2;text-shadow:0 0 .5em #000,0 .05em .4em #000;transition:opacity .8s;opacity:0;pointer-events:none}
+#cap.on{opacity:1}
+#bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+button{font:inherit;font-weight:700;background:var(--btn);color:var(--ink);border:2px solid #7a5f6e;border-radius:999px;padding:.4em 1.1em;cursor:pointer}
+button[aria-pressed="true"]{background:#f2b58e;color:#3b2218;border-color:#f2b58e}
+button:focus-visible{outline:3px solid #8fd0c4;outline-offset:2px}
+</style>
+</head>
+<body>
+<div id="frame"><canvas id="c"></canvas><div id="title">カゲミチの部屋<small>終点の駅の詰め所</small></div><div id="cap"></div><div id="fade"></div></div>
+<div id="bar"><button id="bL" aria-pressed="true">横 16:9</button><button id="bP" aria-pressed="false">縦 9:16</button><button id="bPl" aria-pressed="false">一時停止</button><button id="bR">最初から</button></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const T=THREE,cv=document.getElementById('c'),frame=document.getElementById('frame'),cap=document.getElementById('cap'),fade=document.getElementById('fade'),ttl=document.getElementById('title');
+const R=new T.WebGLRenderer({canvas:cv,antialias:true});
+R.shadowMap.enabled=true;R.shadowMap.type=T.PCFSoftShadowMap;R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1;
+const S=new T.Scene();S.background=new T.Color(0x0c1020);S.fog=new T.FogExp2(0x0c1020,.012);
+const cam=new T.PerspectiveCamera(50,1,.1,120);
+const SM=(c,o)=>new T.MeshStandardMaterial(Object.assign({color:c,roughness:.85,metalness:0,envMapIntensity:.5},o||{}));
+const BM=c=>new T.MeshBasicMaterial({color:c});
+const add=(g,m,x,y,z,p)=>{const o=new T.Mesh(g,m);o.position.set(x||0,y||0,z||0);(p||S).add(o);return o};
+const box=(w,h,d)=>new T.BoxGeometry(w,h,d),cyl=(a,b,h,s)=>new T.CylinderGeometry(a,b,h,s||24),sph=(r,a,b)=>new T.SphereGeometry(r,a||20,b||14);
+let sd=7;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647;
+function ctex(w,h,fn,rx,ry){const c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d'),w,h);const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rx||1,ry||1);return t}
+const plaster=(base,rx,ry)=>ctex(512,512,(g,w,h)=>{g.fillStyle=base;g.fillRect(0,0,w,h);for(let i=0;i<2500;i++){g.fillStyle='rgba('+(rnd()<.5?'255,255,255':'15,10,20')+','+rnd()*.07+')';g.fillRect(rnd()*w,rnd()*h,2+rnd()*3,2+rnd()*3)}for(let i=0;i<12;i++){const gr=g.createLinearGradient(0,0,0,h*(.4+rnd()*.6));gr.addColorStop(0,'rgba(30,20,15,.22)');gr.addColorStop(1,'rgba(30,20,15,0)');g.fillStyle=gr;g.fillRect(rnd()*w,0,4+rnd()*10,h)}},rx,ry);
+const floorT=ctex(512,512,(g,w)=>{for(let i=0;i<8;i++){g.fillStyle='hsl(25,'+(30+rnd()*8)+'%,'+(22+rnd()*8)+'%)';g.fillRect(0,i*64,w,64);g.fillStyle='rgba(0,0,0,.4)';g.fillRect(0,i*64,w,3)}},2,1.6);
+const gT=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d'),r=g.createRadialGradient(64,64,0,64,64,64);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.25,'rgba(255,255,255,.45)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,128,128);return new T.CanvasTexture(c)})();
+const glow=(col,s,x,y,z,op,p)=>{const m=new T.Sprite(new T.SpriteMaterial({map:gT,color:col,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:op==null?.8:op}));m.scale.set(s,s,1);m.position.set(x,y,z);(p||S).add(m);return m};
+/* ===== v8 helpers: テクスチャと旋盤形状 ===== */
+const lathe=(pts,seg)=>new T.LatheGeometry(pts.map(p=>new T.Vector2(p[0],p[1])),seg||32);
+const late=[];const lateDraw=fn=>{fn();late.push(fn)};if(document.fonts)document.fonts.ready.then(()=>late.forEach(f=>f()));
+const woodT=(h,rx,ry,n,l0)=>ctex(256,256,(g,w,hh)=>{n=n||4;const ph=hh/n;l0=l0||26;for(let i=0;i<n;i++){const l=l0+rnd()*9,y0=i*ph;g.fillStyle='hsl('+(h+rnd()*6)+','+(32+rnd()*10)+'%,'+l+'%)';g.fillRect(0,y0,w,ph);
+ for(let k=0;k<26;k++){g.strokeStyle='rgba('+(rnd()<.5?'20,10,5':'255,220,170')+','+(.04+rnd()*.09)+')';g.lineWidth=.6+rnd()*1.4;const yy=y0+rnd()*ph;g.beginPath();g.moveTo(0,yy);g.bezierCurveTo(w*.3,yy+(rnd()-.5)*5,w*.6,yy+(rnd()-.5)*5,w,yy+(rnd()-.5)*3);g.stroke()}
+ if(rnd()<.6){const kx=rnd()*w,ky=y0+ph*(.3+rnd()*.4);for(let r=7;r>1;r-=2){g.strokeStyle='rgba(30,15,8,'+(.3-r*.025)+')';g.lineWidth=1.2;g.beginPath();g.ellipse(kx,ky,r*1.8,r*.8,0,0,6.3);g.stroke()}}
+ g.fillStyle='rgba(10,5,3,.55)';g.fillRect(0,y0,w,2.5)}},rx,ry);
+const staveT=ctex(256,128,(g,w,hh)=>{for(let i=0;i<8;i++){g.fillStyle='hsl('+(24+rnd()*6)+',36%,'+(22+rnd()*9)+'%)';g.fillRect(i*32,0,32,hh);for(let k=0;k<12;k++){g.strokeStyle='rgba(20,10,5,'+(.05+rnd()*.1)+')';g.beginPath();const x=i*32+rnd()*32;g.moveTo(x,0);g.lineTo(x+(rnd()-.5)*4,hh);g.stroke()}g.fillStyle='rgba(8,4,2,.6)';g.fillRect(i*32,0,2,hh)}},2,1);
+const hamT=ctex(256,256,(g,w,h)=>{g.fillStyle='#808080';g.fillRect(0,0,w,h);for(let i=0;i<420;i++){const x=rnd()*w,y=rnd()*h,r=5+rnd()*9,gr=g.createRadialGradient(x-r*.25,y-r*.25,0,x,y,r),v=rnd()<.5?60:200;gr.addColorStop(0,'rgba('+v+','+v+','+v+',.45)');gr.addColorStop(1,'rgba(128,128,128,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2)}},3,2);
+const specT=(col,speck,rx)=>ctex(128,128,(g,w,h)=>{g.fillStyle=col;g.fillRect(0,0,w,h);if(speck){for(let i=0;i<900;i++){const l=rnd()<.5;g.fillStyle=l?'rgba(255,245,220,'+rnd()*.5+')':'rgba(20,10,5,'+rnd()*.45+')';g.fillRect(rnd()*w,rnd()*h,1+rnd()*2.5,1+rnd()*2.5)}}else{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'rgba(255,255,255,.28)');gr.addColorStop(1,'rgba(0,0,0,.28)');g.fillStyle=gr;g.fillRect(0,0,w,h)}},rx||2,1);
+const weaveT=ctex(128,128,(g,w,h)=>{g.fillStyle='#8a6a3a';g.fillRect(0,0,w,h);for(let y=0;y<h;y+=8)for(let x=0;x<w;x+=16){const o=((y/8)%2)*8;g.fillStyle='hsl(36,'+(35+rnd()*10)+'%,'+(36+rnd()*14)+'%)';g.fillRect(x+o,y,15,7);g.fillStyle='rgba(20,10,0,.4)';g.fillRect(x+o,y+7,16,1)}},4,2);
+const crustT=ctex(128,128,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#e0a560');gr.addColorStop(1,'#a8692f');g.fillStyle=gr;g.fillRect(0,0,w,h);for(let i=0;i<500;i++){g.fillStyle='rgba(255,230,170,'+rnd()*.18+')';g.fillRect(rnd()*w,rnd()*h,2,2)}[.3,.5,.7].forEach(y=>{g.strokeStyle='#f3d9a2';g.lineWidth=7;g.beginPath();g.moveTo(w*.2,h*y-5);g.lineTo(w*.8,h*y+5);g.stroke()})},1,1);
+const quiltT=ctex(128,128,(g,w,h)=>{const cs=['#6f8fb0','#c97b6b','#e6c58a','#7fa890'];for(let i=0;i<4;i++)for(let j=0;j<4;j++){g.fillStyle=cs[(i+j*2)%4];g.fillRect(i*32,j*32,32,32);g.strokeStyle='rgba(255,255,255,.35)';g.setLineDash([3,3]);g.strokeRect(i*32+3,j*32+3,26,26)}for(let i=0;i<700;i++){g.fillStyle='rgba(0,0,0,'+rnd()*.08+')';g.fillRect(rnd()*w,rnd()*h,2,2)}},1,1);
+const skyT=ctex(256,256,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#0f1a3a');gr.addColorStop(1,'#4a5f9a');g.fillStyle=gr;g.fillRect(0,0,w,h);for(let i=0;i<70;i++){g.fillStyle='rgba(255,255,240,'+(.3+rnd()*.7)+')';g.beginPath();g.arc(rnd()*w,rnd()*h*.8,.5+rnd()*1.3,0,6.3);g.fill()}g.fillStyle='#fff6d0';g.beginPath();g.arc(w*.72,h*.3,20,0,6.3);g.fill();g.fillStyle='#0f1a3a';g.beginPath();g.arc(w*.72+9,h*.3-4,18,0,6.3);g.fill()},1,1);
+const soupT=ctex(128,128,(g,w,h)=>{g.fillStyle='#e9a24a';g.fillRect(0,0,w,h);for(let i=0;i<60;i++){const x=rnd()*w,y=rnd()*h,r=3+rnd()*10,gr=g.createRadialGradient(x,y,0,x,y,r);const c=rnd()<.5?'255,220,150':'190,100,40';gr.addColorStop(0,'rgba('+c+',.6)');gr.addColorStop(1,'rgba('+c+',0)');g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2)}},1,1);
+const rugT=ctex(512,512,(g,w,h)=>{g.fillStyle='#e6d8b8';g.fillRect(0,0,w,h);const rings=[['#4d6b66',250],['#e6d8b8',225],['#b4553f',205],['#e6d8b8',180],['#6f8f86',165],['#d9a84a',120],['#4d6b66',100],['#e6d8b8',60]];rings.forEach(r=>{g.fillStyle=r[0];g.beginPath();g.arc(256,256,r[1],0,6.3);g.fill()});g.strokeStyle='#4a3626';g.lineWidth=3;for(let i=0;i<24;i++){const a=i/24*6.283;g.beginPath();g.moveTo(256+Math.cos(a)*165,256+Math.sin(a)*165);g.lineTo(256+Math.cos(a)*205,256+Math.sin(a)*205);g.stroke()}for(let i=0;i<5000;i++){g.fillStyle='rgba('+(rnd()<.5?'255,255,255':'0,0,0')+','+rnd()*.07+')';g.fillRect(rnd()*w,rnd()*h,2,2)}},1,1);
+const labT=(txt,col)=>{const c=document.createElement('canvas');c.width=128;c.height=96;const t=new T.CanvasTexture(c);lateDraw(()=>{const g=c.getContext('2d');g.fillStyle='#eadfc4';g.fillRect(0,0,128,96);g.strokeStyle=col||'#7a5a3a';g.lineWidth=5;g.strokeRect(5,5,118,86);t.needsUpdate=true});return t};
+/* 材質 */
+const br=SM(0xc99a4a,{metalness:.8,roughness:.32,envMapIntensity:1.5}),fe=SM(0x2b2b30,{metalness:.7,roughness:.5,envMapIntensity:1}),
+ glassM=SM(0xdfe9ee,{transparent:true,opacity:.26,roughness:.05,metalness:.1,envMapIntensity:1.8,side:T.DoubleSide,depthWrite:false}),
+ cork=SM(0xb88a55,{roughness:.95}),
+ cuM=SM(0xc27a45,{metalness:.65,roughness:.32,bumpMap:hamT,bumpScale:1.6,envMapIntensity:1.5,side:T.DoubleSide}),
+ cream=SM(0xe9e0cc,{roughness:.35,envMapIntensity:.8,side:T.DoubleSide});
+/* ガラス瓶: 本体(ガラス)+中身(粒つぶ)+コルク+紙ラベル */
+function jar(x,y,z,r,h,col,txt,o){o=o||{};const g=new T.Group();g.position.set(x,y,z);S.add(g);
+ add(lathe([[0,0],[r*.92,0],[r,h*.05],[r,h*.72],[r*.82,h*.84],[r*.56,h*.9],[r*.56,h]],28),glassM,0,0,0,g);
+ const cm=SM(0xffffff,{map:specT(col,!o.liq,2),roughness:o.liq?.25:.9,emissive:o.em?col:0x000000,emissiveIntensity:o.em||0,envMapIntensity:o.liq?1.2:.3});
+ add(cyl(r*.92,r*.92,h*(o.fill||.62),24),cm,0,h*(o.fill||.62)/2+.01,0,g);
+ add(cyl(r*.6,r*.5,.07,14),cork,0,h+.02,0,g);
+ const fa=o.fa==null?Math.PI/2:o.fa;add(new T.CylinderGeometry(r*1.012,r*1.012,h*.36,20,1,true,fa-.95,1.9),new T.MeshStandardMaterial({map:labT(txt),roughness:.9,side:T.DoubleSide}),0,h*.42,0,g);return g}
+function ladle(x,y,z,l,m){const g=new T.Group();g.position.set(x,y,z);S.add(g);add(cyl(.018,.018,l,8),m||fe,0,-l/2,0,g);add(new T.SphereGeometry(.11,14,8,0,Math.PI*2,0,Math.PI/2),m||cuM,0,-l,.0,g).rotation.x=-Math.PI/2;add(new T.TorusGeometry(.02,.006,6,10),m||fe,0,-.03,0,g);return g}
+/* ===== カゲミチの詰め所(駅員の詰め所): グレー/ネイビー+ランタンの暖色 ===== */
+const envF=(top,bot,spot)=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d'),gr=g.createLinearGradient(0,0,0,64);gr.addColorStop(0,top);gr.addColorStop(1,bot);g.fillStyle=gr;g.fillRect(0,0,64,64);if(spot){const r=g.createRadialGradient(32,28,0,32,28,30);r.addColorStop(0,spot);r.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=r;g.fillRect(0,0,64,64)}return c};
+try{const envT=new T.CubeTexture([envF('#3a4258','#1c2030'),envF('#3a4258','#1c2030'),envF('#8a96b0','#4a5470','#cfd8ee'),envF('#20232c','#14161c'),envF('#3a4258','#1c2030'),envF('#4a5a8a','#202840','#8fa8e0')]);envT.needsUpdate=true;const pm=new T.PMREMGenerator(R);S.environment=pm.fromCubemap(envT).texture}catch(e){}
+/* lights */
+S.add(new T.HemisphereLight(0x8a96b4,0x14171f,.3));
+const lamp=new T.PointLight(0xffb865,1.4,16,1.4);lamp.position.set(-1.7,1.6,-4.4);lamp.castShadow=true;lamp.shadow.mapSize.set(1024,1024);lamp.shadow.bias=-.004;lamp.shadow.normalBias=.04;S.add(lamp);
+const ceilL=new T.PointLight(0xaebcdc,.42,16,1.2);ceilL.position.set(0,4.2,-4.2);S.add(ceilL);
+const winL=new T.PointLight(0x8fa8e0,.22,14,1.5);winL.position.set(0,2.4,2.5);S.add(winL);
+
+/* --- 材質 --- */
+const noiseT=(base,rx,ry,streak)=>ctex(256,256,(g,w,h)=>{g.fillStyle=base;g.fillRect(0,0,w,h);for(let i=0;i<1800;i++){g.fillStyle='rgba('+(rnd()<.5?'255,255,255':'0,0,10')+','+rnd()*.06+')';g.fillRect(rnd()*w,rnd()*h,1+rnd()*2,1+rnd()*2)}if(streak)for(let i=0;i<16;i++){const x=rnd()*w;g.fillStyle='rgba(0,0,0,.06)';g.fillRect(x,0,1+rnd()*3,h)}},rx,ry);
+const tileT=ctex(256,256,(g,w,h)=>{for(let i=0;i<4;i++)for(let j=0;j<4;j++){g.fillStyle=(i+j)%2?'#383c46':'#2e323b';g.fillRect(i*64,j*64,64,64);g.strokeStyle='rgba(0,0,0,.45)';g.lineWidth=2;g.strokeRect(i*64,j*64,64,64)}for(let i=0;i<1500;i++){g.fillStyle='rgba(255,255,255,'+rnd()*.05+')';g.fillRect(rnd()*w,rnd()*h,2,2)}},4,3.5);
+const concT=noiseT('#3c424e',8,10);
+const upper=SM(0xffffff,{map:noiseT('#5a6376',3,2),roughness:.9}),lower=SM(0xffffff,{map:noiseT('#1a2036',3,1,true),roughness:.7}),floorM=SM(0xffffff,{map:tileT,roughness:.35,envMapIntensity:.8});
+const steel=SM(0x6c7685,{metalness:.7,roughness:.4,envMapIntensity:1.2}),dsteel=SM(0x3a414d,{metalness:.6,roughness:.45,envMapIntensity:1}),navy=SM(0x232c47,{roughness:.6}),paper=SM(0xd8dce6,{roughness:.8});
+const ljT=woodT(222,2,1,3,18);
+
+/* ===== 外: 終点のホーム ===== */
+const wallT=noiseT('#4a5262',6,4,true),wm=SM(0xffffff,{map:wallT,roughness:.9});
+add(box(19.2,26,.5),wm,-12.4,5,0);add(box(19.2,26,.5),wm,12.4,5,0);add(box(5.6,6,.5),wm,0,-2,0);add(box(5.6,14.6,.5),wm,0,10.7,0);
+add(box(6.2,.14,1.0),steel,0,1.04,.35);add(box(6.2,.18,.3),steel,0,3.5,.1);[-2.9,2.9].forEach(x=>add(box(.25,2.7,.5),steel,x,2.2,.1));
+add(new T.PlaneGeometry(80,60),SM(0xffffff,{map:concT,roughness:.95}),0,-.02,30).rotation.x=-Math.PI/2;
+add(box(80,.3,.06),SM(0x9aa3b4,{roughness:.6}),0,0,14.5);
+[17.2,18.6].forEach(z=>add(box(80,.08,.12),steel,0,-.6,z));add(box(80,.5,3.4),SM(0x1a1d26),0,-.9,18);
+/* ホームの看板 */
+const sg=document.createElement('canvas');sg.width=512;sg.height=256;const sgT=new T.CanvasTexture(sg);
+lateDraw(()=>{const g=sg.getContext('2d');g.fillStyle='#d9dde6';g.fillRect(0,0,512,256);g.strokeStyle='#2a3350';g.lineWidth=8;g.strokeRect(8,8,496,240);g.fillStyle='#232c47';g.textAlign='center';g.font='700 84px "Zen Maru Gothic",sans-serif';g.fillText('おわりの駅',256,120);g.font='700 40px "Zen Maru Gothic",sans-serif';g.fillText('終点',256,176);g.font='500 28px "Zen Maru Gothic",sans-serif';g.fillText('つぎは・・・夢のなかへ →',256,226);sgT.needsUpdate=true});
+add(cyl(.07,.07,3.6,8),dsteel,7,1.8,3);add(cyl(.07,.07,3.6,8),dsteel,9.4,1.8,3);add(new T.PlaneGeometry(2.8,1.4),new T.MeshStandardMaterial({map:sgT,emissive:0xffffff,emissiveMap:sgT,emissiveIntensity:.25,roughness:.7}),8.2,3.2,3);
+/* ホームの灯り(冷たい色) */
+[[-9,7],[10,9],[-15,12]].forEach(a=>{add(cyl(.07,.1,5,8),dsteel,a[0],2.5,a[1]);add(sph(.2,10,8),BM(0xcfe0ff),a[0],5.1,a[1]);glow(0x8fa8e0,3.4,a[0],5.1,a[1],.5)});
+add(box(2.2,.1,.6),dsteel,-6,.5,5);add(box(2.2,.6,.08),dsteel,-6,.85,4.7);[-.9,.9].forEach(x=>add(box(.08,.5,.5),dsteel,-6+x,.25,5));
+/* 遠くの電車 */
+{const tr=new T.Group();tr.position.set(-6,.2,20.5);S.add(tr);add(box(34,2.8,2.2),SM(0x1c2236,{roughness:.5,metalness:.3}),0,1.4,0,tr);add(box(34,.25,2.25),SM(0x7c8596),0,.6,0,tr);for(let i=0;i<14;i++)add(new T.PlaneGeometry(1.5,.9),BM(0xcfd8ee),-15+i*2.35,1.8,-1.12,tr).rotation.y=Math.PI;glow(0x8fa8e0,6,-18,1.8,-2,.5,tr)}
+/* 空と星 */
+{const g=[];for(let i=0;i<220;i++){g.push((rnd()-.5)*140,18+rnd()*40,-40+rnd()*20)}const sgm=new T.BufferGeometry();sgm.setAttribute('position',new T.Float32BufferAttribute(g,3));S.add(new T.Points(sgm,new T.PointsMaterial({color:0xdfe8ff,size:.5,sizeAttenuation:true,fog:false})))}
+glow(0x8fa8e0,6,0,2.2,.6,.12);
+
+/* ===== 内: 詰め所 ===== */
+add(box(9.2,.3,8.2),floorM,0,-.15,-4.15);add(box(9.2,.3,8.2),SM(0x2c313e,{roughness:.9}),0,4.95,-4.15);
+[-4.65,4.65].forEach(x=>{add(box(.3,4.8,8.2),upper,x,2.4,-4.15);add(box(.34,1.5,8.2),lower,x*.992,.75,-4.15);add(box(.38,.07,8.2),steel,x*.99,1.52,-4.15)});
+add(box(9.6,4.8,.3),upper,0,2.4,-8.35);add(box(9.6,1.5,.34),lower,0,.75,-8.33);add(box(9.6,.07,.38),steel,0,1.52,-8.32);
+[-3.725,3.725].forEach(x=>add(box(1.85,4.8,.1),upper,x,2.4,-.3));add(box(5.6,1.4,.1),upper,0,4.1,-.3);add(box(5.6,1.3,.1),lower,0,.65,-.3);
+/* 蛍光灯(冷たく控えめ) */
+[-2.2,2.2].forEach(x=>{add(box(2.2,.1,.4),dsteel,x,4.82,-4.2);add(box(2,.04,.26),BM(0xb8c6e8),x,4.76,-4.2)});glow(0x8fa8e0,5,0,4.5,-4.2,.1);
+/* 絨毯 */
+add(box(3.6,.03,2.6),SM(0x2a3560,{roughness:1}),-.9,.02,-4.6);add(box(3.3,.035,2.3),SM(0x1c2444,{roughness:1}),-.9,.025,-4.6);
+/* --- 左の壁: 制服・帽子掛け・ロッカー --- */
+[-3.2,-2.2].forEach((z,i)=>{add(box(.7,3.4,.9),dsteel,-4.1,1.7,z-.1);add(box(.04,3.0,.7),steel,-3.74,1.7,z-.1);for(let k=0;k<5;k++)add(box(.02,.05,.5),BM(0x1c2030),-3.72,2.5+k*.16,z-.1);add(box(.03,.3,.08),steel,-3.72,1.6,z+.2)});
+add(box(.08,.2,3.5),dsteel,-4.44,3.3,-5.8);
+const unif=SM(0x151a2c,{roughness:.8,side:T.DoubleSide});
+[-4.6,-5.5,-6.4].forEach((z,i)=>{add(box(.12,.1,.12),steel,-4.4,3.2,z);const j=add(lathe([[.0,0],[.2,0],[.26,.4],[.18,.9],[.16,1.1],[0,1.1]],14),unif,-4.2,2.1,z);j.rotation.z=.12;add(sph(.05,8,6),SM(0xc9ced8,{metalness:.7}),-4.0,2.7,z)});
+[-4.0,-7.0].forEach(z=>{const c=add(lathe([[0,.12],[.2,.12],[.25,.08],[.26,0],[.2,-.02],[0,-.02]],18),navy,-4.3,3.3,z);add(box(.2,.02,.2),dsteel,-4.0,3.32,z);add(new T.TorusGeometry(.2,.02,6,16),SM(0x9aa3b4,{metalness:.7,roughness:.4}),-4.3,3.4,z).rotation.x=Math.PI/2});
+/* --- 奥の壁: 手紙の仕分け棚 --- */
+{const px=-2.4,py=2.7,pw=3.0,ph=2.4,cx=6,cy=5,cw=pw/cx,ch=ph/cy;add(box(pw+.1,ph+.1,.5),SM(0x1a1f30),px,py,-7.95);
+ for(let i=0;i<=cx;i++)add(box(.04,ph,.5),ljT.image?steel:steel,px-pw/2+i*cw,py,-7.78);for(let j=0;j<=cy;j++)add(box(pw,.04,.5),steel,px,py-ph/2+j*ch,-7.78);
+ for(let i=0;i<cx;i++)for(let j=0;j<cy;j++){if(rnd()<.35)continue;const n=1+(rnd()*3|0);for(let k=0;k<n;k++){const l=add(box(.28,.2,.015),SM(0xd8dce6,{roughness:.8,emissive:rnd()<.12?0xffb865:0x000000,emissiveIntensity:.5}),px-pw/2+(i+.5)*cw+(rnd()-.5)*.12,py-ph/2+(j+.5)*ch-.04+k*.01,-7.72+k*.02);l.rotation.z=(rnd()-.5)*.25}}
+ add(box(pw+.3,.08,.7),dsteel,px,py+ph/2+.12,-7.85)}
+/* --- 時計・時刻表・路線図 --- */
+const clk=document.createElement('canvas');clk.width=clk.height=256;const clkT=new T.CanvasTexture(clk);
+{const g=clk.getContext('2d');g.fillStyle='#e6e9f0';g.beginPath();g.arc(128,128,124,0,6.3);g.fill();g.strokeStyle='#232c47';g.lineWidth=4;for(let i=0;i<60;i++){const a=i/60*6.283,r1=i%5?114:100;g.lineWidth=i%5?2:6;g.beginPath();g.moveTo(128+Math.sin(a)*r1,128-Math.cos(a)*r1);g.lineTo(128+Math.sin(a)*120,128-Math.cos(a)*120);g.stroke()}clkT.needsUpdate=true}
+add(new T.TorusGeometry(.62,.07,10,36),dsteel,.9,3.6,-8.12);add(new T.CircleGeometry(.6,36),new T.MeshStandardMaterial({map:clkT,roughness:.4}),.9,3.6,-8.12);
+const hnd=new T.Group();hnd.position.set(.9,3.6,-8.02);S.add(hnd);
+const hP=new T.Group(),mP=new T.Group(),sP=new T.Group();[hP,mP,sP].forEach((g,i)=>{g.position.z=i*.012;hnd.add(g)});
+add(box(.035,.3,.012),BM(0x151a2a),0,.15,0,hP);add(box(.025,.46,.012),BM(0x151a2a),0,.23,0,mP);add(box(.01,.5,.01),BM(0xc9ced8),0,.2,0,sP);
+hP.rotation.z=-(0+40/60)*.5236-.0;mP.rotation.z=-40*.1047;
+const tt=document.createElement('canvas');tt.width=512;tt.height=340;const ttT=new T.CanvasTexture(tt);
+{const g=tt.getContext('2d');g.fillStyle='#16203a';g.fillRect(0,0,512,340);g.strokeStyle='#8fa0c4';g.lineWidth=2;for(let r=0;r<9;r++){g.beginPath();g.moveTo(16,30+r*34);g.lineTo(496,30+r*34);g.stroke()}g.fillStyle='#cfd8ee';g.font='600 22px monospace';for(let r=0;r<8;r++)for(let c=0;c<5;c++)g.fillText((23+((r*3+c)%2))+':'+('0'+((r*7+c*11)%60)).slice(-2),28+c*96,58+r*34);ttT.needsUpdate=true}
+add(box(1.8,1.3,.06),dsteel,3.0,3.1,-8.15);add(new T.PlaneGeometry(1.7,1.14),new T.MeshStandardMaterial({map:ttT,emissive:0xffffff,emissiveMap:ttT,emissiveIntensity:.18,roughness:.6}),3.0,3.1,-8.115);
+const rm=document.createElement('canvas');rm.width=640;rm.height=300;const rmT=new T.CanvasTexture(rm);
+lateDraw(()=>{const g=rm.getContext('2d');g.fillStyle='#e0e4ee';g.fillRect(0,0,640,300);g.strokeStyle='#232c47';g.lineWidth=6;g.strokeRect(6,6,628,288);g.lineWidth=10;g.strokeStyle='#4a5a8a';g.beginPath();g.moveTo(50,220);g.lineTo(220,220);g.lineTo(300,130);g.lineTo(480,130);g.lineTo(590,70);g.stroke();g.strokeStyle='#8a94a8';g.beginPath();g.moveTo(220,220);g.lineTo(560,230);g.stroke();[[50,220],[220,220],[300,130],[480,130],[590,70],[560,230]].forEach(p=>{g.fillStyle='#fff';g.strokeStyle='#232c47';g.lineWidth=4;g.beginPath();g.arc(p[0],p[1],11,0,6.3);g.fill();g.stroke()});g.fillStyle='#232c47';g.font='700 26px "Zen Maru Gothic",sans-serif';g.fillText('おわりの駅',500,262);rmT.needsUpdate=true});
+add(box(2.6,1.3,.06),dsteel,-.4,3.0,-8.15);add(new T.PlaneGeometry(2.5,1.2),new T.MeshStandardMaterial({map:rmT,emissive:0xffffff,emissiveMap:rmT,emissiveIntensity:.15,roughness:.6}),-.4,3.0,-8.115);
+/* --- 奥: 駅員の机と椅子 --- */
+add(box(2.4,.08,1.0),SM(0x6a727f,{metalness:.5,roughness:.4}),2.0,.92,-7.2);[[-1.1,-.4],[1.1,-.4],[-1.1,.4],[1.1,.4]].forEach(a=>add(box(.08,.9,.08),dsteel,2.0+a[0],.45,-7.2+a[1]));add(box(.7,.7,.9),dsteel,3.0,.5,-7.2);
+add(lathe([[0,0],[.12,0],[.12,.04],[.04,.06],[.03,.35],[.1,.4],[.22,.55],[.24,.62],[0,.62]],20),SM(0x2a3350,{roughness:.5,side:T.DoubleSide}),1.3,.96,-7.2);add(cyl(.02,.02,.5,6),dsteel,1.3,1.2,-7.2);
+add(box(.35,.05,.25),SM(0xd8dce6),2.2,.99,-7.1);add(box(.3,.02,.2),BM(0x1c2444),2.2,1.03,-7.1);add(cyl(.07,.06,.1,12),paper,2.7,1.0,-7.0);add(cyl(.06,.06,.07,10),dsteel,2.55,1.0,-7.3);
+add(cyl(.28,.3,.08,18),dsteel,1.0,.55,-6.2);add(cyl(.03,.03,.45,6),dsteel,1.0,.3,-6.2);add(cyl(.2,.2,.04,14),dsteel,1.0,.03,-6.2);add(box(.55,.5,.07),SM(0x232c47,{roughness:.8}),1.0,.88,-6.45);
+/* --- 右の壁: 想いの瓶の棚 --- */
+[2.2,3.4].forEach((y,s)=>{add(box(.8,.1,5.6),dsteel,4.2,y,-4.3);[-1.8,-4.3,-6.8].forEach(z=>add(box(.06,.3,.5),dsteel,4.43,y-.2,z));
+ for(let i=0;i<7;i++){const z=-1.4-i*.75,r=.15+((i+s)%3)*.03,h=.4+((i+s*2)%3)*.1,tint=['#cfd8ee','#e8e0c8','#bcd0ee'][(i+s)%3];jar(4.15,y+.05,z,r,h,tint,'',{em:.35,liq:i%2===0,fa:-Math.PI/2});if(i%2===0)glow(0xffd9a0,.9,4.0,y+.05+h*.4,z,.16)}});
+/* 想いの箱(ふたが開いて光る) */
+add(box(.9,.5,.6),SM(0x3a2d24,{roughness:.8}),3.4,.25,-6.0);add(box(.94,.06,.64),steel,3.4,.5,-6.0);{const lid=add(box(.9,.05,.6),SM(0x3a2d24),3.4,.8,-6.3);lid.rotation.x=-.9;lid.position.set(3.4,.78,-6.35)}
+for(let i=0;i<5;i++){const p=add(new T.PlaneGeometry(.22,.16),SM(0xf0f2f8,{emissive:0xffcf8a,emissiveIntensity:.35,side:T.DoubleSide}),3.2+i*.1,.55+i*.03,-6.0+(i-2)*.07);p.rotation.set(-1.2+i*.3,i*.5,i*.2)}
+glow(0xffcf8a,1.8,3.4,.8,-6.0,.5);
+/* 浮かぶ想いのかけら(ガラスのしゃぼん玉) */
+const bubs=[];for(let i=0;i<7;i++){const b=new T.Group();b.position.set(1.6+(i%4)*.55,1.7+((i*5)%4)*.3,-5.4+Math.floor(i/4)*.8);S.add(b);add(sph(.2,16,12),SM(0xdfe9ff,{transparent:true,opacity:.18,roughness:.05,metalness:.2,envMapIntensity:2,depthWrite:false}),0,0,0,b);add(new T.PlaneGeometry(.2,.14),SM(0xf2f4fa,{emissive:0xcfd8ee,emissiveIntensity:.3,side:T.DoubleSide}),0,0,0,b).rotation.set(.3*i,.5,.2);b.userData={p:i};bubs.push(b)}
+/* ===== カゲミチ(影から生まれた案内人): 丸い黒い顔・白い楕円の目・つば広の帽子・ほどけたコート ===== */
+const SC=1.1,C=new T.Group();C.position.set(-.9,0,-5.0);C.rotation.y=.25;C.scale.setScalar(SC);
+const V=(x,y,z)=>new T.Vector3(x,y,z);
+const clothT2=(base,fold)=>ctex(256,256,(g,w,h)=>{g.fillStyle=base;g.fillRect(0,0,w,h);for(let i=0;i<2200;i++){g.fillStyle='rgba('+(rnd()<.5?'170,185,220':'0,0,10')+','+rnd()*.07+')';g.fillRect(rnd()*w,rnd()*h,1+rnd()*2,1+rnd()*2)}
+ if(fold)for(let i=0;i<18;i++){const x=rnd()*w;const gr=g.createLinearGradient(x,0,x+14,0);gr.addColorStop(0,'rgba(0,0,10,0)');gr.addColorStop(.5,'rgba(0,0,10,.18)');gr.addColorStop(1,'rgba(0,0,10,0)');g.fillStyle=gr;g.fillRect(x,0,14,h)}},2,2);
+const coatM=SM(0xffffff,{map:clothT2('#171c2e',true),roughness:.9,side:T.DoubleSide,envMapIntensity:.4}),
+ hatM=SM(0xffffff,{map:clothT2('#2c313f',false),roughness:.95,side:T.DoubleSide,envMapIntensity:.4}),
+ skinM=SM(0x0b0d16,{roughness:.75,envMapIntensity:.25}),bootM=SM(0x181a24,{roughness:.55,envMapIntensity:.6}),
+ scarfM=SM(0x2a3048,{roughness:.95,side:T.DoubleSide}),hairM=SM(0x07080e,{roughness:.9,side:T.DoubleSide});
+/* 足・靴 */
+[-.17,.17].forEach(x=>{add(cyl(.1,.11,.45,10),bootM,x,.3,0,C);const b=add(sph(1,16,12),bootM,x,.11,.07,C);b.scale.set(.17,.12,.27)});
+/* コート */
+add(lathe([[0,.16],[.55,.16],[.5,.45],[.42,.8],[.4,1.05],[.36,1.25],[.26,1.38],[.2,1.42],[0,1.42]],36),coatM,0,0,0,C);
+const belt=add(new T.TorusGeometry(.43,.03,6,36),SM(0x10131f,{roughness:.6}),0,.82,0,C);belt.rotation.x=Math.PI/2;
+[[.55,.5],[.95,.41],[1.15,.385]].forEach(a=>add(sph(.03,8,6),SM(0x9aa3b4,{metalness:.7,roughness:.4}),0,a[0],a[1],C));
+/* ほどけた裾(ぼろぼろの切れ端) */
+function shard(w,len){const s=new T.Shape(),j=()=>(rnd()-.5)*.2;s.moveTo(-w/2,0);s.lineTo(w/2,0);s.lineTo(w*(.4+j()),-len*.4);s.lineTo(w*(.5+j()),-len*.65);s.lineTo(w*(.15+j()),-len*.8);s.lineTo(w*.05,-len);s.lineTo(-w*(.1+j()*.5),-len*.7);s.lineTo(-w*(.45+j()),-len*.5);s.lineTo(-w*(.3+j()),-len*.25);s.lineTo(-w/2,0);return new T.ShapeGeometry(s)}
+const tat=[];
+for(let i=0;i<26;i++){const a=i/26*6.283,g=new T.Group();g.position.set(Math.sin(a)*.55,.2,Math.cos(a)*.55);g.rotation.order='YXZ';g.rotation.y=a;const tl=-.12-rnd()*.1;g.rotation.x=tl;S.remove(g);C.add(g);add(shard(.2+rnd()*.1,.35+rnd()*.4),coatM,0,0,0,g);tat.push({g,b:tl,p:i})}
+for(let i=0;i<24;i++){const a=-2.7+i*.075+rnd()*.08,y=1.0-i*.035,g=new T.Group(),r=.44-(1.0-y)*.05;g.position.set(Math.sin(a)*r,y,Math.cos(a)*r);g.rotation.order='YXZ';g.rotation.y=a;const tl=-.8-rnd()*.5;g.rotation.x=tl;C.add(g);add(shard(.24+rnd()*.14,.8+rnd()*.7),coatM,0,0,0,g);tat.push({g,b:tl,p:i+30,big:1})}
+/* マフラー */
+add(new T.TorusGeometry(.3,.1,10,28),scarfM,0,1.48,0,C).rotation.x=Math.PI/2;add(new T.TorusGeometry(.27,.09,10,28),scarfM,0,1.58,0,C).rotation.x=Math.PI/2;
+{const t=add(box(.16,.6,.06),scarfM,.12,1.2,.36,C);t.rotation.x=-.12;t.rotation.z=.08}
+/* 頭 */
+const head=new T.Group();head.position.set(0,1.85,0);C.add(head);
+add(sph(1,40,28),skinM,0,0,0,head).scale.set(.5,.5,.5);
+/* 目: 白い縦長の楕円(顔の表面に沿わせる) */
+const eyeM=BM(0xf4f6ff);
+const eyes=[-1,1].map(s=>{const x=s*.19,y=0,z=.5*Math.sqrt(1-(x/.5)**2-(y/.5)**2),e=new T.Group();e.position.set(x*1.004,y,z*1.004);e.quaternion.setFromUnitVectors(V(0,0,1),V(x/.25,y/.25,z/.25).normalize());head.add(e);
+ add(sph(1,20,14),eyeM,0,0,0,e).scale.set(.062,.1,.025);glow(0xdfe8ff,.55,0,0,.04,.35,e);return e});
+/* はみ出す髪 */
+for(let i=0;i<24;i++){const a=i/24*6.283,front=Math.cos(a)>.15&&Math.abs(Math.sin(a))<.85,g=new T.Group(),y=front?.13+rnd()*.06:-.12+rnd()*.24;g.position.set(Math.sin(a)*.49,y,Math.cos(a)*.49);g.rotation.order='YXZ';g.rotation.y=a;g.rotation.x=front?-.15:-.5-rnd()*.3;head.add(g);add(shard(.1+rnd()*.06,front?.1:.16+rnd()*.16),hairM,0,0,0,g)}
+/* 帽子 */
+const hat=new T.Group();hat.position.set(0,.27,0);hat.rotation.set(-.05,0,.05);head.add(hat);
+add(lathe([[0,.5],[.14,.52],[.28,.6],[.4,.58],[.46,.46],[.5,.24],[.51,.02],[.62,-.01],[.8,-.03],[.95,-.07],[.98,-.1],[.9,-.08],[.7,-.05],[.55,-.03]],44),hatM,0,0,0,hat);
+add(new T.TorusGeometry(.51,.035,8,40),SM(0x2a2f44,{roughness:.7}),0,.1,0,hat).rotation.x=Math.PI/2;add(box(.12,.1,.03),SM(0x9aa3b4,{metalness:.7,roughness:.35}),0,.1,.53,hat);
+/* 腕 */
+const arm=new T.Group();arm.position.set(-.42,1.3,0);arm.rotation.order='YXZ';arm.rotation.set(-.5,0,-.15);C.add(arm);
+add(cyl(.09,.11,.75,12),coatM,0,-.375,0,arm);add(new T.TorusGeometry(.11,.025,6,14),scarfM,0,-.75,0,arm).rotation.x=Math.PI/2;add(sph(.09,12,10),skinM,0,-.82,0,arm);
+const arm2=new T.Group();arm2.position.set(.42,1.3,0);arm2.rotation.order='YXZ';arm2.rotation.set(-1.0,.4,0);C.add(arm2);
+add(cyl(.09,.11,.75,12),coatM,0,-.375,0,arm2);add(new T.TorusGeometry(.11,.025,6,14),scarfM,0,-.75,0,arm2).rotation.x=Math.PI/2;
+add(sph(1,12,10),skinM,0,-.84,0,arm2).scale.set(.09,.04,.11);for(let i=0;i<4;i++){const f=add(sph(1,8,6),skinM,-.06+i*.04,-.86,-.08-(i%3?0:.01),arm2);f.scale.set(.02,.02,.07)}
+const star=add(new T.OctahedronGeometry(.07),SM(0xfff1d6,{emissive:0xffd9a0,emissiveIntensity:.9,roughness:.5}),0,-.96,-.05,arm2);glow(0xffd9a0,.7,0,-.96,-.05,.6,arm2);
+/* ランタン(右手に提げる) */
+const pivot=new T.Group();pivot.position.set(-.9,.04,-5.0);S.add(pivot);
+const lan=new T.Group();lan.scale.setScalar(.8);lan.position.y=0;pivot.add(lan);
+add(lathe([[0,0],[.16,0],[.18,.04],[.15,.09],[0,.09]],20),br,0,0,0,lan);
+add(cyl(.07,.07,.26,12),BM(0xffe0a0),0,.25,0,lan);add(cyl(.13,.15,.34,18,1,true),glassM,0,.26,0,lan);
+[0,1,2,3].forEach(i=>{const a=i*Math.PI/2+.78;add(cyl(.012,.012,.36,5),br,Math.cos(a)*.14,.26,Math.sin(a)*.14,lan)});
+add(cyl(.14,.15,.03,16),br,0,.43,0,lan);add(new T.ConeGeometry(.16,.12,16),br,0,.5,0,lan);add(new T.TorusGeometry(.13,.015,6,16,Math.PI),br,0,.58,0,lan);add(new T.TorusGeometry(.04,.012,6,12),br,0,.7,0,lan);
+const lg=glow(0xffb865,1.5,0,.26,0,.7,lan),lanC=new T.Object3D();lanC.position.set(0,.28,0);lan.add(lanC);
+/* 足元ににじむ影 */
+add(new T.CircleGeometry(.9,24),new T.MeshBasicMaterial({color:0x04060c,transparent:true,opacity:.35,depthWrite:false}),0,.03,0,C).rotation.x=-Math.PI/2;
+
+/* 光の粒 + ほこり */
+const sparks=[];for(let i=0;i<36;i++){const w=glow(0xffd9a0,.28,0,0,0,0);w.userData={p:i/36,a:i*1.9};sparks.push(w)}
+const N=130,dp=new Float32Array(N*3),dbase=[];for(let i=0;i<N;i++)dbase.push([rnd()*8-4,.3+rnd()*4.2,-.6-rnd()*7.4,rnd()*6]);
+const dg=new T.BufferGeometry();dg.setAttribute('position',new T.BufferAttribute(dp,3));
+S.add(new T.Points(dg,new T.PointsMaterial({map:gT,color:0xcfd8ee,size:.09,transparent:true,opacity:.35,blending:T.AdditiveBlending,depthWrite:false})));
+S.traverse(o=>{if(o.isMesh&&o.material.isMeshStandardMaterial&&!o.material.transparent){o.castShadow=true;o.receiveShadow=true}});
+lan.traverse(o=>{if(o.isMesh)o.castShadow=false});
+
+/* camera path: ホーム→詰め所の窓へズームイン→カゲミチに寄る→部屋を見渡す */
+const KT=[0,9,15,20,26,33,38,43,48,53,58,63,67,70],
+KP=[[0,4.5,28],[0,3.2,11],[0,2.5,3],[.3,2.2,-.8],[1.2,2.4,-2.0],[-.1,1.5,-2.6],[-.1,1.5,-2.6],[.3,2.3,-3.0],[.2,2.3,-3.0],[.2,2.3,-3.0],[.3,2.3,-3.0],[.3,2.3,-3.0],[.3,2.3,-2.9],[.2,2.3,-2.4]],
+KL=[[0,2.6,0],[0,2.6,0],[0,2.2,-5],[-.5,2,-5],[-.9,.6,-5],[-.9,.6,-5],[-.9,.6,-5],[-4.3,2.4,-5],[-2.6,2.5,-8],[.9,3.4,-8],[1.6,3.0,-8],[4.3,1.8,-4.8],[3.3,1.0,-6],[.5,2.2,-.2]];
+const mk=a=>new T.CatmullRomCurve3(a.map(v=>new T.Vector3(v[0],v[1],v[2])),false,'centripetal'),cP=mk(KP),cL=mk(KL);
+const U=t=>{let i=0;while(i<KT.length-2&&t>KT[i+1])i++;return(i+Math.min(1,Math.max(0,(t-KT[i])/(KT[i+1]-KT[i]))))/(KT.length-1)};
+const caps=[[0,''],[4,'終電が終わったあとの駅。'],[9,'誰もいないはずのホームの奥に、'],[14,'小さな灯りがともっています。'],[19,'ここは、カゲミチの詰め所。'],[24,'足もとには、ぽつんとランタンがひとつ。'],[29,'やわらかな灯りが、青灰色の部屋をあたためます。'],[33,'言えなかった「ありがとう」も、渡せなかった手紙も、'],[37,'この灯りに包まれて、夢へ届きます。'],[41,'壁には、案内人の制服と帽子。'],[46,'仕分け棚には、渡せなかった手紙たち。'],[51,'駅の時計は、いつも終電のあと。'],[56,'時刻表と路線図。行き先は、誰かの夢のなか。'],[61,'想いの瓶と、そっとしまっておく箱。'],[66,'今夜も、詰め所の灯りは消えません。']];
+const LOOP=70;let ci=-1;
+function setCap(i){ci=i;cap.classList.remove('on');setTimeout(()=>{if(ci===i){cap.textContent=caps[i][1];if(caps[i][1])cap.classList.add('on')}},450)}
+/* layout */
+let mode='L';
+function resize(){const aw=innerWidth-24,ah=innerHeight-90,r=mode==='L'?16/9:9/16;let w=aw,h=w/r;if(h>ah){h=ah;w=h*r}
+ frame.style.width=w+'px';frame.style.height=h+'px';frame.style.setProperty('--fs',(mode==='L'?h*.034:w*.05)+'px');
+ R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(w,h,false);cv.style.width=w+'px';cv.style.height=h+'px';
+ cam.aspect=w/h;cam.fov=mode==='L'?50:62;cam.updateProjectionMatrix()}
+addEventListener('resize',resize);
+const bL=document.getElementById('bL'),bP=document.getElementById('bP'),bPl=document.getElementById('bPl');
+function setMode(m){mode=m;bL.setAttribute('aria-pressed',m==='L');bP.setAttribute('aria-pressed',m==='P');resize()}
+bL.onclick=()=>setMode('L');bP.onclick=()=>setMode('P');
+let paused=false,t=0,last=performance.now();
+bPl.onclick=()=>{paused=!paused;bPl.textContent=paused?'再生':'一時停止';bPl.setAttribute('aria-pressed',paused)};
+document.getElementById('bR').onclick=()=>{t=0;ci=-1};
+resize();
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,cl=(x,a,b)=>Math.min(b,Math.max(a,x));
+const tmp=new T.Vector3();
+const wp=new T.Vector3();
+function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.1);last=now;if(!paused)t+=dt*(reduce?.4:1);
+ const lt=t%LOOP,u=U(Math.min(lt,69.9));cP.getPoint(u,cam.position);cL.getPoint(u,tmp);
+ const walk=cl((lt-14)/4,0,1)*(1-.9*cl((lt-33)/4,0,1));cam.position.y+=walk*.035*Math.sin(lt*2.4);cam.position.x+=walk*.02*Math.sin(lt*1.2);cam.lookAt(tmp);
+ fade.style.opacity=lt<1.2?1-lt/1.2:lt>68.4?(lt-68.4)/1.6:0;ttl.style.opacity=lt<6?1:cl(1-(lt-6)/2,0,1);
+ C.scale.y=SC*(1+.006*Math.sin(t*1.5));head.rotation.y=.12*Math.sin(t*.5);head.rotation.z=.025*Math.sin(t*.9);
+ arm2.rotation.x=-1.0+.04*Math.sin(t*1.1);
+ star.rotation.y=t*1.2;star.rotation.x=t*.7;
+ eyes.forEach(e=>e.scale.y=(t%5)<.14?.1:1);
+ tat.forEach(o=>{o.g.rotation.x=o.b+(o.big?.12:.05)*Math.sin(t*1.4+o.p)});
+ lanC.getWorldPosition(wp);lamp.position.copy(wp);lamp.position.y+=.08;
+ const fl=1+.05*Math.sin(t*7)+.03*Math.sin(t*13);lamp.intensity=1.4*fl;lg.scale.set(1.5*fl,1.5*fl,1);
+ sP.rotation.z=-(Math.floor(t))*.1047;
+ sparks.forEach(w=>{const q=w.userData,p=(t*.07+q.p)%1;w.position.set(wp.x+Math.sin(q.a+p*4)*.5*(.4+p),wp.y+p*2.4,wp.z+Math.cos(q.a+p*4)*.5*(.4+p));w.material.opacity=.7*Math.sin(p*Math.PI)});
+ bubs.forEach(b=>{const q=b.userData.p;b.position.y+=Math.sin(t*.6+q)*.0008;b.rotation.y=t*.3+q});
+ for(let i=0;i<N;i++){const b=dbase[i];dp[i*3]=b[0]+Math.sin(t*.3+b[3])*.3;dp[i*3+1]=.3+((b[1]+t*.06)%4.2);dp[i*3+2]=b[2]+Math.cos(t*.25+b[3])*.3}
+ dg.attributes.position.needsUpdate=true;
+ let k=0;caps.forEach((c,i)=>{if(lt>=c[0])k=i});if(k!==ci)setCap(k);
+ R.render(S,cam)}
+requestAnimationFrame(tick);
+</script>
+<a href="index.html" aria-label="部屋マップへ戻る" style="position:fixed;top:10px;left:10px;z-index:999;padding:7px 14px;border-radius:999px;background:rgba(20,14,28,.72);color:#f1e4d8;font:600 13px/1 'Zen Maru Gothic',sans-serif;text-decoration:none;border:1px solid rgba(241,228,216,.35);backdrop-filter:blur(4px)">← 部屋マップ</a>
+</body>
+</html>
+
+</body></html>

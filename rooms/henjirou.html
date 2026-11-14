@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ヘンジロウの部屋 — 見えない隣人たち</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<style>
+:root{--bg:#1a1220;--ink:#f1e4d8;--btn:#3a2d45;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#2a2133}}
+:root[data-theme="light"]{--bg:#2a2133}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;overflow:hidden}
+#frame{position:relative;background:#16111d;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px #0008}
+canvas{display:block}
+#fade{position:absolute;inset:0;background:#16111d;opacity:1;pointer-events:none}
+#title{position:absolute;left:0;right:0;top:4%;text-align:center;font-weight:700;font-size:calc(var(--fs)*1.3);color:#ffe9cf;letter-spacing:.14em;text-shadow:0 0 .6em #000b;pointer-events:none}
+#title small{display:block;font-weight:500;font-size:.55em;letter-spacing:.22em;opacity:.85;margin-top:.4em}
+#cap{position:absolute;left:6%;right:6%;bottom:5%;text-align:center;font-weight:700;font-size:calc(var(--fs)*1.2);line-height:1.6;color:#fff3e2;text-shadow:0 0 .5em #000,0 .05em .4em #000;transition:opacity .8s;opacity:0;pointer-events:none}
+#cap.on{opacity:1}
+#bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+button{font:inherit;font-weight:700;background:var(--btn);color:var(--ink);border:2px solid #7a5f6e;border-radius:999px;padding:.4em 1.1em;cursor:pointer}
+button[aria-pressed="true"]{background:#f2b58e;color:#3b2218;border-color:#f2b58e}
+button:focus-visible{outline:3px solid #8fd0c4;outline-offset:2px}
+</style>
+</head>
+<body>
+<div id="frame"><canvas id="c"></canvas><div id="title">ヘンジロウの部屋<small>ポストの中の返事書き</small></div><div id="cap"></div><div id="fade"></div></div>
+<div id="bar"><button id="bL" aria-pressed="true">横 16:9</button><button id="bP" aria-pressed="false">縦 9:16</button><button id="bPl" aria-pressed="false">一時停止</button><button id="bR">最初から</button></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const T=THREE,cv=document.getElementById('c'),frame=document.getElementById('frame'),cap=document.getElementById('cap'),fade=document.getElementById('fade'),ttl=document.getElementById('title');
+const R=new T.WebGLRenderer({canvas:cv,antialias:true});
+R.shadowMap.enabled=true;R.shadowMap.type=T.PCFShadowMap;R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=.9;
+const S=new T.Scene();S.background=new T.Color(0x0c1020);S.fog=new T.FogExp2(0x0c1020,.012);
+const cam=new T.PerspectiveCamera(50,1,.1,120);
+const SM=(c,o)=>new T.MeshStandardMaterial(Object.assign({color:c,roughness:.85,metalness:0,envMapIntensity:.5},o||{}));
+const BM=c=>new T.MeshBasicMaterial({color:c});
+const add=(g,m,x,y,z,p)=>{const o=new T.Mesh(g,m);o.position.set(x||0,y||0,z||0);(p||S).add(o);return o};
+const box=(w,h,d)=>new T.BoxGeometry(w,h,d),cyl=(a,b,h,s)=>new T.CylinderGeometry(a,b,h,s||24),sph=(r,a,b)=>new T.SphereGeometry(r,a||20,b||14);
+let sd=7;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647;
+function ctex(w,h,fn,rx,ry){const c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d'),w,h);const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rx||1,ry||1);return t}
+const plaster=(base,rx,ry)=>ctex(512,512,(g,w,h)=>{g.fillStyle=base;g.fillRect(0,0,w,h);for(let i=0;i<2500;i++){g.fillStyle='rgba('+(rnd()<.5?'255,255,255':'15,10,20')+','+rnd()*.07+')';g.fillRect(rnd()*w,rnd()*h,2+rnd()*3,2+rnd()*3)}for(let i=0;i<12;i++){const gr=g.createLinearGradient(0,0,0,h*(.4+rnd()*.6));gr.addColorStop(0,'rgba(30,20,15,.22)');gr.addColorStop(1,'rgba(30,20,15,0)');g.fillStyle=gr;g.fillRect(rnd()*w,0,4+rnd()*10,h)}},rx,ry);
+const floorT=ctex(512,512,(g,w)=>{for(let i=0;i<8;i++){g.fillStyle='hsl(25,'+(30+rnd()*8)+'%,'+(22+rnd()*8)+'%)';g.fillRect(0,i*64,w,64);g.fillStyle='rgba(0,0,0,.4)';g.fillRect(0,i*64,w,3)}},2,1.6);
+const gT=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d'),r=g.createRadialGradient(64,64,0,64,64,64);g.fillStyle='#000';g.fillRect(0,0,128,128);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.25,'rgba(255,255,255,.45)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,128,128);return new T.CanvasTexture(c)})();
+const glow=(col,s,x,y,z,op,p)=>{const m=new T.Sprite(new T.SpriteMaterial({map:gT,color:col,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:op==null?.8:op}));m.scale.set(s,s,1);m.position.set(x,y,z);(p||S).add(m);return m};
+/* ===== v8 helpers: テクスチャと旋盤形状 ===== */
+const lathe=(pts,seg)=>new T.LatheGeometry(pts.map(p=>new T.Vector2(p[0],p[1])),seg||32);
+const late=[];const lateDraw=fn=>{fn();late.push(fn)};if(document.fonts)document.fonts.ready.then(()=>late.forEach(f=>f()));
+const woodT=(h,rx,ry,n,l0)=>ctex(256,256,(g,w,hh)=>{n=n||4;const ph=hh/n;l0=l0||26;for(let i=0;i<n;i++){const l=l0+rnd()*9,y0=i*ph;g.fillStyle='hsl('+(h+rnd()*6)+','+(32+rnd()*10)+'%,'+l+'%)';g.fillRect(0,y0,w,ph);
+ for(let k=0;k<26;k++){g.strokeStyle='rgba('+(rnd()<.5?'20,10,5':'255,220,170')+','+(.04+rnd()*.09)+')';g.lineWidth=.6+rnd()*1.4;const yy=y0+rnd()*ph;g.beginPath();g.moveTo(0,yy);g.bezierCurveTo(w*.3,yy+(rnd()-.5)*5,w*.6,yy+(rnd()-.5)*5,w,yy+(rnd()-.5)*3);g.stroke()}
+ if(rnd()<.6){const kx=rnd()*w,ky=y0+ph*(.3+rnd()*.4);for(let r=7;r>1;r-=2){g.strokeStyle='rgba(30,15,8,'+(.3-r*.025)+')';g.lineWidth=1.2;g.beginPath();g.ellipse(kx,ky,r*1.8,r*.8,0,0,6.3);g.stroke()}}
+ g.fillStyle='rgba(10,5,3,.55)';g.fillRect(0,y0,w,2.5)}},rx,ry);
+const staveT=ctex(256,128,(g,w,hh)=>{for(let i=0;i<8;i++){g.fillStyle='hsl('+(24+rnd()*6)+',36%,'+(22+rnd()*9)+'%)';g.fillRect(i*32,0,32,hh);for(let k=0;k<12;k++){g.strokeStyle='rgba(20,10,5,'+(.05+rnd()*.1)+')';g.beginPath();const x=i*32+rnd()*32;g.moveTo(x,0);g.lineTo(x+(rnd()-.5)*4,hh);g.stroke()}g.fillStyle='rgba(8,4,2,.6)';g.fillRect(i*32,0,2,hh)}},2,1);
+const hamT=ctex(256,256,(g,w,h)=>{g.fillStyle='#808080';g.fillRect(0,0,w,h);for(let i=0;i<420;i++){const x=rnd()*w,y=rnd()*h,r=5+rnd()*9,gr=g.createRadialGradient(x-r*.25,y-r*.25,0,x,y,r),v=rnd()<.5?60:200;gr.addColorStop(0,'rgba('+v+','+v+','+v+',.45)');gr.addColorStop(1,'rgba(128,128,128,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2)}},3,2);
+const specT=(col,speck,rx)=>ctex(128,128,(g,w,h)=>{g.fillStyle=col;g.fillRect(0,0,w,h);if(speck){for(let i=0;i<900;i++){const l=rnd()<.5;g.fillStyle=l?'rgba(255,245,220,'+rnd()*.5+')':'rgba(20,10,5,'+rnd()*.45+')';g.fillRect(rnd()*w,rnd()*h,1+rnd()*2.5,1+rnd()*2.5)}}else{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'rgba(255,255,255,.28)');gr.addColorStop(1,'rgba(0,0,0,.28)');g.fillStyle=gr;g.fillRect(0,0,w,h)}},rx||2,1);
+const weaveT=ctex(128,128,(g,w,h)=>{g.fillStyle='#8a6a3a';g.fillRect(0,0,w,h);for(let y=0;y<h;y+=8)for(let x=0;x<w;x+=16){const o=((y/8)%2)*8;g.fillStyle='hsl(36,'+(35+rnd()*10)+'%,'+(36+rnd()*14)+'%)';g.fillRect(x+o,y,15,7);g.fillStyle='rgba(20,10,0,.4)';g.fillRect(x+o,y+7,16,1)}},4,2);
+const crustT=ctex(128,128,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#e0a560');gr.addColorStop(1,'#a8692f');g.fillStyle=gr;g.fillRect(0,0,w,h);for(let i=0;i<500;i++){g.fillStyle='rgba(255,230,170,'+rnd()*.18+')';g.fillRect(rnd()*w,rnd()*h,2,2)}[.3,.5,.7].forEach(y=>{g.strokeStyle='#f3d9a2';g.lineWidth=7;g.beginPath();g.moveTo(w*.2,h*y-5);g.lineTo(w*.8,h*y+5);g.stroke()})},1,1);
+const quiltT=ctex(128,128,(g,w,h)=>{const cs=['#6f8fb0','#c97b6b','#e6c58a','#7fa890'];for(let i=0;i<4;i++)for(let j=0;j<4;j++){g.fillStyle=cs[(i+j*2)%4];g.fillRect(i*32,j*32,32,32);g.strokeStyle='rgba(255,255,255,.35)';g.setLineDash([3,3]);g.strokeRect(i*32+3,j*32+3,26,26)}for(let i=0;i<700;i++){g.fillStyle='rgba(0,0,0,'+rnd()*.08+')';g.fillRect(rnd()*w,rnd()*h,2,2)}},1,1);
+const skyT=ctex(256,256,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#0f1a3a');gr.addColorStop(1,'#4a5f9a');g.fillStyle=gr;g.fillRect(0,0,w,h);for(let i=0;i<70;i++){g.fillStyle='rgba(255,255,240,'+(.3+rnd()*.7)+')';g.beginPath();g.arc(rnd()*w,rnd()*h*.8,.5+rnd()*1.3,0,6.3);g.fill()}g.fillStyle='#fff6d0';g.beginPath();g.arc(w*.72,h*.3,20,0,6.3);g.fill();g.fillStyle='#0f1a3a';g.beginPath();g.arc(w*.72+9,h*.3-4,18,0,6.3);g.fill()},1,1);
+const soupT=ctex(128,128,(g,w,h)=>{g.fillStyle='#e9a24a';g.fillRect(0,0,w,h);for(let i=0;i<60;i++){const x=rnd()*w,y=rnd()*h,r=3+rnd()*10,gr=g.createRadialGradient(x,y,0,x,y,r);const c=rnd()<.5?'255,220,150':'190,100,40';gr.addColorStop(0,'rgba('+c+',.6)');gr.addColorStop(1,'rgba('+c+',0)');g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2)}},1,1);
+const rugT=ctex(512,512,(g,w,h)=>{g.fillStyle='#e6d8b8';g.fillRect(0,0,w,h);const rings=[['#4d6b66',250],['#e6d8b8',225],['#b4553f',205],['#e6d8b8',180],['#6f8f86',165],['#d9a84a',120],['#4d6b66',100],['#e6d8b8',60]];rings.forEach(r=>{g.fillStyle=r[0];g.beginPath();g.arc(256,256,r[1],0,6.3);g.fill()});g.strokeStyle='#4a3626';g.lineWidth=3;for(let i=0;i<24;i++){const a=i/24*6.283;g.beginPath();g.moveTo(256+Math.cos(a)*165,256+Math.sin(a)*165);g.lineTo(256+Math.cos(a)*205,256+Math.sin(a)*205);g.stroke()}for(let i=0;i<5000;i++){g.fillStyle='rgba('+(rnd()<.5?'255,255,255':'0,0,0')+','+rnd()*.07+')';g.fillRect(rnd()*w,rnd()*h,2,2)}},1,1);
+const labT=(txt,col)=>{const c=document.createElement('canvas');c.width=128;c.height=96;const t=new T.CanvasTexture(c);lateDraw(()=>{const g=c.getContext('2d');g.fillStyle='#eadfc4';g.fillRect(0,0,128,96);g.strokeStyle=col||'#7a5a3a';g.lineWidth=5;g.strokeRect(5,5,118,86);t.needsUpdate=true});return t};
+/* 材質 */
+const br=SM(0xc99a4a,{metalness:.8,roughness:.32,envMapIntensity:1.5}),fe=SM(0x2b2b30,{metalness:.7,roughness:.5,envMapIntensity:1}),
+ glassM=SM(0xdfe9ee,{transparent:true,opacity:.26,roughness:.05,metalness:.1,envMapIntensity:1.8,side:T.DoubleSide,depthWrite:false}),
+ cork=SM(0xb88a55,{roughness:.95}),
+ cuM=SM(0xc27a45,{metalness:.65,roughness:.32,bumpMap:hamT,bumpScale:1.6,envMapIntensity:1.5,side:T.DoubleSide}),
+ cream=SM(0xe9e0cc,{roughness:.35,envMapIntensity:.8,side:T.DoubleSide});
+/* ガラス瓶: 本体(ガラス)+中身(粒つぶ)+コルク+紙ラベル */
+function jar(x,y,z,r,h,col,txt,o){o=o||{};const g=new T.Group();g.position.set(x,y,z);S.add(g);
+ add(lathe([[0,0],[r*.92,0],[r,h*.05],[r,h*.72],[r*.82,h*.84],[r*.56,h*.9],[r*.56,h]],28),glassM,0,0,0,g);
+ const cm=SM(0xffffff,{map:specT(col,!o.liq,2),roughness:o.liq?.25:.9,emissive:o.em?col:0x000000,emissiveIntensity:o.em||0,envMapIntensity:o.liq?1.2:.3});
+ add(cyl(r*.92,r*.92,h*(o.fill||.62),24),cm,0,h*(o.fill||.62)/2+.01,0,g);
+ add(cyl(r*.6,r*.5,.07,14),cork,0,h+.02,0,g);
+ const fa=o.fa==null?Math.PI/2:o.fa;add(new T.CylinderGeometry(r*1.012,r*1.012,h*.36,20,1,true,fa-.95,1.9),new T.MeshStandardMaterial({map:labT(txt),roughness:.9,side:T.DoubleSide}),0,h*.42,0,g);return g}
+function ladle(x,y,z,l,m){const g=new T.Group();g.position.set(x,y,z);S.add(g);add(cyl(.018,.018,l,8),m||fe,0,-l/2,0,g);add(new T.SphereGeometry(.11,14,8,0,Math.PI*2,0,Math.PI/2),m||cuM,0,-l,.0,g).rotation.x=-Math.PI/2;add(new T.TorusGeometry(.02,.006,6,10),m||fe,0,-.03,0,g);return g}
+/* layout */
+let mode='L';
+function resize(){const aw=innerWidth-24,ah=innerHeight-90,r=mode==='L'?16/9:9/16;let w=aw,h=w/r;if(h>ah){h=ah;w=h*r}
+ frame.style.width=w+'px';frame.style.height=h+'px';frame.style.setProperty('--fs',(mode==='L'?h*.034:w*.05)+'px');
+ R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(w,h,false);cv.style.width=w+'px';cv.style.height=h+'px';
+ cam.aspect=w/h;cam.fov=mode==='L'?50:62;cam.updateProjectionMatrix()}
+addEventListener('resize',resize);
+const bL=document.getElementById('bL'),bP=document.getElementById('bP'),bPl=document.getElementById('bPl');
+function setMode(m){mode=m;bL.setAttribute('aria-pressed',m==='L');bP.setAttribute('aria-pressed',m==='P');resize()}
+bL.onclick=()=>setMode('L');bP.onclick=()=>setMode('P');
+let paused=false,t=0,last=performance.now();
+bPl.onclick=()=>{paused=!paused;bPl.textContent=paused?'再生':'一時停止';bPl.setAttribute('aria-pressed',paused)};
+document.getElementById('bR').onclick=()=>{t=0;ci=-1};
+resize();
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,cl=(x,a,b)=>Math.min(b,Math.max(a,x));
+const tmp=new T.Vector3();
+
+/* ===== ヘンジロウの部屋: 月夜の町角、赤いポストの内側にある返事書きの書斎 ===== */
+const V3=(x,y,z)=>new T.Vector3(x,y,z);
+const FNT="'Zen Maru Gothic','Hiragino Maru Gothic ProN','Yu Gothic',sans-serif";
+const PCX=0,PCZ=-5,PR=2.8,PH=4.4;
+const envF=(top,bot,spot)=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d'),gr=g.createLinearGradient(0,0,0,64);gr.addColorStop(0,top);gr.addColorStop(1,bot);g.fillStyle=gr;g.fillRect(0,0,64,64);if(spot){const r=g.createRadialGradient(32,30,0,32,30,30);r.addColorStop(0,spot);r.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=r;g.fillRect(0,0,64,64)}return c};
+try{const envT=new T.CubeTexture([envF('#2a3358','#1a1218','#ffb870'),envF('#2a3358','#1a1218','#ffb870'),envF('#1c2440','#2a1c1a'),envF('#0c0e18','#241414'),envF('#2a3358','#1a1218','#ffb870'),envF('#1c2440','#120e12')]);envT.needsUpdate=true;const pm=new T.PMREMGenerator(R);S.environment=pm.fromCubemap(envT).texture}catch(e){}
+S.background=new T.Color(0x04060e);S.fog=new T.FogExp2(0x04060e,.028);
+S.add(new T.HemisphereLight(0x8a80a0,0x3a1c18,.4));
+const moonL=new T.DirectionalLight(0xa9bdf0,.6);moonL.position.set(-6,10,8);S.add(moonL);
+const coldL=new T.PointLight(0x9fb8ff,.5,16,1.4);coldL.position.set(0,3.5,2);S.add(coldL);
+const roomL=new T.PointLight(0xffb868,1.6,10,1.3);roomL.position.set(0,3.0,-5.3);S.add(roomL);
+const deskL=new T.PointLight(0xffc078,1.2,6,1.5);deskL.position.set(.55,1.25,-6.9);S.add(deskL);
+const shaftL=new T.PointLight(0xa8c0ff,.8,7,1.4);shaftL.position.set(0,3.8,-5);S.add(shaftL);
+const doorL=new T.PointLight(0xffb070,.5,6,1.4);doorL.position.set(0,1.4,-2.0);S.add(doorL);
+const postL=new T.PointLight(0xffb878,2.6,12,1.2);postL.position.set(0,3.0,-.7);S.add(postL);
+const iron=SM(0x20262c,{metalness:.65,roughness:.5,envMapIntensity:1.1});
+const darkM=SM(0x1b2030,{roughness:.9});
+
+/* --- テクスチャ --- */
+const txtT=(w,h,fn)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const tx=new T.CanvasTexture(c);lateDraw(()=>{fn(c.getContext('2d'),w,h);tx.needsUpdate=true});return tx};
+const paperT=(lines,w,h)=>txtT(w||256,h||180,(g,W,H)=>{g.fillStyle='#ece1c6';g.fillRect(0,0,W,H);for(let i=0;i<500;i++){g.fillStyle='rgba(120,90,50,'+rnd()*.08+')';g.fillRect(rnd()*W,rnd()*H,2,2)}g.fillStyle='#3a2f4a';g.font='700 '+Math.round(H*.17)+'px '+FNT;g.textBaseline='middle';lines.forEach((s,i)=>{g.save();g.translate(W*.1,H*(.26+i*.26));g.rotate((i%2?.012:-.014));g.fillText(s,0,0);g.restore()})});
+const paperCache={};const paperC=(txt)=>paperCache[txt]||(paperCache[txt]=paperT([txt],192,136));
+const redT=ctex(256,512,(g,w,h)=>{g.fillStyle='#b22a22';g.fillRect(0,0,w,h);for(let i=0;i<8;i++){g.fillStyle='rgba(255,170,150,.07)';g.fillRect(i*32+4,0,6,h);g.fillStyle='rgba(60,5,5,.35)';g.fillRect(i*32,0,3,h)}
+ for(let r=0;r<2;r++)for(let i=0;i<32;i++){g.fillStyle='rgba(255,200,180,.35)';g.beginPath();g.arc(i*8+4,22+r*470,2,0,6.3);g.fill()}
+ for(let i=0;i<700;i++){g.fillStyle='rgba('+(rnd()<.6?'40,0,0':'255,200,170')+','+rnd()*.12+')';g.fillRect(rnd()*w,rnd()*h,1+rnd()*2,1+rnd()*10)}},4,1);
+const redIn=ctex(256,512,(g,w,h)=>{g.fillStyle='#7c1f1b';g.fillRect(0,0,w,h);for(let i=0;i<8;i++){g.fillStyle='rgba(0,0,0,.35)';g.fillRect(i*32,0,3,h);g.fillStyle='rgba(255,160,130,.05)';g.fillRect(i*32+6,0,8,h)}for(let i=0;i<900;i++){g.fillStyle='rgba('+(rnd()<.6?'20,0,0':'255,190,160')+','+rnd()*.1+')';g.fillRect(rnd()*w,rnd()*h,1+rnd()*2,1+rnd()*8)}},4,1);
+const stoneT=ctex(512,512,(g,w,h)=>{g.fillStyle='#07090f';g.fillRect(0,0,w,h);const n=8,s=w/n;for(let j=0;j<n;j++)for(let i=0;i<n;i++){const o=(j%2)*s/2,x=i*s+o,y=j*s,l=18+rnd()*14;g.fillStyle='hsl('+(215+rnd()*20)+','+(10+rnd()*10)+'%,'+l+'%)';g.beginPath();const r=9;g.moveTo(x+r+3,y+3);g.arcTo(x+s-3,y+3,x+s-3,y+s-3,r);g.arcTo(x+s-3,y+s-3,x+3,y+s-3,r);g.arcTo(x+3,y+s-3,x+3,y+3,r);g.arcTo(x+3,y+3,x+s-3,y+3,r);g.fill();for(let k=0;k<30;k++){g.fillStyle='rgba(255,255,255,'+rnd()*.06+')';g.fillRect(x+rnd()*s,y+rnd()*s,2,2)}}},6,18);
+const facadeT=(rx)=>ctex(256,512,(g,w,h)=>{g.fillStyle='#1c2036';g.fillRect(0,0,w,h);for(let j=0;j<40;j++)for(let i=0;i<12;i++){const l=16+rnd()*7;g.fillStyle='hsl('+(225+rnd()*15)+',22%,'+l+'%)';g.fillRect(i*21.4+(j%2?10:0),j*12.8,20,11)}
+ for(let j=0;j<6;j++)for(let i=0;i<3;i++){const x=22+i*80,y=34+j*78,lit=rnd()<.14;g.fillStyle='#0a0d18';g.fillRect(x-4,y-4,50,62);if(lit){const gr=g.createLinearGradient(0,y,0,y+54);gr.addColorStop(0,'#ffd68a');gr.addColorStop(1,'#d9893c');g.fillStyle=gr}else g.fillStyle='hsl(225,30%,'+(10+rnd()*6)+'%)';g.fillRect(x,y,42,54);g.fillStyle='#0a0d18';g.fillRect(x+19,y,4,54);g.fillRect(x,y+24,42,4)}},rx||1,1);
+const poolT=(()=>{const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d'),r=g.createRadialGradient(128,128,0,128,128,128);g.fillStyle='#000';g.fillRect(0,0,256,256);r.addColorStop(0,'rgba(255,190,110,.8)');r.addColorStop(.5,'rgba(255,160,80,.3)');r.addColorStop(1,'rgba(255,150,70,0)');g.fillStyle=r;g.fillRect(0,0,256,256);return new T.CanvasTexture(c)})();
+const beamT=(()=>{const c=document.createElement('canvas');c.width=8;c.height=128;const g=c.getContext('2d'),r=g.createLinearGradient(0,0,0,128);g.fillStyle='#000';g.fillRect(0,0,8,128);r.addColorStop(0,'rgba(200,220,255,.9)');r.addColorStop(1,'rgba(200,220,255,.05)');g.fillStyle=r;g.fillRect(0,0,8,128);return new T.CanvasTexture(c)})();
+const townT=txtT(256,256,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#16224a');gr.addColorStop(1,'#3a4a86');g.fillStyle=gr;g.fillRect(0,0,w,h);for(let i=0;i<40;i++){g.fillStyle='rgba(255,255,240,'+(.3+rnd()*.7)+')';g.fillRect(rnd()*w,rnd()*h*.6,1.6,1.6)}
+ g.fillStyle='#e8eeff';g.beginPath();g.arc(180,70,22,0,6.3);g.fill();g.fillStyle='#16224a';g.beginPath();g.arc(190,64,20,0,6.3);g.fill();
+ g.fillStyle='#0a0e22';for(let i=0;i<8;i++){const bw=28+rnd()*18,bh=50+rnd()*70,x=i*34-6;g.fillRect(x,h-bh,bw,bh);g.fillStyle=rnd()<.5?'#f5c46a':'#1a2248';for(let k=0;k<3;k++)g.fillRect(x+5+rnd()*12,h-bh+10+k*22,6,9);g.fillStyle='#0a0e22'}});
+const redM=SM(0xffffff,{map:redT,roughness:.5,metalness:.35,envMapIntensity:1.2});
+const redInM=SM(0xffffff,{map:redIn,roughness:.7,metalness:.2,side:T.BackSide});
+const woodM=SM(0xffffff,{map:woodT(24,1,1,4,22),roughness:.75});
+
+/* --- 地面と通り --- */
+const ground=add(new T.PlaneGeometry(13,60),SM(0xffffff,{map:stoneT,roughness:.55,envMapIntensity:.9}),0,0,8);ground.rotation.x=-Math.PI/2;
+const pool=add(new T.CircleGeometry(3.8,48),new T.MeshBasicMaterial({map:poolT,transparent:true,blending:T.AdditiveBlending,depthWrite:false,opacity:.75,fog:false}),0,.02,-1.4);pool.rotation.x=-Math.PI/2;
+[-6.5,6.5].forEach(x=>add(box(.4,.22,60),SM(0x2a2e40,{roughness:.8}),x*.985,.11,8));
+const facM=SM(0xffffff,{map:facadeT(1),roughness:.9,emissive:0x1a1a22,emissiveIntensity:.35});let zz=-9;const heights=[11,13,10,14,12,15,11,13,12,14,10,13];
+for(let i=0;i<10;i++){const d=3.2+rnd()*2.2,hh=heights[i%heights.length]+rnd()*2,zc=zz+d/2;
+ const mL=[darkM,darkM,darkM,darkM,darkM,darkM];mL[0]=facM;add(box(2,hh,d),mL,-7.5,hh/2,zc);
+ const mR=[darkM,darkM,darkM,darkM,darkM,darkM];mR[1]=facM;add(box(2,hh,d),mR,7.5,hh/2,zc);zz+=d}
+add(box(16,13,1),[darkM,darkM,darkM,darkM,SM(0xffffff,{map:facadeT(2.4),roughness:.9,emissive:0x1a1a22,emissiveIntensity:.3}),darkM],0,6.5,-9.5);
+var starMat,moonMat;
+{const n=380,p=new Float32Array(n*3);for(let i=0;i<n;i++){const a=rnd()*6.283,e=.25+rnd()*1.1,r=95;p[i*3]=Math.cos(a)*Math.cos(e)*r;p[i*3+1]=Math.sin(e)*r*.8+10;p[i*3+2]=-Math.abs(Math.sin(a))*Math.cos(e)*r*.9-20}
+ const sg=new T.BufferGeometry();sg.setAttribute('position',new T.BufferAttribute(p,3));starMat=new T.PointsMaterial({color:0xdfe8ff,size:1.6,sizeAttenuation:false,transparent:true,opacity:.8,fog:false,depthWrite:false});S.add(new T.Points(sg,starMat));
+ const mo=new T.Sprite(new T.SpriteMaterial({map:gT,color:0xbfd0ff,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:.6,fog:false}));mo.scale.set(40,40,1);mo.position.set(-14,40,-85);S.add(mo);moonMat=mo.material}
+
+/* --- 赤いポスト(大きな円筒。足元に入口、その上に投函口) --- */
+const DG=.4;/* 入口の半角 */
+const cyP=(r,h,ts,tl,m,y)=>{const o=new T.Mesh(new T.CylinderGeometry(r,r,h,48,1,true,ts,tl),m);o.position.set(PCX,y,PCZ);S.add(o);return o};
+cyP(PR,PH,DG,Math.PI*2-DG*2,redM,PH/2);cyP(PR,PH-2.5,-DG,DG*2,redM,2.5+(PH-2.5)/2);
+cyP(PR-.06,PH,DG,Math.PI*2-DG*2,redInM,PH/2);cyP(PR-.06,PH-2.5,-DG,DG*2,redInM,2.5+(PH-2.5)/2);
+add(lathe([[PR,PH],[PR-.15,PH+.35],[PR-.6,PH+.7],[PR-1.4,PH+1.0],[PR-2.2,PH+1.15],[.42,PH+1.18]],48),SM(0xffffff,{map:redT,roughness:.5,metalness:.35,side:T.DoubleSide}),PCX,0,PCZ);
+add(new T.TorusGeometry(.42,.035,8,32),br,PCX,PH+1.18,PCZ).rotation.x=Math.PI/2;
+add(cyl(PR+.18,PR+.2,.16,48),SM(0x4a4e5a,{roughness:.85}),PCX,.08,PCZ);
+add(cyl(PR+.04,PR+.04,.1,48,1,true),br,PCX,.5,PCZ).visible=false;
+[-DG,DG].forEach(a=>add(box(.12,2.5,.16),br,PCX+Math.sin(a)*(PR+.01),1.25,PCZ+Math.cos(a)*(PR+.01)).rotation.y=a);
+add(box(2.4,.12,.2),br,PCX,2.5,PCZ+PR*Math.cos(DG)+.02);
+/* 投函口(光る)と〒マーク */
+const slotG=new T.Group();slotG.position.set(PCX,3.45,PCZ+PR+.02);S.add(slotG);
+add(box(1.5,.26,.08),br,0,0,0,slotG);const slotM=new T.MeshBasicMaterial({color:0xffcf88,fog:false});add(new T.PlaneGeometry(1.3,.1),slotM,0,0,.045,slotG);
+const slotGl=glow(0xffc27a,3.2,0,0,.2,.9,slotG);slotGl.material.fog=false;
+const yubin=add(new T.PlaneGeometry(.7,.7),new T.MeshStandardMaterial({map:txtT(128,128,(g,w,h)=>{g.fillStyle='#e8c76a';g.beginPath();g.arc(64,64,58,0,6.3);g.fill();g.fillStyle='#8a1a14';g.textAlign='center';g.textBaseline='middle';g.font='700 82px '+FNT;g.fillText('〒',64,70)}),roughness:.4,metalness:.5,transparent:true}),PCX,4.05,PCZ+PR+.012);
+add(box(1.0,.22,.04),new T.MeshStandardMaterial({map:paperC('ゆうびん'),roughness:.6}),PCX+1.55,3.0,PCZ+PR*.86).rotation.y=.55;
+/* 空へ昇る月の光 */
+const skyBeam=add(new T.CylinderGeometry(.38,1.6,8,32,1,true),new T.MeshBasicMaterial({map:beamT,color:0xbcd0ff,transparent:true,opacity:.14,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide,fog:false}),PCX,PH+1.15+4,PCZ);skyBeam.rotation.x=Math.PI;
+
+/* --- 内側の床・床の手紙・月あかりの柱 --- */
+const parqT=ctex(512,512,(g,w,h)=>{const n=10,pw=w/n;for(let i=0;i<n;i++){let y=-rnd()*200;while(y<h){const L=140+rnd()*160,l=30+rnd()*9;g.fillStyle='hsl('+(26+rnd()*6)+','+(42+rnd()*10)+'%,'+l+'%)';g.fillRect(i*pw,y,pw,L);g.fillStyle='rgba(30,12,4,.55)';g.fillRect(i*pw,y,pw,2);for(let k=0;k<14;k++){g.fillStyle='rgba(60,25,8,'+rnd()*.12+')';g.fillRect(i*pw+rnd()*pw,y+rnd()*L,1+rnd()*2,6+rnd()*30)}y+=L}g.fillStyle='rgba(30,12,4,.6)';g.fillRect(i*pw,0,2,h)}},1,1);
+
+add(new T.CircleGeometry(PR-.08,48),SM(0xffffff,{map:parqT,roughness:.55,envMapIntensity:.8}),PCX,.02,PCZ).rotation.x=-Math.PI/2;
+const shaft=add(new T.CylinderGeometry(.4,1.3,5.4,32,1,true),new T.MeshBasicMaterial({map:beamT,color:0xbcd0ff,transparent:true,opacity:.12,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide,fog:false}),PCX,2.8,PCZ);
+const spotC=add(new T.CircleGeometry(1.2,40),new T.MeshBasicMaterial({map:poolT,color:0xa8c0ff,transparent:true,blending:T.AdditiveBlending,depthWrite:false,opacity:.4,fog:false}),PCX,.035,PCZ);spotC.rotation.x=-Math.PI/2;
+const envC=[0xf0e6cc,0xf6d8d8,0xd8e6f0,0xe6e0d0,0xf2e2b8],envM=envC.map(c=>SM(c,{roughness:.9}));
+function envelope(x,y,z,ry,k){const e=add(box(.17,.012,.115),envM[k%5],x,y,z);e.rotation.y=ry;if(k%3==0){add(box(.05,.014,.03),SM(0xc9453a,{roughness:.6}),x,y+.001,z).rotation.y=ry}return e}
+for(let i=0;i<70;i++){const a=rnd()*6.283,r=.7+rnd()*1.9,x=PCX+Math.sin(a)*r,z=PCZ+Math.cos(a)*r;if(z>PCZ+1.8&&Math.abs(x)<1.3)continue;if(Math.hypot(x,z-(PCZ-2))<.9)continue;envelope(x,.035+rnd()*.01,z,rnd()*6,i)}
+for(let i=0;i<38;i++){const a=rnd()*6.283,r=rnd()*.55,lay=Math.floor(i/10);envelope(-1.4+Math.cos(a)*r,.04+lay*.016+rnd()*.008,-4.2+Math.sin(a)*r*.8,rnd()*6,i)}
+glow(0xffe2a8,1.3,-1.4,.25,-4.2,.25);
+
+/* --- 小さな机・椅子・書きかけの返事・羽ペン・インク壺・封蝋・丸メガネ・ランプ --- */
+const DX=0,DZ=-7.05;
+add(box(1.7,.06,.76),woodM,DX,.8,DZ);[[-.78,-.3],[.78,-.3],[-.78,.3],[.78,.3]].forEach(a=>add(box(.07,.8,.07),woodM,DX+a[0],.4,DZ+a[1]));
+add(box(.5,.14,.02),SM(0x3a2616,{roughness:.8}),DX+.4,.68,DZ+.38);add(sph(.02,8,6),br,DX+.4,.68,DZ+.4);add(box(.7,.18,.02),SM(0x3a2616,{roughness:.8}),DX-.45,.68,DZ+.38);
+const letter=add(new T.PlaneGeometry(.42,.3),new T.MeshStandardMaterial({map:paperT(['ちゃんと届きますように','ありがとう、を','こめて'],256,180),roughness:.9}),DX-.12,.835,DZ+.02);letter.rotation.set(-Math.PI/2,0,-.1);
+[0,.012,.024].forEach((y,i)=>add(box(.3,.01,.22),SM(0xece1c6,{roughness:.9}),DX+.45,.835+y,DZ-.12).rotation.y=.1*i);
+const pen=new T.Group();pen.position.set(DX-.55,.83,DZ-.02);S.add(pen);
+add(lathe([[0,0],[.05,0],[.055,.02],[.055,.06],[.03,.075],[.03,.09],[0,.09]],20),glassM,0,0,0,pen);add(cyl(.045,.045,.045,16),SM(0x0e1230,{roughness:.2,metalness:.2,emissive:0x0a1030,emissiveIntensity:.4}),0,.03,0,pen);add(cyl(.032,.032,.015,14),br,0,.095,0,pen);
+const quill=new T.Group();quill.position.set(0,.09,0);quill.rotation.set(.15,0,-.55);pen.add(quill);
+add(cyl(.004,.006,.4,6),SM(0xece1c6,{roughness:.7}),0,.2,0,quill);
+const fsh=new T.Shape();fsh.moveTo(0,0);fsh.quadraticCurveTo(.07,.12,.005,.3);fsh.quadraticCurveTo(-.06,.12,0,0);const fM=SM(0xf4efe2,{roughness:.8,side:T.DoubleSide});add(new T.ShapeGeometry(fsh),fM,0,.18,0,quill).rotation.y=.2;add(new T.ShapeGeometry(fsh),fM,0,.18,0,quill).rotation.y=-.9;
+const seal=new T.Group();seal.position.set(DX+.12,.83,DZ-.2);S.add(seal);
+add(cyl(.045,.045,.012,16),SM(0xa4261f,{roughness:.4,emissive:0x3a0a08,emissiveIntensity:.3}),0,.006,0,seal);add(cyl(.02,.025,.06,12),SM(0x3a2616,{roughness:.7}),.1,.03,.02,seal);add(cyl(.028,.028,.02,12),br,.1,.07,.02,seal);
+const brm=new T.Group();brm.position.set(DX+.25,.83,DZ+.1);brm.rotation.y=.5;S.add(brm);const gl2=new T.Group();brm.add(gl2);gl2.rotation.x=-Math.PI/2;gl2.position.y=.012;
+[-.062,.062].forEach(x=>add(new T.TorusGeometry(.05,.005,8,28),br,x,0,0,gl2));add(new T.TorusGeometry(.018,.004,6,10,Math.PI),br,0,.012,0,gl2);[-.11,.11].forEach(x=>add(cyl(.003,.003,.12,4),br,x,-.11,0,gl2));
+const hat=new T.Group();hat.position.set(DX+.45,.83,DZ+.2);S.add(hat);add(sph(1,16,10),SM(0x1f2c52,{roughness:.9}),0,.035,0,hat).scale.set(.085,.04,.085);add(sph(.012,8,6),SM(0x14183a,{roughness:.9}),0,.075,0,hat);add(cyl(.088,.09,.014,20),SM(0x14183a,{roughness:.9}),0,.008,0,hat);
+const lampB=new T.Group();lampB.position.set(DX+.68,.83,DZ-.2);S.add(lampB);
+add(lathe([[0,0],[.07,0],[.06,.04],[.03,.08],[.03,.12],[0,.12]],18),br,0,0,0,lampB);add(cyl(.06,.075,.2,16,1,true),glassM,0,.22,0,lampB);const flame=add(sph(.022,10,8),BM(0xffd48a),0,.17,0,lampB);flame.scale.set(1,1.7,1);glow(0xffc070,.7,0,.18,0,.8,lampB);
+add(lathe([[.045,0],[.06,.06],[.09,.1],[.1,.12]],18),SM(0x2e5a46,{roughness:.5,metalness:.3,side:T.DoubleSide}),0,.3,0,lampB);
+const stool=new T.Group();stool.position.set(0,0,-6.15);S.add(stool);add(cyl(.22,.22,.05,20),woodM,0,.46,0,stool);[0,1,2].forEach(i=>{const a=i*2.094+.5,l=add(cyl(.025,.03,.46,8),woodM,Math.cos(a)*.15,.22,Math.sin(a)*.15,stool);l.rotation.z=Math.cos(a)*.12;l.rotation.x=-Math.sin(a)*.12});
+add(sph(1,14,10),SM(0x6a2a3a,{roughness:1}),0,.5,0,stool).scale.set(.2,.04,.2);
+
+/* --- 物干しの紐(くしゃくしゃの手紙を伸ばして干す) --- */
+function seg(a,b,r,m){const d=new T.Vector3(b.x-a.x,b.y-a.y,b.z-a.z),l=d.length(),o=add(cyl(r,r,l,6),m,(a.x+b.x)/2,(a.y+b.y)/2,(a.z+b.z)/2);o.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),d.normalize());return o}
+const ropeM=SM(0xc9b48a,{roughness:1}),LZ=-5.75,LY=2.3;
+const ropeP=[];for(let i=0;i<=14;i++){const u=i/14;ropeP.push(V3(-2.5+5*u,LY-Math.sin(u*Math.PI)*.18,LZ))}for(let i=0;i<14;i++)seg(ropeP[i],ropeP[i+1],.008,ropeM);
+[-2.5,2.5].forEach(x=>add(sph(.04,8,6),br,x,LY,LZ));
+const clothes=[];
+[['ごめんね'],['ありがとう'],['本当は、','好きでした'],['またね'],['だいじょうぶ'],['ありがとう']].forEach((ln,i)=>{const u=(i+.8)/6.6,x=-2.5+5*u,y=LY-Math.sin(u*Math.PI)*.18,g=new T.Group();g.position.set(x,y,LZ);S.add(g);
+ const geo=new T.PlaneGeometry(.34,.46,6,8),ps=geo.attributes.position;for(let k=0;k<ps.count;k++){ps.setZ(k,(rnd()-.5)*.035*(1-(ps.getY(k)+.23)/.46*.6));}geo.computeVertexNormals();
+ add(geo,new T.MeshStandardMaterial({map:paperT(ln,256,340),roughness:.9,side:T.DoubleSide}),0,-.25,.0,g);
+ [-.1,.1].forEach(dx=>{add(box(.025,.07,.02),woodM,dx,-.02,0,g)});g.userData.ph=i*1.3;clothes.push(g)});
+
+/* --- 丸い窓(外は静かな町) --- */
+const pw=new T.Group();pw.position.set(PCX+PR-.1,1.95,PCZ);pw.rotation.y=-Math.PI/2;S.add(pw);
+add(new T.TorusGeometry(.42,.05,10,40),br,0,0,0,pw);add(new T.CircleGeometry(.4,40),new T.MeshBasicMaterial({map:townT,fog:false}),0,0,-.02,pw);add(new T.CircleGeometry(.4,40),glassM,0,0,.01,pw);[0,1].forEach(i=>add(box(.8,.02,.02),br,0,0,0,pw).rotation.z=i*Math.PI/2);
+glow(0xaec4ff,1.2,PCX+PR-.45,1.95,PCZ,.2);
+
+/* --- 棚(封蝋・スタンプ・切手・封筒の束) --- */
+const sh=new T.Group();sh.position.set(PCX-PR+.28,1.25,PCZ-.5);sh.rotation.y=Math.PI/2;S.add(sh);
+[0,.55].forEach(y=>add(box(1.4,.04,.28),woodM,0,y,0,sh));[-.7,.7].forEach(x=>add(box(.04,.6,.28),woodM,x,.27,0,sh));
+[-.5,-.3].forEach((x,i)=>add(cyl(.016,.016,.14,8),SM(i?0xa4261f:0x2a4a8a,{roughness:.5}),x,.095,.0,sh).rotation.z=Math.PI/2-.2*i);
+const st1=add(cyl(.03,.035,.09,12),SM(0x3a2616,{roughness:.7}),-.1,.065,.03,sh);add(cyl(.04,.04,.02,12),br,-.1,.12,.03,sh);
+const sheet=add(new T.PlaneGeometry(.2,.14),new T.MeshStandardMaterial({map:txtT(128,96,(g,w,h)=>{g.fillStyle='#efe6cf';g.fillRect(0,0,w,h);const cs=['#c9453a','#3a6aa8','#4a8a5a','#d8a83a'];for(let i=0;i<3;i++)for(let j=0;j<4;j++){g.fillStyle=cs[(i+j)%4];g.fillRect(8+j*28,8+i*27,22,20)}}),roughness:.9}),.15,.025,.04,sh);sheet.rotation.set(-Math.PI/2,0,.15);
+[0,1,2].forEach(i=>add(box(.24,.012,.17),envM[i],.5,.03+i*.013,.0,sh));
+[-.5,-.2,.15,.5].forEach((x,i)=>{const b=add(box(.1,.02,.2),envM[i%5],x,.58,0,sh)});add(new T.PlaneGeometry(.5,.12),new T.MeshStandardMaterial({map:paperC('ふうろう・きって'),roughness:.8}),0,.9+.0,.14,sh).visible=false;
+const swx=add(box(.16,.12,.1),SM(0x3a2616,{roughness:.8}),.1,.62,0,sh);
+
+/* --- 壁に貼られた言葉たち・天井のランプ --- */
+const noteT=['ごめんね','ありがとう','すき','またね','だいじょうぶ','ゆるして','おげんき?','ずっと'];
+for(let i=0;i<34;i++){const a=(rnd()*2-1)*Math.PI;if(Math.abs(a)>Math.PI-.7||Math.abs(a)<.6)continue;if(Math.abs(a-1.57)<.45||Math.abs(a+1.57)<.5)continue;const y=1.35+rnd()*2.15,r=PR-.09;
+ const n=add(new T.PlaneGeometry(.2+rnd()*.08,.15+rnd()*.06),new T.MeshStandardMaterial({map:paperC(noteT[i%8]),roughness:.9,side:T.DoubleSide}),PCX+Math.sin(a)*r,y,PCZ+Math.cos(a)*r);n.rotation.set(0,a+Math.PI+(rnd()-.5)*.2,(rnd()-.5)*.3)}
+const hl=new T.Group();hl.position.set(PCX,3.5,PCZ-.3);S.add(hl);
+add(cyl(.006,.006,1.0,4),darkM,0,.5,0,hl);add(lathe([[0,0],[.12,0],[.2,-.07],[.26,-.16]],24),SM(0x2e5a46,{roughness:.5,metalness:.3,side:T.DoubleSide}),0,-.0,0,hl);const hb=add(sph(.07,14,10),BM(0xfff0c4),0,-.1,0,hl);
+const hG=glow(0xffd08a,2.6,PCX,3.4,PCZ-.3,.85),hG3=glow(0xffc27a,9,PCX,3.4,PCZ-.3,.3);[hG,hG3,hb].forEach(o=>o.material.fog=false);hG3.material.depthTest=false;
+
+/* --- 落ちてくる手紙・粒 --- */
+const fall=[];for(let i=0;i<9;i++){const e=add(box(.17,.012,.115),envM[i%5],0,0,0);e.userData={p:i/9,a:i*2.1,r:rnd()};fall.push(e)}
+const sparks=[];for(let i=0;i<36;i++){const w=glow(0xffdca0,.24,0,0,0,0);w.material.fog=false;w.userData={p:i/36,a:i*1.9};sparks.push(w)}
+const N=140,dp=new Float32Array(N*3),dbase=[];for(let i=0;i<N;i++){const a=rnd()*6.283,r=rnd()*2.2;dbase.push([PCX+Math.sin(a)*r,.3+rnd()*4.2,PCZ+Math.cos(a)*r,rnd()*6])}
+const dg=new T.BufferGeometry();dg.setAttribute('position',new T.BufferAttribute(dp,3));
+S.add(new T.Points(dg,new T.PointsMaterial({map:gT,color:0xffe6b8,size:.07,transparent:true,opacity:.45,blending:T.AdditiveBlending,depthWrite:false})));
+/* ===== v2: おしゃれな内装(腰板・絨毯・本棚・額縁・時計・肘掛け椅子・鉢植え・電球の飾り) ===== */
+const xwr=(a,r)=>[PCX+Math.sin(a)*r,PCZ+Math.cos(a)*r];
+const brIn=br.clone();brIn.side=T.DoubleSide;
+const wainT=ctex(256,128,(g,w,h)=>{g.fillStyle='#1f4a42';g.fillRect(0,0,w,h);for(let i=0;i<4;i++){const x=i*64;g.fillStyle='rgba(0,0,0,.4)';g.fillRect(x,0,3,h);g.strokeStyle='rgba(190,235,210,.28)';g.lineWidth=2;g.strokeRect(x+9,12,46,h-24);g.strokeStyle='rgba(0,0,0,.45)';g.strokeRect(x+12,15,40,h-30)}for(let i=0;i<500;i++){g.fillStyle='rgba(255,255,255,'+rnd()*.05+')';g.fillRect(rnd()*w,rnd()*h,1,1+rnd()*5)}},8,1);
+add(new T.CylinderGeometry(PR-.085,PR-.085,1.1,64,1,true,DG,Math.PI*2-DG*2),SM(0xffffff,{map:wainT,roughness:.55,metalness:.15,envMapIntensity:.9,side:T.BackSide}),PCX,.55,PCZ);
+add(new T.CylinderGeometry(PR-.105,PR-.105,.07,64,1,true,DG,Math.PI*2-DG*2),brIn,PCX,1.12,PCZ);
+add(new T.CylinderGeometry(PR-.125,PR-.125,.025,64,1,true,DG,Math.PI*2-DG*2),brIn,PCX,1.16,PCZ);
+add(new T.CylinderGeometry(PR-.09,PR-.09,.16,64,1,true,DG,Math.PI*2-DG*2),SM(0x2a170c,{roughness:.6,side:T.DoubleSide}),PCX,.08,PCZ);
+/* 絨毯 */
+const rugX=ctex(512,512,(g,w,h)=>{const c=256;g.clearRect(0,0,w,h);const ring=(r,col)=>{g.fillStyle=col;g.beginPath();g.arc(c,c,r,0,6.3);g.fill()};
+ ring(250,'#e8dcc0');ring(238,'#23335a');ring(214,'#d49a3a');ring(204,'#23335a');ring(180,'#7a2a30');
+ for(let i=0;i<16;i++){const a=i/16*6.283;g.save();g.translate(c+Math.cos(a)*140,c+Math.sin(a)*140);g.rotate(a);g.fillStyle='#e8dcc0';g.beginPath();g.moveTo(-26,0);g.quadraticCurveTo(0,-12,26,0);g.quadraticCurveTo(0,12,-26,0);g.fill();g.restore()}
+ ring(96,'#23335a');ring(88,'#d49a3a');ring(78,'#7a2a30');g.fillStyle='#e8dcc0';g.beginPath();for(let i=0;i<16;i++){const a=i/16*6.283,r=i%2?22:62;g[i?'lineTo':'moveTo'](c+Math.cos(a)*r,c+Math.sin(a)*r)}g.fill();
+ g.globalCompositeOperation='source-atop';for(let i=0;i<2500;i++){g.fillStyle='rgba('+(rnd()<.5?'255,255,255':'0,0,0')+','+rnd()*.07+')';g.fillRect(rnd()*w,rnd()*h,2,2)}},1,1);
+const rug=add(new T.CircleGeometry(1.75,64),SM(0xffffff,{map:rugX,roughness:1,transparent:true,envMapIntensity:.3}),PCX,.027,PCZ-.4);rug.rotation.x=-Math.PI/2;
+/* 本棚 */
+const bkM=['#9a2f2a','#2f5a4a','#d9a441','#2b3f66','#e8dcc0','#6b3a5a','#c9703a','#3f6f8a'].map(c=>SM(c,{roughness:.75}));
+function xBookshelf(th,r){const g=new T.Group(),p=xwr(th,r);g.position.set(p[0],0,p[1]);g.rotation.y=th+Math.PI;S.add(g);
+ const W=.96,H=2.3,D=.3,wd=SM(0x3a2616,{roughness:.7});
+ [-1,1].forEach(s=>add(box(.04,H,D),wd,s*(W/2-.02),H/2,0,g));add(box(W,H,.02),SM(0x241408,{roughness:.9}),0,H/2,-D/2+.01,g);
+ const ys=[.06,.5,.92,1.34,1.76,2.28];ys.forEach(y=>add(box(W,.035,D),wd,0,y,0,g));
+ for(let s=0;s<5;s++){let x=-W/2+.05;const y0=ys[s]+.0175;while(x<W/2-.1){const w=.025+rnd()*.035,h=.17+rnd()*.12,m=bkM[Math.floor(rnd()*bkM.length)];if(rnd()<.07){x+=.08;continue}add(box(w,h,.2),m,x+w/2,y0+h/2,-.02,g);x+=w+.004}}
+ add(cyl(.05,.04,.1,12),SM(0xb8623a,{roughness:.8}),.2,2.33,0,g);add(sph(.07,10,8),SM(0x3f8a4f,{roughness:.6}),.2,2.43,0,g);
+ return g}
+xBookshelf(Math.PI-1.05,2.55);
+/* 額縁 */
+const artLeaf=ctex(256,320,(g,w,h)=>{g.fillStyle='#efe6cf';g.fillRect(0,0,w,h);g.strokeStyle='#4a6a3a';g.lineWidth=4;g.beginPath();g.moveTo(128,300);g.quadraticCurveTo(110,170,140,30);g.stroke();for(let i=0;i<8;i++){const y=270-i*32,s=i%2?1:-1;g.fillStyle=i%3?'#4f8a52':'#6aa05a';g.beginPath();g.moveTo(128,y);g.quadraticCurveTo(128-s*50,y-30,128-s*70,y-6);g.quadraticCurveTo(128-s*40,y+14,128,y);g.fill()}g.strokeStyle='rgba(120,90,50,.3)';g.lineWidth=6;g.strokeRect(6,6,w-12,h-12)});
+const artStamp=ctex(256,320,(g,w,h)=>{g.fillStyle='#ece1c6';g.fillRect(0,0,w,h);const cs=['#c9453a','#3a6aa8','#4a8a5a','#d8a83a','#7a4a8a','#c9703a'];for(let j=0;j<3;j++)for(let i=0;i<2;i++){const x=22+i*112,y=22+j*98,k=j*2+i;g.fillStyle='#f8f2e0';g.fillRect(x,y,100,88);g.fillStyle=cs[k];g.fillRect(x+9,y+9,82,70);g.fillStyle='rgba(255,255,255,.7)';g.beginPath();if(k%2)g.arc(x+50,y+44,18,0,6.3);else{g.moveTo(x+50,y+24);g.lineTo(x+72,y+64);g.lineTo(x+28,y+64)}g.fill();g.fillStyle='#ece1c6';for(let d=0;d<10;d++){g.beginPath();g.arc(x+5+d*10,y,3,0,6.3);g.arc(x+5+d*10,y+88,3,0,6.3);g.fill()}}});
+function xFrame(th,y,w,h,map){const p=xwr(th,PR-.1),g=new T.Group();g.position.set(p[0],y,p[1]);g.rotation.y=th+Math.PI;S.add(g);add(box(w+.08,h+.08,.035),SM(0x3a2616,{roughness:.5}),0,0,0,g);add(box(w+.03,h+.03,.04),br,0,0,-.002,g);add(new T.PlaneGeometry(w,h),new T.MeshStandardMaterial({map:map,roughness:.8}),0,0,.022,g);return g}
+xFrame(Math.PI-.3,2.3,.42,.55,artLeaf);xFrame(Math.PI,2.3,.78,.52,townT);xFrame(Math.PI+.3,2.3,.42,.55,artStamp);
+/* 壁時計 */
+{const clockT=ctex(128,128,(g,w,h)=>{g.fillStyle='#f4ecd6';g.fillRect(0,0,w,h);g.fillStyle='#3a2616';for(let i=0;i<12;i++){g.save();g.translate(64,64);g.rotate(i/12*6.283);g.fillRect(-2,-56,4,i%3?8:14);g.restore()}});
+ const p=xwr(Math.PI-.62,PR-.1),g=new T.Group();g.position.set(p[0],2.7,p[1]);g.rotation.y=Math.PI-.62+Math.PI;S.add(g);
+ add(new T.TorusGeometry(.2,.022,10,40),br,0,0,.02,g);add(new T.CircleGeometry(.19,40),new T.MeshStandardMaterial({map:clockT,roughness:.7}),0,0,.012,g);
+ const mh=new T.Group();mh.position.z=.03;mh.rotation.z=-.3;g.add(mh);add(box(.012,.13,.004),darkM,0,.06,0,mh);const hh=new T.Group();hh.position.z=.028;hh.rotation.z=-2.4;g.add(hh);add(box(.018,.09,.004),darkM,0,.04,0,hh);add(sph(.014,8,6),br,0,0,.034,g)}
+/* 肘掛け椅子 */
+{const pilT=ctex(64,64,(g,w,h)=>{g.fillStyle='#efe6cf';g.fillRect(0,0,w,h);g.fillStyle='#23335a';for(let i=0;i<4;i++)g.fillRect(0,i*16+4,w,6)}),blT=ctex(128,64,(g,w,h)=>{g.fillStyle='#e8dcc0';g.fillRect(0,0,w,h);const c=['#2f6a5a','#c9453a','#d49a3a'];for(let i=0;i<8;i++){g.fillStyle=c[i%3];g.fillRect(i*16+4,0,6,h)}});
+ const g=new T.Group();g.position.set(-1.05,0,-6.05);g.rotation.y=.785;S.add(g);const f=SM(0xc08a30,{roughness:.95}),d=SM(0xa87420,{roughness:.95});
+ [[-.28,-.24],[.28,-.24],[-.28,.24],[.28,.24]].forEach(a=>add(cyl(.025,.018,.16,8),woodM,a[0],.08,a[1],g));
+ add(box(.7,.12,.62),d,0,.2,0,g);add(sph(1,18,12),f,0,.31,.03,g).scale.set(.31,.11,.28);
+ add(box(.7,.56,.14),f,0,.56,-.26,g).rotation.x=-.18;
+ [-1,1].forEach(s=>{add(box(.12,.3,.6),d,s*.36,.38,0,g);add(cyl(.065,.065,.6,12),f,s*.36,.54,0,g).rotation.x=Math.PI/2});
+ add(box(.3,.28,.09),new T.MeshStandardMaterial({map:pilT,roughness:.9}),.13,.5,-.12,g).rotation.set(-.3,0,.3);
+ add(box(.5,.03,.3),new T.MeshStandardMaterial({map:blT,roughness:1}),-.1,.37,.14,g).rotation.set(.12,0,-.12)}
+/* 鉢植え */
+function xPlant(x,z,hh){const g=new T.Group();g.position.set(x,0,z);S.add(g);add(lathe([[0,0],[.14,0],[.2,.28],[.21,.3],[.17,.3],[0,.26]],20),SM(0xb8623a,{roughness:.8,side:T.DoubleSide}),0,0,0,g);
+ const gm=[0x2f6a3f,0x3f8a4f,0x255a38].map(c=>SM(c,{roughness:.6,side:T.DoubleSide}));
+ for(let i=0;i<14;i++){const a=i*2.4,l=.5+rnd()*.5*hh,s=add(sph(1,10,8),gm[i%3],Math.sin(a)*.1*(1+i%3),.3+l*.5,Math.cos(a)*.1,g);s.scale.set(.07,l*.5,.02+rnd()*.03);s.rotation.set(Math.cos(a)*.5,0,-Math.sin(a)*.5)}return g}
+xPlant(-1.85,-6.45,1.6);xPlant(1.95,-3.9,1.0);
+/* 吊り鉢 */
+function xHanger(x,y,z){const g=new T.Group();g.position.set(x,y,z);S.add(g);const cy=4.95-y;add(cyl(.004,.004,cy,4),br,0,.12+cy/2,0,g);
+ add(lathe([[0,0],[.1,0],[.15,.1],[.16,.13],[.13,.13],[0,.09]],20),SM(0xe8dcc0,{roughness:.4,side:T.DoubleSide}),0,0,0,g);
+ const gm=[0x2f6a3f,0x3f8a4f,0x5a9a50].map(c=>SM(c,{roughness:.6}));
+ for(let k=0;k<3;k++)add(sph(.1,10,8),gm[k],(k-1)*.07,.15,(k%2?.04:-.04),g);
+ for(let k=0;k<4;k++){const a=k*1.6+.4,vx=Math.cos(a)*.13,vz=Math.sin(a)*.13,L=.4+rnd()*.35;add(cyl(.004,.004,L,4),gm[0],vx,.1-L/2,vz,g);for(let j=0;j<9;j++){const yy=.1-j*L/9;add(sph(.03,8,6),gm[j%3],vx+Math.sin(j*1.3+k)*.025,yy,vz,g).scale.set(1,.55,.8)}}return g}
+xHanger(1.7,3.05,-6.35);xHanger(-1.9,3.0,-3.9);
+/* 郵便配達のカバン */
+{const p=xwr(-.78,PR-.13),g=new T.Group();g.position.set(p[0],1.58,p[1]);g.rotation.y=-.78+Math.PI;S.add(g);const lm=SM(0x6b3d1f,{roughness:.55,metalness:.1});
+ add(box(.4,.3,.12),lm,0,-.2,0,g);add(box(.4,.15,.13),SM(0x5a3218,{roughness:.5}),0,-.1,0,g);add(box(.05,.07,.02),br,0,-.17,.075,g);
+ add(new T.TorusGeometry(.2,.012,6,24,Math.PI),lm,0,-.05,0,g);add(sph(.02,8,6),br,0,.15,.03,g)}
+/* 小包 */
+const xkr=SM(0xb98a55,{roughness:.9}),xtw=SM(0x3a2a1a,{roughness:.9});
+function xParcel(x,y,z,w,h,d,ry){const g=new T.Group();g.position.set(x,y,z);g.rotation.y=ry;S.add(g);add(box(w,h,d),xkr,0,h/2,0,g);add(box(w+.006,h+.006,.014),xtw,0,h/2,0,g);add(box(.014,h+.006,d+.006),xtw,0,h/2,0,g);add(box(.07,.025,.001),SM(0xece1c6,{roughness:.8}),w*.25,h*.6,d/2+.004,g)}
+xParcel(1.55,.0,-3.6,.5,.3,.38,.3);xParcel(1.58,.3,-3.6,.36,.22,.3,-.2);xParcel(1.15,.0,-3.15,.3,.2,.3,.6);
+/* 机の小物(本・多肉・ティーカップ・ベル) */
+[0x2f5a4a,0x9a2f2a,0xd9a441].forEach((c,i)=>add(box(.2-i*.02,.035,.15),SM(c,{roughness:.75}),DX-.72,.83+.0175+i*.035,DZ-.18,undefined).rotation.y=i*.2-.1);
+add(cyl(.03,.025,.04,10),SM(0xb8623a,{roughness:.8}),DX-.72,.83+.105+.02,DZ-.18);add(sph(.04,10,8),SM(0x4f8a52,{roughness:.6}),DX-.72,.83+.105+.07,DZ-.18);
+{const g=new T.Group();g.position.set(DX-.36,.83,DZ-.24);S.add(g);const cm=SM(0xf0ead8,{roughness:.3,side:T.DoubleSide});add(cyl(.07,.06,.01,20),cm,0,.005,0,g);add(lathe([[0,0],[.03,0],[.045,.06],[.047,.07],[.04,.07],[0,.02]],20),cm,0,.01,0,g);add(cyl(.04,.04,.004,16),SM(0x6a3a1a,{roughness:.3}),0,.07,0,g);add(new T.TorusGeometry(.02,.006,6,12),cm,.055,.045,0,g)}
+add(lathe([[0,0],[.045,0],[.04,.03],[.02,.06],[0,.065]],18),brIn,DX-.2,.83,DZ-.3);add(sph(.01,8,6),br,DX-.2,.9,DZ-.3);
+/* 壁をめぐる電球の飾り */
+const garl=[],wireM=SM(0x1a1410,{roughness:.8}),bulbC=[0xffd88a,0xffb866,0xfff0c4],bulbM=bulbC.map(c=>BM(c));
+{const gr=PR-.13,y0=3.5,nS=5,a0=.85,a1=Math.PI*2-.85,M=14;
+ for(let s=0;s<nS;s++){const sa=a0+(a1-a0)*s/nS,sb=a0+(a1-a0)*(s+1)/nS,pts=[];
+  for(let i=0;i<=M;i++){const u=i/M,a=sa+(sb-sa)*u,p=xwr(a,gr);pts.push(V3(p[0],y0-Math.sin(u*Math.PI)*.34,p[1]))}
+  for(let i=0;i<M;i++)seg(pts[i],pts[i+1],.006,wireM);
+  add(sph(.025,8,6),br,pts[0].x,pts[0].y,pts[0].z);
+  for(let i=1;i<M;i+=2){const q=pts[i],k=(i+s)%3;add(sph(.03,8,6),bulbM[k],q.x,q.y-.035,q.z);const gl=glow(bulbC[k],.3,q.x,q.y-.035,q.z,.5);gl.userData.ph=garl.length*1.7;garl.push(gl)}}}
+
+S.traverse(o=>{if(o.isMesh&&o.material&&o.material.isMeshStandardMaterial&&!o.material.transparent){o.castShadow=false;o.receiveShadow=false}});
+
+/* camera path */
+const KT=[0,9,15,20,26,33,38,43,48,53,58,63,68,73,78,82,86],
+KP=[[0,2.4,10],[0,2.1,6.2],[0,2.0,3.2],[.3,1.6,-1.2],[.4,1.5,-4.0],[.5,1.35,-5.5],[0,1.6,-3.8],[-.3,1.3,-3.0],[-.2,1.5,-5.6],[-.5,1.5,-4.4],[0,1.0,-5.0],[.4,1.7,-4.6],[-.4,1.6,-4.2],[.9,1.4,-4.6],[.2,1.7,-4.0],[0,1.7,-2.2],[0,2.4,2.5]],
+KL=[[0,3.0,-5],[0,3.1,-5],[0,2.2,-5],[0,1.5,-5],[0,1.0,-7.0],[0,.95,-7.0],[0,2.1,-5.8],[-1.4,.15,-4.2],[.35,.95,-7.0],[-2.3,1.3,-5.5],[0,4.2,-5],[2.4,1.9,-5.0],[2.0,1.4,-6.4],[-1.3,.6,-6.2],[0,2.5,-7.7],[0,1.2,-6.5],[0,2.2,-5]];
+const mk=a=>new T.CatmullRomCurve3(a.map(v=>new T.Vector3(v[0],v[1],v[2])),false,'centripetal'),cP=mk(KP),cL=mk(KL);
+const U=t=>{let i=0;while(i<KT.length-2&&t>KT[i+1])i++;return(i+Math.min(1,Math.max(0,(t-KT[i])/(KT[i+1]-KT[i]))))/(KT.length-1)};
+const caps=[[0,''],[3,'月あかりの夜、赤いポストがひとつ。'],[8,'投函口から、ほのかな灯りがもれています。'],[14,'近づくと、ポストの内側に小さな書斎。'],[19,'ここは、ヘンジロウの部屋。'],
+[24,'小さな木の机に、羽ペンとインク壺。'],[29,'ランプの灯りが、書きかけの返事を照らします。'],[33,'インクの香りがする、ちいさな手紙。'],[37,'物干しの紐には、伸ばした手紙たち。'],
+[41,'床には、届かなかった手紙が積もっています。'],[46,'机のすみには、丸メガネと小さな帽子。'],[51,'棚には、封蝋とスタンプ、切手のシート。'],[56,'天井の投函口から、月あかりと新しい手紙。'],[61,'丸い窓の外は、静かな町。'],
+[66,'壁には小さな額縁。本棚には、読みかけの本がぎっしり。'],[71,'ふかふかの椅子と、緑の鉢植え。'],[76,'壁をめぐる電球が、夜をやさしく照らします。'],[81,'今夜も、届かなかった言葉を、そっと心へ。']];
+const LOOP=86;let ci=-1;
+function setCap(i){ci=i;cap.classList.remove('on');setTimeout(()=>{if(ci===i){cap.textContent=caps[i][1];if(caps[i][1])cap.classList.add('on')}},450)}
+const wpS=V3(0,.8,-5.0);
+function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.1);last=now;if(!paused)t+=dt*(reduce?.4:1);
+ const lt=t%LOOP,u=U(Math.min(lt,LOOP-.1));cP.getPoint(u,cam.position);cL.getPoint(u,tmp);
+ const walk=cl((lt-14)/4,0,1)*(1-.9*cl((lt-33)/4,0,1));cam.position.y+=walk*.03*Math.sin(lt*2.4);cam.position.x+=walk*.02*Math.sin(lt*1.2);cam.lookAt(tmp);
+ fade.style.opacity=lt<1.2?1-lt/1.2:lt>LOOP-1.6?(lt-(LOOP-1.6))/1.6:0;ttl.style.opacity=lt<6?1:cl(1-(lt-6)/2,0,1);
+ const rv=cl((lt-8)/12,0,1),sv=rv*rv*(3-2*rv);S.fog.density=.028+(.02-.028)*sv;S.background.setRGB(.016,.024+.01*sv,.055+.03*sv);S.fog.color.copy(S.background);starMat.opacity=.8*(.35+.65*sv);moonMat.opacity=.6*(.3+.7*sv);hG3.material.opacity=.12*(1-sv)+.04;
+ const fl=1+.04*Math.sin(t*7)+.025*Math.sin(t*13);roomL.intensity=1.9*fl;hG.scale.set(2.6*fl,2.6*fl,1);deskL.intensity=1.2*(1+.05*Math.sin(t*9)+.03*Math.sin(t*14));flame.scale.set(1,1.7+.2*Math.sin(t*10),1);
+ slotGl.scale.setScalar(3.2*(1+.05*Math.sin(t*2.1)));shaftL.intensity=.8*(1+.05*Math.sin(t*1.3));
+ quill.rotation.z=-.55+.05*Math.sin(t*3.2);quill.rotation.x=.15+.04*Math.sin(t*2.1);pen.position.x=DX-.55;
+ clothes.forEach(g=>{g.rotation.z=.05*Math.sin(t*.9+g.userData.ph);g.rotation.x=.03*Math.sin(t*.7+g.userData.ph*2)});
+ fall.forEach(e=>{const q=e.userData,p=(t*.11+q.p)%1;e.position.set(PCX+Math.sin(q.a+p*5)*.3*(1-p*.3),5.5-p*5.4,PCZ+Math.cos(q.a+p*4)*.25);e.rotation.set(p*6+q.a,p*5,p*4);e.visible=p<.97});
+ sparks.forEach(w=>{const q=w.userData,p=(t*.05+q.p)%1;w.position.set(wpS.x+Math.sin(q.a+p*4)*1.9*(.3+p*.6),.3+p*3.2,wpS.z+Math.cos(q.a+p*4)*1.7*(.3+p*.6));w.material.opacity=.7*Math.sin(p*Math.PI)});
+ for(let i=0;i<N;i++){const b=dbase[i];dp[i*3]=b[0]+Math.sin(t*.3+b[3])*.3;dp[i*3+1]=.3+((b[1]+t*.06)%4.2);dp[i*3+2]=b[2]+Math.cos(t*.25+b[3])*.3}
+ dg.attributes.position.needsUpdate=true;
+ garl.forEach(q=>{q.material.opacity=.45+.2*Math.sin(t*1.6+q.userData.ph)});
+ let k=0;caps.forEach((c,i)=>{if(lt>=c[0])k=i});if(k!==ci)setCap(k);
+ R.render(S,cam)}
+requestAnimationFrame(tick);
+</script>
+<a href="index.html" aria-label="部屋マップへ戻る" style="position:fixed;top:10px;left:10px;z-index:999;padding:7px 14px;border-radius:999px;background:rgba(20,14,28,.72);color:#f1e4d8;font:600 13px/1 'Zen Maru Gothic',sans-serif;text-decoration:none;border:1px solid rgba(241,228,216,.35);backdrop-filter:blur(4px)">← 部屋マップ</a>
+</body>
+</html>
+
+</body></html>
