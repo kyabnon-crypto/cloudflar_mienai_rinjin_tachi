@@ -71,13 +71,13 @@
     <section class="campaign-banner">
       <div class="campaign-info">
         <span class="phase-tag" id="banner-prev">Week 4（第7話：ツマヅキ）完了</span>
-        <h2 id="banner-current">🔥 現在フェーズ：Week 5（第5話：ヌクモリ特集）</h2>
-        <p>ゲーム『みつけて、となりびと』第5夜への無料体験誘導 × note/SNS連載 × 未登録YouTube動画（11〜13話）完遂</p>
+        <h2 id="banner-current">🔥 現在フェーズ：読み込み中...</h2>
+        <p id="banner-desc">スマホ絵本ゲーム『みつけて、となりびと』連動 × note/SNS週間連載 × 全隣人メディア展開</p>
       </div>
       <div style="display:flex; gap:0.55rem; flex-wrap:wrap;">
         <a href="../game/play.html?preview=zukan" target="_blank" rel="noopener" class="btn">🔍 5号プレビュー：図鑑モーダル</a>
         <a href="../game/play.html?preview=complete" target="_blank" rel="noopener" class="btn">🎁 5号プレビュー：13夜コンプ特典</a>
-        <button id="btn-order-all-week5" class="btn btn-amber">🚀 スマホからWeek 5を一斉発注する</button>
+        <button id="btn-order-all-current" class="btn btn-amber">🚀 スマホから今週計画を一斉発注する</button>
       </div>
     </section>
 
@@ -113,23 +113,6 @@
         <span id="order-queue-badge" class="status-badge standby">待機中の発注: 0件</span>
       </div>
 
-      <!-- Quick One-Tap Presets -->
-      <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
-        <span style="font-size:0.78rem; color:var(--amber); font-weight:700;">⚡ ワンタップ定型発注：</span>
-        <button type="button" class="btn btn-quick-preset" data-agent="rinjin-2-sns" data-name="2号：SNS広報AI" data-inst="Week 5『ヌクモリ（第5話）』のX投稿セット（140字短編・ゲーム第5夜誘導スレッド）とInstagramカルーセル案を output/sns-drafts/week5_nukumori/ に作成してください。">
-          📱 2号にWeek5 SNS作成を発注
-        </button>
-        <button type="button" class="btn btn-quick-preset" data-agent="rinjin-3-editorial" data-name="3号：連載ライター＆編集AI" data-inst="Week 5『ヌクモリ（第5話）』のnote記事（ゲーム『みつけて、となりびと』のかけら紹介＆リンク集付き）を output/note-articles/week5_nukumori.md に執筆してください。">
-          📝 3号にWeek5 note執筆を発注
-        </button>
-        <button type="button" class="btn btn-quick-preset" data-agent="rinjin-4-multimedia" data-name="4号：マルチメディア制作AI" data-inst="未登録となっている第11話（ユメアツメ）・第12話（ナミダビン）・第13話（アシタヨビ）の読み聞かせ動画生成と、睡眠導入長尺BGM動画の構成案を作成してください。">
-          🎬 4号に11〜13話動画化を発注
-        </button>
-        <button type="button" class="btn btn-quick-preset" data-agent="rinjin-5-game-md" data-name="5号：ゲーム＆MDグロースAI" data-inst="ゲーム『みつけて、となりびと』（game/）の隣人図鑑モーダルや全13夜クリア画面にnote連載・LINEスタンプ・コンプリート特典の導線を追加し、cloudflare-site/game/ にも同期してください。">
-          🏮 5号にゲーム導線強化を発注
-        </button>
-      </div>
-
       <div class="two-col" style="margin-top:0.4rem;">
         <!-- Custom Order Form -->
         <form id="remote-order-form" class="feedback-form">
@@ -145,10 +128,13 @@
             </select>
           </div>
           <div class="form-row">
-            <label for="order-instruction">業務指示内容（スマホから自由に入力して発注できます）</label>
-            <textarea id="order-instruction" class="textarea-input" rows="3" placeholder="例：雨の日の帰り道に合わせた『ヌクモリ』の140字Xポストを3パターン作って、ゲーム第5夜への誘導リンクを添えてください。"></textarea>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.3rem;">
+              <label for="order-instruction" style="margin-bottom:0;">業務指示内容（スマホから自由に入力して発注できます）</label>
+              <button type="button" id="btn-fill-recommend-prompt" class="btn" style="padding:0.2rem 0.5rem; font-size:0.72rem; color:var(--amber);">💡 推奨タスクを自動入力</button>
+            </div>
+            <textarea id="order-instruction" class="textarea-input" rows="3" placeholder="指示を入力してください（空欄の場合は選択したAIの最新推奨タスクが発注されます）"></textarea>
           </div>
-          <button type="submit" class="btn btn-amber" style="justify-content:center; padding:0.65rem;">
+          <button type="submit" id="btn-submit-remote-order" class="btn btn-amber" style="justify-content:center; padding:0.65rem;">
             🚀 この内容でAI社員へ発注する
           </button>
         </form>
@@ -206,7 +192,7 @@
         </div>
 
         <div class="tab-bar">
-          <button class="tab-btn active" data-tab="weekly_plan">📋 週間計画 (Week 5)</button>
+          <button class="tab-btn active" data-tab="weekly_plan" id="tab-btn-weekly-plan">📋 週間計画</button>
           <button class="tab-btn" data-tab="note">📝 note記事下書き</button>
           <button class="tab-btn" data-tab="sns">📱 SNS投稿下書き</button>
           <button class="tab-btn" data-tab="revenue_tracker">💰 収益トラッカー</button>

@@ -36,14 +36,121 @@
       });
   }
 
+  // 端末ローカルキュー（オフライン・スナップショット用）
+  const OFFLINE_KEY = 'RINJIN_OFFLINE_ORDERS_V2';
+  function getOfflineOrders() {
+    try {
+      return JSON.parse(localStorage.getItem(OFFLINE_KEY) || '[]');
+    } catch (e) {
+      return [];
+    }
+  }
+  function saveOfflineOrders(list) {
+    try {
+      localStorage.setItem(OFFLINE_KEY, JSON.stringify(list));
+    } catch (e) {}
+  }
+
+  // 各AI社員の最新推奨タスク（プロンプト）を取得
+  function getRecommendPrompt(agentId) {
+    if (!STATE) return '';
+    if (agentId === 'all') {
+      const wk = STATE.current_week || '最新週間計画';
+      return `${wk}の全体計画に従って、全AI社員（1号〜5号）で今週のアクションプラン・SNS・note・動画・ゲーム施策を実行してください。`;
+    }
+    const found = (STATE.agents || []).find((a) => a.id === agentId);
+    if (found && found.quick_prompt) {
+      return found.quick_prompt;
+    }
+    const defaultPrompts = {
+      'rinjin-1-producer': '1号プロデューサーAIとして、最新の週間アクションプラン策定および各AI社員の連携を統括してください。',
+      'rinjin-2-sns': '2号SNS広報AIとして、最新週間計画に従い、X投稿案（140字厳守・ゲーム誘導スレッド）とInstagramカルーセル案を作成してください。',
+      'rinjin-3-editorial': '3号連載ライター＆編集AIとして、最新週のnote記事（ゲーム『みつけて、となりびと』のかけら紹介＆リンク集付き）を執筆してください。',
+      'rinjin-4-multimedia': '4号マルチメディア制作AIとして、読み聞かせ動画・プロモーション企画・睡眠用BGM動画の構成案を作成してください。',
+      'rinjin-5-game-md': '5号ゲーム＆MDグロースAIとして、ゲーム『みつけて、となりびと』の導線点検・特典実装・BOOTH/LINEスタンプ販促企画を進めてください。',
+    };
+    return defaultPrompts[agentId] || '最新計画に従って業務を遂行してください。';
+  }
+
+  // 複数経路（ホスト相対、外出先トンネル、自宅LAN）を試行するスマートFetch
+  async function smartFetch(path, options = {}) {
+    const urls = [];
+    urls.push(path); // 1. 相対パス
+
+    const pubUrl = STATE && STATE.public_url ? STATE.public_url.replace(/\/dashboard\/?$/, '') : '';
+    if (pubUrl) urls.push(pubUrl + path);
+
+    const lanUrl = STATE && STATE.lan_url ? STATE.lan_url.replace(/\/dashboard\/?$/, '') : '';
+    if (lanUrl) urls.push(lanUrl + path);
+
+    const uniqueUrls = [...new Set(urls)];
+    let lastError = null;
+
+    for (const u of uniqueUrls) {
+      try {
+        const controller = new AbortController();
+        const tid = setTimeout(() => controller.abort(), 3500);
+        const res = await fetch(u, {
+          ...options,
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+            ...(options.headers || {}),
+          },
+        });
+        clearTimeout(tid);
+        if (res.ok) {
+          return res;
+        }
+      } catch (err) {
+        lastError = err;
+      }
+    }
+    throw lastError || new Error('All endpoints failed');
+  }
+
+  // オフライン発注をサーバー復帰時に自動同期
+  let isSyncingOffline = false;
+  async function syncOfflineOrders() {
+    if (isSyncingOffline) return;
+    const offList = getOfflineOrders();
+    if (!offList.length) return;
+    isSyncingOffline = true;
+    const remaining = [];
+    for (const ord of offList) {
+      try {
+        const res = await smartFetch('/api/order', {
+          method: 'POST',
+          body: JSON.stringify({
+            target_agent: ord.target_agent,
+            agent_name: ord.agent_name,
+            instruction: ord.instruction,
+          }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          STATE = data.state;
+          showToast(`🔄 保留中だった発注（${ord.agent_name}）をサーバーへ自動送信しました！`);
+        } else {
+          remaining.push(ord);
+        }
+      } catch (e) {
+        remaining.push(ord);
+      }
+    }
+    saveOfflineOrders(remaining);
+    isSyncingOffline = false;
+    renderOrders();
+  }
+
   async function fetchState() {
     try {
-      const res = await fetch('/api/state', { cache: 'no-store' });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const res = await smartFetch('/api/state', { cache: 'no-store' });
       STATE = await res.json();
       isLiveServer = true;
       updateLiveBadge();
       renderAll();
+      syncOfflineOrders();
     } catch (e) {
       isLiveServer = false;
       updateLiveBadge();
@@ -64,28 +171,64 @@
     }
   }
 
-  // スマホからのワンタップ発注送信
+  // 外出先スマホ・ダッシュボードからの業務発注送信（スマートフォールバック付き）
   async function dispatchRemoteOrder(target_agent, agent_name, instruction) {
-    if (!instruction) return;
-    if (isLiveServer) {
-      try {
-        const res = await fetch('/api/order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ target_agent, agent_name, instruction }),
-        });
-        if (res.ok) {
-          const data = await res.json();
-          STATE = data.state;
-          renderAll();
-          showToast(`🚀 「${agent_name}」へ発注しました！（受付番号: ${data.order.id}）`);
-          return;
-        }
-      } catch (e) {
-        // Fallback below
-      }
+    const finalInstruction = (instruction || '').trim() || getRecommendPrompt(target_agent);
+    if (!finalInstruction) {
+      showToast('業務指示内容を入力してください');
+      return;
     }
-    copyText(instruction, `「${agent_name}」への指示文をコピーしました！`);
+
+    // 1. サーバーへスマート送信（相対・トンネル・LAN）
+    try {
+      const res = await smartFetch('/api/order', {
+        method: 'POST',
+        body: JSON.stringify({
+          target_agent,
+          agent_name,
+          instruction: finalInstruction,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        STATE = data.state;
+        isLiveServer = true;
+        updateLiveBadge();
+        renderAll();
+        showToast(`🚀 「${agent_name}」へ発注しました！（受付番号: ${data.order.id}）`);
+        return;
+      }
+    } catch (e) {
+      // サーバー未接続・オフライン時はフォールバックへ
+    }
+
+    // 2. 端末ローカル保存 ＆ 画面キューへ即座に反映
+    const offId = 'LOCAL-' + Date.now().toString(36).toUpperCase();
+    const nowStr = new Date().toLocaleString('ja-JP', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    const localOrder = {
+      id: offId,
+      created_at: nowStr,
+      target_agent,
+      agent_name,
+      instruction: finalInstruction,
+      status: 'pending',
+      status_label: '📲 端末受付済（サーバー接続時に自動送信）',
+      is_local: true,
+      result_summary: '',
+    };
+    const offList = getOfflineOrders();
+    offList.unshift(localOrder);
+    saveOfflineOrders(offList);
+
+    copyText(finalInstruction, `「${agent_name}」への指示文をコピーしました`);
+    showToast(`📱 「${agent_name}」へ発注受付しました！（サーバー接続時に自動送信）`);
+    renderOrders();
   }
 
   function renderKpis() {
@@ -161,8 +304,15 @@
 
   function renderAgents() {
     if (!STATE || !STATE.agents) return;
-    $('#banner-prev').textContent = STATE.previous_week || 'Week 4 完了';
-    $('#banner-current').textContent = '🔥 現在フェーズ：' + (STATE.current_week || 'Week 5');
+    const curWk = STATE.current_week || 'Week 7';
+    $('#banner-prev').textContent = STATE.previous_week || '前週 完了';
+    $('#banner-current').textContent = '🔥 現在フェーズ：' + curWk;
+
+    const tabWeekly = $('#tab-btn-weekly-plan');
+    if (tabWeekly) {
+      const shortWk = curWk.split('（')[0] || curWk;
+      tabWeekly.textContent = `📋 週間計画 (${shortWk})`;
+    }
 
     $('#agents-grid').innerHTML = STATE.agents
       .map((ag) => {
@@ -227,26 +377,32 @@
         const cur = btn.dataset.status;
         const order = ['standby', 'working', 'completed'];
         const labels = {
-          standby: 'Week 5 指示待ち',
+          standby: '指示待ち',
           working: '現在稼働中...',
-          completed: 'Week 5 完了',
+          completed: '完了',
         };
         const next = order[(order.indexOf(cur) + 1) % order.length];
-        if (isLiveServer) {
-          await fetch('/api/agent-status', {
+        try {
+          await smartFetch('/api/agent-status', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, status: next, status_label: labels[next] }),
           });
           fetchState();
           showToast(`ステータスを「${labels[next]}」に更新しました`);
+        } catch (e) {
+          showToast('ステータス更新に失敗しました（サーバー未接続）');
         }
       };
     });
   }
 
   function renderOrders() {
-    const orders = (STATE && STATE.orders) || [];
+    const serverOrders = (STATE && STATE.orders) || [];
+    const offlineOrders = getOfflineOrders();
+    const serverIds = new Set(serverOrders.map((o) => o.id));
+    const pendingOffline = offlineOrders.filter((o) => !serverIds.has(o.id));
+    const orders = [...pendingOffline, ...serverOrders];
+
     const pendingCount = orders.filter((o) => o.status === 'pending' || o.status === 'running').length;
     const badge = $('#order-queue-badge');
     if (badge) {
@@ -265,19 +421,20 @@
     box.innerHTML = orders
       .map((o) => {
         const isDone = o.status === 'completed';
+        const isLocal = !!o.is_local;
         return `
-        <div class="order-item ${isDone ? 'completed' : ''}">
+        <div class="order-item ${isDone ? 'completed' : ''}" style="${isLocal ? 'border-left: 3px solid var(--amber); background: rgba(245,158,11,0.06);' : ''}">
           <div class="order-head">
             <strong style="color:var(--amber);">${esc(o.agent_name)} <small style="color:var(--text-muted);">(${esc(o.id)})</small></strong>
-            <span class="status-badge ${isDone ? 'completed' : 'working'}">${esc(o.status_label || o.status)}</span>
+            <span class="status-badge ${isDone ? 'completed' : isLocal ? 'standby' : 'working'}">${esc(o.status_label || o.status)}</span>
           </div>
           <div style="color:var(--text-main);">${esc(o.instruction)}</div>
           ${o.result_summary ? `<div style="color:#6ee7b7; font-size:0.76rem;">✨ 結果: ${esc(o.result_summary)}</div>` : ''}
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.2rem; font-size:0.72rem; color:var(--text-muted);">
             <span>🕒 ${esc(o.created_at)}</span>
             <div style="display:flex; gap:0.35rem;">
-              ${!isDone ? `<button type="button" class="btn btn-order-act" style="padding:0.15rem 0.45rem; font-size:0.7rem;" data-id="${esc(o.id)}" data-act="completed">✅ 完了にする</button>` : ''}
-              <button type="button" class="btn btn-order-act" style="padding:0.15rem 0.45rem; font-size:0.7rem;" data-id="${esc(o.id)}" data-act="delete">🗑️ 削除</button>
+              ${!isDone && !isLocal ? `<button type="button" class="btn btn-order-act" style="padding:0.15rem 0.45rem; font-size:0.7rem;" data-id="${esc(o.id)}" data-act="completed">✅ 完了にする</button>` : ''}
+              <button type="button" class="btn btn-order-act" style="padding:0.15rem 0.45rem; font-size:0.7rem;" data-id="${esc(o.id)}" data-local="${isLocal ? '1' : '0'}" data-act="delete">🗑️ 削除</button>
             </div>
           </div>
         </div>
@@ -287,13 +444,25 @@
 
     $$('.btn-order-act').forEach((btn) => {
       btn.onclick = async () => {
-        if (!isLiveServer) return;
-        await fetch('/api/order-update', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: btn.dataset.id, status: btn.dataset.act }),
-        });
-        fetchState();
+        const id = btn.dataset.id;
+        const act = btn.dataset.act;
+        const isLocal = btn.dataset.local === '1';
+        if (isLocal) {
+          const list = getOfflineOrders().filter((o) => o.id !== id);
+          saveOfflineOrders(list);
+          renderOrders();
+          showToast('端末保存の発注を削除しました');
+          return;
+        }
+        try {
+          await smartFetch('/api/order-update', {
+            method: 'POST',
+            body: JSON.stringify({ id, status: act }),
+          });
+          fetchState();
+        } catch (e) {
+          showToast('サーバー通信に失敗しました');
+        }
       };
     });
   }
@@ -426,22 +595,17 @@
     copyText($('#preview-box').textContent, '表示中の原稿テキストをコピーしました！');
   });
 
-  const btnOrderAll = $('#btn-order-all-week5');
+  const btnOrderAll = $('#btn-order-all-current') || $('#btn-order-all-week5');
   if (btnOrderAll) {
     btnOrderAll.addEventListener('click', () => {
+      const curWk = (STATE && STATE.current_week) || '最新計画';
       dispatchRemoteOrder(
         'all',
         '全員 (1号〜5号)',
-        'dashboard/weekly-plan.md のWeek 5計画（第5話：ヌクモリ特集）に従って、2号（SNS広報AI）と3号（連載ライターAI）でWeek 5のX投稿セット・Instagram案・note記事を作成し、4号・5号のタスクも進めてください。'
+        `${curWk}に従って、全AI社員（1号〜5号）で今週のアクションプラン・SNS・note・動画・ゲーム施策を実行してください。`
       );
     });
   }
-
-  $$('.btn-quick-preset').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      dispatchRemoteOrder(btn.dataset.agent, btn.dataset.name, btn.dataset.inst);
-    });
-  });
 
   const orderForm = $('#remote-order-form');
   if (orderForm) {
@@ -450,13 +614,39 @@
       const sel = $('#order-agent');
       const target_agent = sel.value;
       const agent_name = sel.options[sel.selectedIndex].dataset.name || 'AI社員';
-      const instruction = $('#order-instruction').value.trim();
+      let instruction = $('#order-instruction').value.trim();
       if (!instruction) {
-        showToast('業務指示内容を入力してください');
-        return;
+        // 空欄の場合は選択AIの推奨指示文を自動採用
+        instruction = getRecommendPrompt(target_agent);
+        $('#order-instruction').value = instruction;
+        showToast(`💡 「${agent_name}」の最新推奨タスクを自動適用して発注します`);
       }
       dispatchRemoteOrder(target_agent, agent_name, instruction);
-      $('#order-instruction').value = '';
+    });
+  }
+
+  // 推奨タスク自動入力ボタン
+  const btnFillPrompt = $('#btn-fill-recommend-prompt');
+  if (btnFillPrompt) {
+    btnFillPrompt.addEventListener('click', () => {
+      const sel = $('#order-agent');
+      const target_agent = sel.value;
+      const prompt = getRecommendPrompt(target_agent);
+      const ta = $('#order-instruction');
+      ta.value = prompt;
+      ta.focus();
+      showToast('💡 推奨タスクを入力欄にセットしました');
+    });
+  }
+
+  // AI社員セレクト変更時にプレースホルダーを更新
+  const agentSel = $('#order-agent');
+  if (agentSel) {
+    agentSel.addEventListener('change', () => {
+      const target_agent = agentSel.value;
+      const prompt = getRecommendPrompt(target_agent);
+      const ta = $('#order-instruction');
+      ta.placeholder = `指示を入力（空欄なら推奨タスク: ${prompt.slice(0, 32)}...）`;
     });
   }
 
@@ -542,10 +732,9 @@
       showToast('赤入れ・改善指示を入力してください');
       return;
     }
-    if (isLiveServer) {
-      const res = await fetch('/api/feedback', {
+    try {
+      const res = await smartFetch('/api/feedback', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ target_ai, feedback, action_rule }),
       });
       if (res.ok) {
@@ -557,6 +746,8 @@
         showToast('✍️ feedback-log.md に直接追記しました！');
         return;
       }
+    } catch (e) {
+      // サーバー未接続時はコマンドコピー
     }
     const cmd = `【育成ノート追記指示】対象：${target_ai} / 内容：「${feedback}」 / ルール：「${action_rule}」を .agent/feedback-log.md に追記してください。`;
     copyText(cmd, '育成ノート追記用コマンドをコピーしました！');
