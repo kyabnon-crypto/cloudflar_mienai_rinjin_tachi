@@ -300,7 +300,7 @@ function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000
  R.render(S,cam)}
 requestAnimationFrame(tick);
 </script>
-<a href="index.html" aria-label="部屋マップへ戻る" style="position:fixed;top:10px;left:10px;z-index:999;padding:7px 14px;border-radius:999px;background:rgba(20,14,28,.72);color:#f1e4d8;font:600 13px/1 'Zen Maru Gothic',sans-serif;text-decoration:none;border:1px solid rgba(241,228,216,.35);backdrop-filter:blur(4px)">← 部屋マップ</a>
+<a href="index.html" aria-label="部屋マップへ戻る" style="position:fixed;top:10px;left:10px;z-index:999;padding:7px 14px;border-radius:999px;background:rgba(20,14,28,.72);color:#f1e4d8;font:600 13px/1 'Zen Maru Gothic',sans-serif;text-decoration:none;border:1px solid rgba(241,228,216,.35);backdrop-filter:blur(4px)">← 部屋マップ</a><script>(function(){var a=document.createElement("audio");a.src="audio/kazoeru.mp3";a.loop=true;a.preload="none";a.volume=0;document.body.appendChild(a);var b=document.createElement("button");b.textContent="♪ BGM";b.setAttribute("aria-pressed","false");var bar=document.getElementById("bar");if(bar)bar.appendChild(b);var on=false,fade=null;function ramp(to){clearInterval(fade);var from=a.volume,step=(to-from)/12,i=0;fade=setInterval(function(){i++;a.volume=Math.max(0,Math.min(1,from+step*i));if(i>=12){clearInterval(fade);if(to===0)a.pause();}},40);}b.onclick=function(){on=!on;b.setAttribute("aria-pressed",on);b.textContent=on?"♪ BGM（再生中）":"♪ BGM";if(on){a.play();ramp(0.45);}else{ramp(0);}};})();</script>
 </body>
 </html>
 
