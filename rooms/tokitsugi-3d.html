@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>トキツギの部屋 3D — 見えない隣人たち</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<style>
+:root{--bg:#1b1522;--ink:#f1e4d8;--btn:#3a2d45}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;overflow:hidden;padding:10px}
+#frame{position:relative;background:#16111d;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px #0008;width:min(96vw,880px);aspect-ratio:16/9}
+#frame.portrait{width:min(96vw,420px);aspect-ratio:9/16;max-height:78vh}
+canvas{display:block;width:100%;height:100%}
+#title{position:absolute;left:0;right:0;top:4%;text-align:center;font-weight:700;font-size:clamp(17px,3.4vw,26px);color:#ffe9cf;letter-spacing:.14em;text-shadow:0 0 .6em #000b;pointer-events:none}
+#title small{display:block;font-weight:500;font-size:.55em;letter-spacing:.22em;opacity:.85;margin-top:.4em}
+#cap{position:absolute;left:6%;right:6%;bottom:5%;text-align:center;font-weight:700;font-size:clamp(13px,2.6vw,19px);line-height:1.6;color:#fff3e2;text-shadow:0 0 .5em #000,0 .05em .4em #000;transition:opacity .6s;opacity:0;pointer-events:none}
+#cap.on{opacity:1}
+#hint{position:absolute;left:0;right:0;bottom:1.5%;text-align:center;font-size:11px;opacity:.65;pointer-events:none}
+#loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;letter-spacing:.1em;color:#ffe9cf;background:#16111d;transition:opacity .5s}
+#bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:96vw}
+button,a.btn{font:inherit;font-weight:700;background:var(--btn);color:var(--ink);border:2px solid #7a5f6e;border-radius:999px;padding:.4em 1.1em;cursor:pointer;text-decoration:none;font-size:14px}
+button[aria-pressed="true"]{background:#f2b58e;color:#3b2218;border-color:#f2b58e}
+#back{position:absolute;top:10px;left:10px;z-index:5;font-size:13px;padding:.3em .9em}
+</style>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+</head>
+<body>
+<a class="btn" id="back" href="index.html">← 部屋マップ</a>
+<div id="frame">
+  <div id="loading">トキツギを呼んでいます…</div>
+  <div id="title">トキツギの部屋<small>押し入れの奥の時計工房 — 3D試作</small></div>
+  <div id="cap"></div>
+  <div id="hint">トキツギをタップすると、言葉が出ます</div>
+</div>
+<div id="bar">
+  <button id="bWalk" aria-pressed="true">歩く</button>
+  <button id="bRun" aria-pressed="false">走る</button>
+  <button id="bStop" aria-pressed="false">とまる</button>
+  <button id="bL" aria-pressed="true">横 16:9</button>
+  <button id="bP" aria-pressed="false">縦 9:16</button>
+  <a class="btn" href="viewer-tokitsugi.html">AR・3Dで見る →</a>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const frame = document.getElementById('frame');
+const cap = document.getElementById('cap');
+const loading = document.getElementById('loading');
+
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+frame.prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x241a30);
+scene.fog = new THREE.Fog(0x241a30, 9, 16);
+
+const camera = new THREE.PerspectiveCamera(42, 16/9, 0.1, 100);
+camera.position.set(0, 1.9, 4.6);
+camera.lookAt(0, 0.85, 0);
+
+// lights
+scene.add(new THREE.AmbientLight(0xffe6c4, 0.55));
+const key = new THREE.DirectionalLight(0xffd9a0, 1.6);
+key.position.set(2.5, 4.5, 3.5);
+key.castShadow = true;
+key.shadow.mapSize.set(1024,1024);
+scene.add(key);
+const lamp = new THREE.PointLight(0xff9c4a, 12, 8, 1.8);
+lamp.position.set(-2.2, 1.7, 0.6);
+scene.add(lamp);
+
+// room: floor + back wall + side hint
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(9, 6),
+  new THREE.MeshStandardMaterial({ color:0x4a3423, roughness:0.9 })
+);
+floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; scene.add(floor);
+const wall = new THREE.Mesh(
+  new THREE.PlaneGeometry(9, 4.2),
+  new THREE.MeshStandardMaterial({ color:0x2e2138, roughness:1 })
+);
+wall.position.set(0, 2.1, -1.9); wall.receiveShadow = true; scene.add(wall);
+
+// rug
+const rug = new THREE.Mesh(
+  new THREE.CircleGeometry(1.55, 40),
+  new THREE.MeshStandardMaterial({ color:0x5d2f3a, roughness:1 })
+);
+rug.rotation.x = -Math.PI/2; rug.position.y = 0.005; rug.receiveShadow = true; scene.add(rug);
+
+// big clock on the wall (hands move)
+const clockGroup = new THREE.Group();
+const face = new THREE.Mesh(new THREE.CircleGeometry(0.62, 40), new THREE.MeshStandardMaterial({ color:0xf3e5c8 }));
+const rim = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.05, 12, 40), new THREE.MeshStandardMaterial({ color:0x8a6a3b, roughness:0.6 }));
+clockGroup.add(face, rim);
+const hourHand = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.34, 0.02), new THREE.MeshBasicMaterial({ color:0x33241a }));
+hourHand.geometry.translate(0, 0.15, 0);
+const minHand = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.5, 0.02), new THREE.MeshBasicMaterial({ color:0x33241a }));
+minHand.geometry.translate(0, 0.22, 0);
+hourHand.position.z = 0.02; minHand.position.z = 0.03;
+clockGroup.add(hourHand, minHand);
+clockGroup.position.set(1.55, 2.35, -1.86);
+scene.add(clockGroup);
+
+// shelf boxes + jars on the left
+const shelfMat = new THREE.MeshStandardMaterial({ color:0x3d2b1c, roughness:0.9 });
+for (let i=0;i<3;i++){
+  const s = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.07, 0.4), shelfMat);
+  s.position.set(-2.35, 0.8 + i*0.55, -1.65); s.castShadow = true; scene.add(s);
+  for (let j=0;j<3;j++){
+    const jar = new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.26,14),
+      new THREE.MeshStandardMaterial({ color:[0x9fc6b8,0xe8b4b8,0xf2d492][(i+j)%3], roughness:0.35 }));
+    jar.position.set(-2.85 + j*0.45, 0.97 + i*0.55, -1.65); jar.castShadow = true; scene.add(jar);
+  }
+}
+// workbench on the right
+const bench = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.09, 0.6), shelfMat);
+bench.position.set(2.4, 0.78, -1.55); bench.castShadow = true; scene.add(bench);
+for (const dx of [-0.7, 0.7]) for (const dz of [-0.22, 0.22]) {
+  const leg = new THREE.Mesh(new THREE.BoxGeometry(0.07,0.78,0.07), shelfMat);
+  leg.position.set(2.4+dx, 0.39, -1.55+dz); scene.add(leg);
+}
+const gear = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.05, 8, 18), new THREE.MeshStandardMaterial({ color:0xc9a227, metalness:0.7, roughness:0.35 }));
+gear.position.set(2.3, 0.95, -1.55); gear.castShadow = true; scene.add(gear);
+
+// character
+let mixer = null, actions = {}, current = null, charObj = null;
+let mode = 'walk'; // walk | run | stop
+let angle = Math.PI * 0.25;
+const PATH_RX = 1.05, PATH_RZ = 0.5;
+
+const loader = new GLTFLoader();
+loader.load('models/tokitsugi.glb', (gltf) => {
+  charObj = gltf.scene;
+  charObj.traverse(o => { if (o.isMesh) { o.castShadow = true; } });
+  scene.add(charObj);
+  mixer = new THREE.AnimationMixer(charObj);
+  for (const clip of gltf.animations) actions[clip.name] = mixer.clipAction(clip);
+  play('Walking');
+  loading.style.opacity = '0';
+  setTimeout(()=> loading.remove(), 600);
+  showCap('トキツギが、工房を歩いています。');
+}, undefined, (err) => {
+  loading.textContent = '読み込みに失敗しました。通信環境を確認してもう一度開いてください。';
+  console.error(err);
+});
+
+function play(name){
+  if (!actions[name]) return;
+  if (current && current !== actions[name]) { current.fadeOut(0.25); }
+  current = actions[name];
+  current.reset().fadeIn(0.25).play();
+}
+function showCap(text){
+  cap.textContent = text;
+  cap.classList.add('on');
+  clearTimeout(showCap._t);
+  showCap._t = setTimeout(()=> cap.classList.remove('on'), 4200);
+}
+
+// tap the character
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+renderer.domElement.addEventListener('pointerdown', (e) => {
+  if (!charObj) return;
+  const r = renderer.domElement.getBoundingClientRect();
+  ptr.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+  ptr.y = -((e.clientY - r.top) / r.height) * 2 + 1;
+  ray.setFromCamera(ptr, camera);
+  if (ray.intersectObject(charObj, true).length) {
+    showCap('「それは偶然ではない。トキツギが、静かに仕事をした証だ。」');
+  }
+});
+
+// buttons
+const bWalk = document.getElementById('bWalk'), bRun = document.getElementById('bRun'), bStop = document.getElementById('bStop');
+function setMode(m){
+  mode = m;
+  for (const [b, v] of [[bWalk,'walk'],[bRun,'run'],[bStop,'stop']]) b.setAttribute('aria-pressed', String(m===v));
+  if (!mixer) return;
+  if (m === 'walk') play('Walking');
+  if (m === 'run') play('Running');
+  if (m === 'stop' && current) { current.fadeOut(0.2); current = null; }
+}
+bWalk.onclick = () => setMode('walk');
+bRun.onclick = () => setMode('run');
+bStop.onclick = () => setMode('stop');
+
+const frameEl = document.getElementById('frame');
+const bL = document.getElementById('bL'), bP = document.getElementById('bP');
+function setAspect(portrait){
+  frameEl.classList.toggle('portrait', portrait);
+  bL.setAttribute('aria-pressed', String(!portrait));
+  bP.setAttribute('aria-pressed', String(portrait));
+  resize();
+}
+bL.onclick = () => setAspect(false);
+bP.onclick = () => setAspect(true);
+
+function resize(){
+  const w = frameEl.clientWidth, h = frameEl.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize);
+resize();
+
+const clockT = new THREE.Clock();
+function tick(){
+  requestAnimationFrame(tick);
+  const dt = Math.min(clockT.getDelta(), 0.05);
+  const t = clockT.elapsedTime;
+  if (mixer) mixer.update(dt);
+  if (charObj) {
+    if (mode !== 'stop') {
+      const speed = mode === 'run' ? 0.85 : 0.32; // rad/s around the oval
+      angle += speed * dt;
+      const x = Math.cos(angle) * PATH_RX, z = Math.sin(angle) * PATH_RZ;
+      const nx = Math.cos(angle + 0.02) * PATH_RX, nz = Math.sin(angle + 0.02) * PATH_RZ;
+      charObj.position.set(x, 0, z);
+      charObj.rotation.y = Math.atan2(nx - x, nz - z);
+    }
+  }
+  // clock hands: 1 real second = 1 clock minute (dreamy workshop time)
+  minHand.rotation.z = -t * (Math.PI * 2 / 60);
+  hourHand.rotation.z = -t * (Math.PI * 2 / 720);
+  gear.rotation.z = t * 0.6;
+  lamp.intensity = 12 + Math.sin(t * 7.3) * 0.9 + Math.sin(t * 13.7) * 0.5;
+  renderer.render(scene, camera);
+}
+tick();
+</script>
+</body>
+</html>

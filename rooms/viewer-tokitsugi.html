@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>トキツギ 3Dビューア — 見えない隣人たち</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#1b1522;color:#f1e4d8;font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px}
+h1{font-size:19px;letter-spacing:.12em;color:#ffe9cf;margin:6px 0 0;text-align:center}
+h1 small{display:block;font-size:12px;letter-spacing:.2em;opacity:.85;margin-top:.35em;font-weight:500}
+model-viewer{width:min(94vw,560px);height:min(62vh,560px);background:#241a30;border-radius:14px;box-shadow:0 8px 30px #0008}
+#bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+button,a.btn{font:inherit;font-weight:700;background:#3a2d45;color:#f1e4d8;border:2px solid #7a5f6e;border-radius:999px;padding:.4em 1.1em;cursor:pointer;text-decoration:none;font-size:14px}
+button[aria-pressed="true"]{background:#f2b58e;color:#3b2218;border-color:#f2b58e}
+p.note{font-size:12.5px;line-height:1.7;opacity:.85;max-width:520px;text-align:center;margin:2px 8px}
+#arBtn{background:#f2b58e;color:#3b2218;border-color:#f2b58e}
+</style>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+</head>
+<body>
+<h1>トキツギ<small>押し入れの奥の時計工房</small></h1>
+
+<model-viewer id="mv" src="models/tokitsugi.glb"
+  alt="トキツギの3Dモデル"
+  camera-controls auto-rotate
+  animation-name="Walking" autoplay
+  shadow-intensity="1"
+  ar ar-modes="webxr scene-viewer quick-look"
+  environment-image="neutral" exposure="1.05">
+  <button slot="ar-button" id="arBtn">📱 部屋に置いてみる（AR）</button>
+</model-viewer>
+
+<div id="bar">
+  <button id="bWalk" aria-pressed="true">歩く</button>
+  <button id="bRun" aria-pressed="false">走る</button>
+  <a class="btn" href="tokitsugi-3d.html">← 工房にもどる</a>
+  <a class="btn" href="index.html">部屋マップ</a>
+</div>
+
+<p class="note">指で回したり、ピンチで拡大できます。「部屋に置いてみる」は対応端末でARが開きます（Androidはそのまま／iPhoneは次版でUSDZ対応予定）。机の上にトキツギを置いた写真は、そのままSNSに投稿できます。</p>
+
+<script>
+const mv = document.getElementById('mv');
+const bWalk = document.getElementById('bWalk'), bRun = document.getElementById('bRun');
+function setAnim(name, btn){
+  mv.animationName = name;
+  mv.play();
+  bWalk.setAttribute('aria-pressed', String(btn==='walk'));
+  bRun.setAttribute('aria-pressed', String(btn==='run'));
+}
+bWalk.onclick = () => setAnim('Walking','walk');
+bRun.onclick = () => setAnim('Running','run');
+</script>
+</body>
+</html>
