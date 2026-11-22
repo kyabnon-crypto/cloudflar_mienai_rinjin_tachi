@@ -44,7 +44,7 @@ a.btn.primary{background:#f2b58e;color:#3b2218;border-color:#f2b58e}
 <p>常世町の13人 — タップすると、3Dで会えます</p>
 </header>
 <div class="grid" id="grid"></div>
-<p class="note">3Dモデルは各キャラクターの低ポリゴンGLBです。読み込みに少し時間がかかります。<br>AR対応はトキツギから順次広げています。</p>
+<p class="note">3Dモデルは各キャラクターの低ポリゴンGLBです。読み込みに少し時間がかかります。<br>詳細を開くとARボタン（対応端末）から、あなたの部屋に置くこともできます。</p>
 
 <div id="detail" role="dialog" aria-modal="true">
   <div class="panel">
@@ -56,6 +56,7 @@ a.btn.primary{background:#f2b58e;color:#3b2218;border-color:#f2b58e}
     <audio id="dAudio" controls preload="none"></audio>
     <div class="btns">
       <a class="btn primary" id="dRoom" href="#">部屋をのぞく</a>
+      <a class="btn" id="dRoom3d" href="#">3Dの部屋（歩く姿）</a>
       <a class="btn" href="rooms/index.html">部屋マップ</a>
     </div>
   </div>
@@ -76,13 +77,9 @@ for (const c of CHARS) {
 }
 function openDetail(c) {
   mv.setAttribute('src', `rooms/models/${c.slug}.glb`);
-  if (c.slug === 'tokitsugi') {
-    mv.setAttribute('ios-src', 'rooms/models/tokitsugi.usdz?v=2');
-    mv.setAttribute('ar', '');
-    mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
-  } else {
-    mv.removeAttribute('ios-src'); mv.removeAttribute('ar'); mv.removeAttribute('ar-modes');
-  }
+  mv.setAttribute('ios-src', `rooms/models/${c.slug}.usdz?v=2`);
+  mv.setAttribute('ar', '');
+  mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
   document.getElementById('dName').textContent = c.name;
   document.getElementById('dSub').textContent = `${c.ep}｜${c.room}`;
   document.getElementById('dLoc').textContent = '📍 ' + c.loc;
@@ -90,6 +87,7 @@ function openDetail(c) {
   const au = document.getElementById('dAudio');
   au.src = `rooms/audio/${c.slug}.mp3`;
   document.getElementById('dRoom').href = `rooms/${c.slug}.html`;
+  document.getElementById('dRoom3d').href = `rooms/char-3d.html?c=${c.slug}`;
   detail.classList.add('on');
   if (mv.play) mv.play();
 }

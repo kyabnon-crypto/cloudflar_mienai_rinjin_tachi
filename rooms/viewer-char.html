@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>3Dビューア — 見えない隣人たち</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#1b1522;color:#f1e4d8;font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px}
+h1{font-size:19px;letter-spacing:.12em;color:#ffe9cf;margin:6px 0 0;text-align:center}
+h1 small{display:block;font-size:12px;letter-spacing:.2em;opacity:.85;margin-top:.35em;font-weight:500}
+model-viewer{width:min(94vw,560px);height:min(62vh,560px);background:#241a30;border-radius:14px;box-shadow:0 8px 30px #0008}
+#bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+button,a.btn{font:inherit;font-weight:700;background:#3a2d45;color:#f1e4d8;border:2px solid #7a5f6e;border-radius:999px;padding:.4em 1.1em;cursor:pointer;text-decoration:none;font-size:14px}
+button[aria-pressed="true"]{background:#f2b58e;color:#3b2218;border-color:#f2b58e}
+p.note{font-size:12.5px;line-height:1.7;opacity:.85;max-width:520px;text-align:center;margin:2px 8px}
+#arBtn{background:#f2b58e;color:#3b2218;border-color:#f2b58e}
+</style>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+</head>
+<body>
+<h1><span id="vName"></span><small id="vRoom"></small></h1>
+<model-viewer id="mv" alt="3Dモデル" camera-controls auto-rotate animation-name="Walking" autoplay shadow-intensity="1" ar ar-modes="webxr scene-viewer quick-look" environment-image="neutral" exposure="1.05">
+  <button slot="ar-button" id="arBtn">📱 部屋に置いてみる（AR）</button>
+</model-viewer>
+<div id="bar">
+  <button id="bWalk" aria-pressed="true">歩く</button>
+  <button id="bRun" aria-pressed="false">走る</button>
+  <a class="btn" id="roomLink" href="#">← 部屋にもどる</a>
+  <a class="btn" href="../zukan.html">図鑑</a>
+</div>
+<p class="note">指で回したり、ピンチで拡大できます。「部屋に置いてみる」は対応端末でARが開きます。机の上に置いた写真は、そのままSNSに投稿できます。</p>
+<script>
+const CFG = {
+ "susunomi": {
+  "slug": "susunomi",
+  "ep": "第1話の隣人",
+  "name": "ススノミ",
+  "room": "換気口の奥の小さな台所",
+  "loc": "古びたアパートの換気口の奥にある小さな台所",
+  "quote": "「なんだか今日は、懐かしい気分だな」",
+  "theme": {
+   "bg": "#241a20",
+   "wall": "#3a2a26",
+   "floor": "#4a3423",
+   "rug": "#6b3a2e",
+   "accent": "#ffb36b"
+  }
+ },
+ "kagemichi": {
+  "slug": "kagemichi",
+  "ep": "第2話の隣人",
+  "name": "カゲミチ",
+  "room": "終点の駅の詰め所",
+  "loc": "終電が終わった後の誰もいない駅のホーム",
+  "quote": "「それでいい、とカゲミチは思う。」",
+  "theme": {
+   "bg": "#181a24",
+   "wall": "#272b3a",
+   "floor": "#33343c",
+   "rug": "#3d4457",
+   "accent": "#ffd9a0"
+  }
+ },
+ "tokitsugi": {
+  "slug": "tokitsugi",
+  "ep": "第3話の隣人",
+  "name": "トキツギ",
+  "room": "押し入れの奥の時計工房",
+  "loc": "どの家の押し入れの奥にもある、ほんのわずかな「隙間」",
+  "quote": "「それは偶然ではない。トキツギが、静かに仕事をした証だ。」",
+  "theme": {
+   "bg": "#241a30",
+   "wall": "#2e2138",
+   "floor": "#4a3423",
+   "rug": "#5d2f3a",
+   "accent": "#f2b58e"
+  }
+ },
+ "wasuredama": {
+  "slug": "wasuredama",
+  "ep": "第4話の隣人",
+  "name": "ワスレダマ",
+  "room": "街灯の下の落とし物置き場",
+  "loc": "夜の街灯の下",
+  "quote": "「そこには、昔の自分の夢が書いてあった。」",
+  "theme": {
+   "bg": "#14201e",
+   "wall": "#1e2f2a",
+   "floor": "#2c3833",
+   "rug": "#37544a",
+   "accent": "#ffe9a8"
+  }
+ },
+ "nukumori": {
+  "slug": "nukumori",
+  "ep": "第5話の隣人",
+  "name": "ヌクモリ",
+  "room": "自動販売機の裏の小さな温度番",
+  "loc": "真冬の夜の自動販売機の裏側（小さな湯気の立つ場所）",
+  "quote": "「今日は、なんだか凍えないな」",
+  "theme": {
+   "bg": "#26161a",
+   "wall": "#38202a",
+   "floor": "#472a20",
+   "rug": "#70352c",
+   "accent": "#ffab7a"
+  }
+ },
+ "henjirou": {
+  "slug": "henjirou",
+  "ep": "第6話の隣人",
+  "name": "ヘンジロウ",
+  "room": "ポストの中の返事書き",
+  "loc": "赤い郵便ポストの底",
+  "quote": "「相手は何も聞いていないのに、なぜか理解してくれる。」",
+  "theme": {
+   "bg": "#221418",
+   "wall": "#331e24",
+   "floor": "#402820",
+   "rug": "#5f2f33",
+   "accent": "#ffb59d"
+  }
+ },
+ "tsumazuki": {
+  "slug": "tsumazuki",
+  "ep": "第7話の隣人",
+  "name": "ツマヅキ",
+  "room": "階段の踊り場の見張り番",
+  "loc": "駅やアパートの階段の踊り場",
+  "quote": "「つまずきそうになって踏みとどまる。それは偶然ではない。」",
+  "theme": {
+   "bg": "#191d26",
+   "wall": "#262c3a",
+   "floor": "#31333c",
+   "rug": "#3f4a5e",
+   "accent": "#cfe3ff"
+  }
+ },
+ "kazoeru": {
+  "slug": "kazoeru",
+  "ep": "第8話の隣人",
+  "name": "カゾエル",
+  "room": "公園のブランコの数え役",
+  "loc": "夜の公園の誰もいない揺れるブランコ",
+  "quote": "「誰にも褒められなかった日でも、その頑張りは消えていない。」",
+  "theme": {
+   "bg": "#14211a",
+   "wall": "#1f3025",
+   "floor": "#2a3626",
+   "rug": "#38543c",
+   "accent": "#d8ffb0"
+  }
+ },
+ "tomerun": {
+  "slug": "tomerun",
+  "ep": "第9話の隣人",
+  "name": "トメルン",
+  "room": "冷蔵庫の奥の時間保存士",
+  "loc": "家庭の冷蔵庫の最奥にある小さな氷の小棚",
+  "quote": "「“腐りそうな時間”を、ほんの少しだけ延ばしている。」",
+  "theme": {
+   "bg": "#122028",
+   "wall": "#1b303c",
+   "floor": "#24343c",
+   "rug": "#2f5468",
+   "accent": "#bdefff"
+  }
+ },
+ "hoshihakobi": {
+  "slug": "hoshihakobi",
+  "ep": "第10話の隣人",
+  "name": "ホシハコビ",
+  "room": "屋根の上の星運び",
+  "loc": "夜の屋根の上・煙突の周辺",
+  "quote": "「それは、空の偶然ではない。」",
+  "theme": {
+   "bg": "#141228",
+   "wall": "#201c42",
+   "floor": "#2a2440",
+   "rug": "#3a3468",
+   "accent": "#ffe9a8"
+  }
+ },
+ "yumeatsume": {
+  "slug": "yumeatsume",
+  "ep": "第11話の隣人",
+  "name": "ユメアツメ",
+  "room": "夢の保管庫の管理人",
+  "loc": "常世町の西の丘の上にある大きな温室「夢の保管庫」",
+  "quote": "「夢には賞味期限がないから。「おかえり」」",
+  "theme": {
+   "bg": "#20142c",
+   "wall": "#2f1e42",
+   "floor": "#38283e",
+   "rug": "#543a68",
+   "accent": "#e3c2ff"
+  }
+ },
+ "namidabin": {
+  "slug": "namidabin",
+  "ep": "第12話の隣人",
+  "name": "ナミダビン",
+  "room": "涙瓶職人",
+  "loc": "常世町の地下「涙蔵（なみだぐら）」",
+  "quote": "「悲しみは、いつか輝きになる。それを知っているから。」",
+  "theme": {
+   "bg": "#101e2a",
+   "wall": "#18303f",
+   "floor": "#22333c",
+   "rug": "#2c5568",
+   "accent": "#a8e6ff"
+  }
+ },
+ "ashitayobi": {
+  "slug": "ashitayobi",
+  "ep": "第13話の隣人",
+  "name": "アシタヨビ",
+  "room": "朝焼け配達人",
+  "loc": "夜明け前の空・常世町の東門",
+  "quote": "「明日は希望そのものじゃない。でも、希望を運ぶことはできる。」",
+  "theme": {
+   "bg": "#241a1e",
+   "wall": "#37242c",
+   "floor": "#40302a",
+   "rug": "#6e453a",
+   "accent": "#ffc9a3"
+  }
+ }
+};
+const slug = new URLSearchParams(location.search).get('c') || 'tokitsugi';
+const C = CFG[slug] || CFG['tokitsugi'];
+document.title = `${C.name} 3Dビューア — 見えない隣人たち`;
+document.getElementById('vName').textContent = C.name;
+document.getElementById('vRoom').textContent = C.room;
+document.getElementById('roomLink').href = `char-3d.html?c=${slug}`;
+const mv = document.getElementById('mv');
+mv.setAttribute('src', `models/${slug}.glb`);
+mv.setAttribute('ios-src', `models/${slug}.usdz?v=2`);
+const bWalk = document.getElementById('bWalk'), bRun = document.getElementById('bRun');
+function setAnim(name, btn){
+  mv.animationName = name; mv.play();
+  bWalk.setAttribute('aria-pressed', String(btn==='walk'));
+  bRun.setAttribute('aria-pressed', String(btn==='run'));
+}
+bWalk.onclick = () => setAnim('Walking','walk');
+bRun.onclick = () => setAnim('Running','run');
+</script>
+</body>
+</html>
