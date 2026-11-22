@@ -149,7 +149,7 @@
 <body>
   <nav class="preview-nav" aria-label="Site navigation">
     <a href="#top-preview">トップ</a>
-    <a href="game/play.html" style="border-color: rgba(255, 207, 122, 0.6); background: rgba(255, 207, 122, 0.16); color: #ffe2a8;">🏮 ゲームで遊ぶ</a>
+    <a href="#games-hub" style="border-color: rgba(255, 207, 122, 0.6); background: rgba(255, 207, 122, 0.16); color: #ffe2a8;">🏮 ゲームで遊ぶ</a>
     <a href="#stickers-preview" style="border-color: rgba(6, 199, 85, 0.6); background: rgba(6, 199, 85, 0.16); color: #86efac;">💬 LINEスタンプ（全13種）</a>
     <a href="#characters-preview">隣人図鑑</a>
     <a href="#stories-preview">ストーリー一覧</a>
@@ -185,13 +185,41 @@
         それはきっと、彼らがそっと仕事をした証拠です。
       </p>
       <div class="mn-actions">
-        <a class="mn-button mn-button--primary" href="game/play.html" style="background: linear-gradient(135deg, #eab308, #ca8a04); color: #1e1302; font-weight: 800;">🏮 ゲームで遊ぶ（無料）</a>
+        <a class="mn-button mn-button--primary" href="#games-hub" style="background: linear-gradient(135deg, #eab308, #ca8a04); color: #1e1302; font-weight: 800;">🏮 ゲームで遊ぶ（無料）</a>
         <a class="mn-button mn-button--ghost" href="#stickers-preview" style="border-color: rgba(6, 199, 85, 0.55); background: rgba(6, 199, 85, 0.12); color: #86efac;">💬 動くLINEスタンプ（全13種）</a>
         <a class="mn-button mn-button--ghost" href="#characters-preview">13人の隣人図鑑</a>
         <a class="mn-button mn-button--ghost" href="#music-preview">🎧 楽曲・BGM</a>
       </div>
     </div>
   </header>
+
+
+  <!-- ゲームハブ -->
+  <section class="mn-section" id="games-hub" aria-labelledby="mn-games-title" style="padding-top: 3.5rem; padding-bottom: 1rem;">
+    <p class="mn-kicker" style="color: #ffd782;">Play</p>
+    <h2 id="mn-games-title" style="font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.25; margin-bottom: 1rem;">ゲームで遊ぶ</h2>
+    <p style="color: #cfc3af; font-size: 1rem; line-height: 1.8;">遊べるものは3つ。どれも無料で、スマホのまま遊べます。</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; margin-top: 1.6rem;">
+      <article class="mn-character-card" style="border-radius: 20px; overflow: hidden; border: 1px solid rgba(255, 215, 130, 0.25); padding: 1.4rem;">
+        <p class="mn-kicker">Exploration Game</p>
+        <h3 style="font-size: 1.2rem; color: #fff7e8; margin: 0 0 0.4rem;">🏮 みつけて、となりびと</h3>
+        <p style="color: #cfc3af; font-size: 0.88rem; margin: 0 0 1rem;">ランタンの光で暗がりを照らして、隠れた13人の隣人を探す無料スマホ絵本ゲーム。</p>
+        <a class="mn-button mn-button--primary" href="game/play.html" style="background: linear-gradient(135deg, #ffd782, #e5a93b); color: #1e1302; font-weight: 800;">ゲームをはじめる</a>
+      </article>
+      <article class="mn-character-card" style="border-radius: 20px; overflow: hidden; border: 1px solid rgba(255, 215, 130, 0.25); padding: 1.4rem;">
+        <p class="mn-kicker">Card Game</p>
+        <h3 style="font-size: 1.2rem; color: #fff7e8; margin: 0 0 0.4rem;">🃏 メモリーマッチ</h3>
+        <p style="color: #cfc3af; font-size: 0.88rem; margin: 0 0 1rem;">13人のカードをめくって揃える神経衰弱。揃えたペアをタップすると、その隣人の曲が流れます。</p>
+        <a class="mn-button mn-button--primary" href="memory-match/" style="background: linear-gradient(135deg, #ffd782, #e5a93b); color: #1e1302; font-weight: 800;">カードをめくる</a>
+      </article>
+      <article class="mn-character-card" style="border-radius: 20px; overflow: hidden; border: 1px solid rgba(255, 215, 130, 0.25); padding: 1.4rem;">
+        <p class="mn-kicker">3D Room Tour</p>
+        <h3 style="font-size: 1.2rem; color: #fff7e8; margin: 0 0 0.4rem;">🏠 3D部屋めぐり</h3>
+        <p style="color: #cfc3af; font-size: 0.88rem; margin: 0 0 1rem;">13人の部屋を3Dでそっとのぞく。歩く姿に会える部屋と、ARで自分の部屋に置く体験も。</p>
+        <a class="mn-button mn-button--primary" href="rooms/" style="background: linear-gradient(135deg, #ffd782, #e5a93b); color: #1e1302; font-weight: 800;">部屋へ出かける</a>
+      </article>
+    </div>
+  </section>
 
   <!-- スマホ絵本ゲーム紹介セクション -->
   <section class="mn-section mn-section--split" id="game-preview" aria-labelledby="mn-game-title" style="padding-top: 3.5rem; padding-bottom: 3.5rem;">
