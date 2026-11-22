@@ -2,97 +2,17 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>隣人図鑑 — 見えない隣人たち</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<meta http-equiv="refresh" content="0; url=index.html#characters-preview">
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#171021;color:#f1e4d8;font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;padding:20px 14px 48px}
-header{text-align:center;margin:10px 0 22px}
-h1{font-size:27px;letter-spacing:.2em;color:#ffe9cf;margin:0}
-header p{opacity:.85;font-size:13.5px;letter-spacing:.14em;margin:.6em 0 0}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;max-width:880px;margin:0 auto}
-.card{background:#241a30;border:2px solid #453257;border-radius:14px;padding:12px 10px 14px;text-align:center;cursor:pointer;transition:transform .15s,border-color .15s}
-.card:active{transform:scale(.97)}
-.card:hover{border-color:#f2b58e}
-.card img{width:100%;aspect-ratio:1;object-fit:contain}
-.card .ep{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.08em;background:#3a2d45;border-radius:999px;padding:.15em .8em;margin-top:6px}
-.card h2{font-size:17px;margin:.45em 0 .15em;letter-spacing:.1em}
-.card .room{font-size:11.5px;opacity:.8;line-height:1.5;min-height:2.6em}
-.card .open{font-size:11px;color:#f2b58e;font-weight:700;margin-top:4px}
-#detail{position:fixed;inset:0;background:rgba(10,6,16,.72);display:none;align-items:flex-end;justify-content:center;z-index:20}
-#detail.on{display:flex}
-.panel{background:#1e1529;width:min(100%,560px);max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px 18px 26px;box-shadow:0 -8px 40px #000a}
-@media(min-width:640px){#detail{align-items:center}.panel{border-radius:18px}}
-.panel model-viewer{width:100%;height:320px;background:#241a30;border-radius:12px}
-.panel h2{margin:.5em 0 .1em;font-size:22px;letter-spacing:.1em;color:#ffe9cf}
-.panel h2 small{display:block;font-size:12.5px;opacity:.85;letter-spacing:.14em;margin-top:.3em;color:#f1e4d8}
-.panel .loc{font-size:13px;opacity:.9}
-.panel blockquote{margin:1em 0;padding:.7em 1em;background:#2a2138;border-left:4px solid #f2b58e;border-radius:0 10px 10px 0;font-size:14.5px;line-height:1.7}
-.panel audio{width:100%;margin:4px 0 10px}
-.btns{display:flex;gap:8px;flex-wrap:wrap}
-a.btn,button.btn{font:inherit;font-weight:700;background:#3a2d45;color:#f1e4d8;border:2px solid #7a5f6e;border-radius:999px;padding:.45em 1.1em;cursor:pointer;text-decoration:none;font-size:13.5px}
-a.btn.primary{background:#f2b58e;color:#3b2218;border-color:#f2b58e}
-#closeBtn{float:right}
-.note{text-align:center;font-size:12px;opacity:.7;margin-top:20px;line-height:1.7}
+body{background:#171021;color:#f1e4d8;font-family:"Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;text-align:center;padding:48px 16px}
+a{color:#f2b58e;font-weight:700}
 </style>
-<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+<script>location.replace('index.html#characters-preview');</script>
 </head>
 <body>
-<header>
-<h1>隣人図鑑</h1>
-<p>常世町の13人 — タップすると、3Dで会えます</p>
-</header>
-<div class="grid" id="grid"></div>
-<p class="note">3Dモデルは各キャラクターの低ポリゴンGLBです。読み込みに少し時間がかかります。<br>詳細を開くとARボタン（対応端末）から、あなたの部屋に置くこともできます。</p>
-
-<div id="detail" role="dialog" aria-modal="true">
-  <div class="panel">
-    <button class="btn" id="closeBtn">閉じる</button>
-    <model-viewer id="mv" alt="3Dモデル" camera-controls auto-rotate animation-name="Walking" autoplay shadow-intensity="1" environment-image="neutral" exposure="1.05"></model-viewer>
-    <h2><span id="dName"></span><small id="dSub"></small></h2>
-    <p class="loc" id="dLoc"></p>
-    <blockquote id="dQuote"></blockquote>
-    <audio id="dAudio" controls preload="none"></audio>
-    <div class="btns">
-      <a class="btn primary" id="dRoom" href="#">部屋をのぞく</a>
-      <a class="btn" id="dRoom3d" href="#">3Dの部屋（歩く姿）</a>
-      <a class="btn" href="rooms/index.html">部屋マップ</a>
-    </div>
-  </div>
-</div>
-
-<script>
-const CHARS = [{"slug": "susunomi", "ep": "第1話の隣人", "name": "ススノミ", "room": "換気口の奥の小さな台所", "loc": "古びたアパートの換気口の奥にある小さな台所", "quote": "「なんだか今日は、懐かしい気分だな」"}, {"slug": "kagemichi", "ep": "第2話の隣人", "name": "カゲミチ", "room": "終点の駅の詰め所", "loc": "終電が終わった後の誰もいない駅のホーム", "quote": "「それでいい、とカゲミチは思う。」"}, {"slug": "tokitsugi", "ep": "第3話の隣人", "name": "トキツギ", "room": "押し入れの奥の時計工房", "loc": "どの家の押し入れの奥にもある、ほんのわずかな「隙間」", "quote": "「それは偶然ではない。トキツギが、静かに仕事をした証だ。」"}, {"slug": "wasuredama", "ep": "第4話の隣人", "name": "ワスレダマ", "room": "街灯の下の落とし物置き場", "loc": "夜の街灯の下", "quote": "「そこには、昔の自分の夢が書いてあった。」"}, {"slug": "nukumori", "ep": "第5話の隣人", "name": "ヌクモリ", "room": "自動販売機の裏の小さな温度番", "loc": "真冬の夜の自動販売機の裏側（小さな湯気の立つ場所）", "quote": "「今日は、なんだか凍えないな」"}, {"slug": "henjirou", "ep": "第6話の隣人", "name": "ヘンジロウ", "room": "ポストの中の返事書き", "loc": "赤い郵便ポストの底", "quote": "「相手は何も聞いていないのに、なぜか理解してくれる。」"}, {"slug": "tsumazuki", "ep": "第7話の隣人", "name": "ツマヅキ", "room": "階段の踊り場の見張り番", "loc": "駅やアパートの階段の踊り場", "quote": "「つまずきそうになって踏みとどまる。それは偶然ではない。」"}, {"slug": "kazoeru", "ep": "第8話の隣人", "name": "カゾエル", "room": "公園のブランコの数え役", "loc": "夜の公園の誰もいない揺れるブランコ", "quote": "「誰にも褒められなかった日でも、その頑張りは消えていない。」"}, {"slug": "tomerun", "ep": "第9話の隣人", "name": "トメルン", "room": "冷蔵庫の奥の時間保存士", "loc": "家庭の冷蔵庫の最奥にある小さな氷の小棚", "quote": "「“腐りそうな時間”を、ほんの少しだけ延ばしている。」"}, {"slug": "hoshihakobi", "ep": "第10話の隣人", "name": "ホシハコビ", "room": "屋根の上の星運び", "loc": "夜の屋根の上・煙突の周辺", "quote": "「それは、空の偶然ではない。」"}, {"slug": "yumeatsume", "ep": "第11話の隣人", "name": "ユメアツメ", "room": "夢の保管庫の管理人", "loc": "常世町の西の丘の上にある大きな温室「夢の保管庫」", "quote": "「夢には賞味期限がないから。「おかえり」」"}, {"slug": "namidabin", "ep": "第12話の隣人", "name": "ナミダビン", "room": "涙瓶職人", "loc": "常世町の地下「涙蔵（なみだぐら）」", "quote": "「悲しみは、いつか輝きになる。それを知っているから。」"}, {"slug": "ashitayobi", "ep": "第13話の隣人", "name": "アシタヨビ", "room": "朝焼け配達人", "loc": "夜明け前の空・常世町の東門", "quote": "「明日は希望そのものじゃない。でも、希望を運ぶことはできる。」"}];
-const grid = document.getElementById('grid');
-const detail = document.getElementById('detail');
-const mv = document.getElementById('mv');
-for (const c of CHARS) {
-  const el = document.createElement('article');
-  el.className = 'card';
-  el.innerHTML = `<img src="assets/${c.slug}-clean.png" alt="${c.name}" loading="lazy">
-    <span class="ep">${c.ep}</span><h2>${c.name}</h2><p class="room">${c.room}</p><p class="open">3Dで見る →</p>`;
-  el.onclick = () => openDetail(c);
-  grid.appendChild(el);
-}
-function openDetail(c) {
-  mv.setAttribute('src', `rooms/models/${c.slug}.glb`);
-  mv.setAttribute('ios-src', `rooms/models/${c.slug}.usdz?v=2`);
-  mv.setAttribute('ar', '');
-  mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
-  document.getElementById('dName').textContent = c.name;
-  document.getElementById('dSub').textContent = `${c.ep}｜${c.room}`;
-  document.getElementById('dLoc').textContent = '📍 ' + c.loc;
-  document.getElementById('dQuote').textContent = c.quote;
-  const au = document.getElementById('dAudio');
-  au.src = `rooms/audio/${c.slug}.mp3`;
-  document.getElementById('dRoom').href = `rooms/${c.slug}.html`;
-  document.getElementById('dRoom3d').href = `rooms/char-3d.html?c=${c.slug}`;
-  detail.classList.add('on');
-  if (mv.play) mv.play();
-}
-document.getElementById('closeBtn').onclick = () => { detail.classList.remove('on'); document.getElementById('dAudio').pause(); };
-detail.addEventListener('click', (e) => { if (e.target === detail) document.getElementById('closeBtn').click(); });
-</script>
+<p>隣人図鑑はトップページに引っ越しました。</p>
+<p><a href="index.html#characters-preview">隣人図鑑へ移動する</a></p>
 </body>
 </html>
